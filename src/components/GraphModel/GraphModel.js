@@ -69,8 +69,7 @@ const GraphModel = ({ graphModel, setGraphModel, setModel, model }) => {
             <select onChange={(e) => handleChange(e)}>
                 <option
                     value="https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_100_224/feature_vector/5/default/1"
-                    selected
-                >
+                    selected>
                     mobilenet v3 small 100 224
                 </option>
                 <option value="https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v2_130_224/feature_vector/1/default/1">
