@@ -7,7 +7,7 @@ const MainCanvas2 = () => {
     const [stream, setStream] = useState(null);
 
     const setup = (p5, canvasParentRef) => {
-        p5.createCanvas(500, 400).parent(canvasParentRef);
+        const canvas = p5.createCanvas(500, 400).parent(canvasParentRef);
         const c = p5.createCapture(p5.VIDEO, (mediaStream) => {
             setStream(mediaStream);
             console.log('Camera Turned On!', mediaStream);
@@ -15,6 +15,9 @@ const MainCanvas2 = () => {
         c.hide();
         c.size(500, 400);
         setCapture(c);
+        canvas.mousePressed((event) => {
+            console.log('Clicked on the canvas. Event:', event);
+        });
     };
 
     const draw = (p5) => {
