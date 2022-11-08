@@ -8,7 +8,7 @@ import AddClass from '../AddClass/AddClass';
 const Main = () => {
     let navigate = useNavigate();
     const { Sider, Content } = Layout;
-    const [collapsed, setCollapsed] = useState(false);
+    const [collapsed, setCollapsed] = useState(true);
     const [key, setKey] = useState(1);
 
     function getItem(label, key, icon, children) {
