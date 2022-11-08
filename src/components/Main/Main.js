@@ -3,6 +3,7 @@ import { AimOutlined, SettingOutlined, PlusSquareOutlined, HomeOutlined } from '
 import { Layout, Menu } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import styles from './Main.module.scss';
+import AddClass from '../AddClass/AddClass';
 
 const Main = () => {
     let navigate = useNavigate();
@@ -36,18 +37,18 @@ const Main = () => {
     const ContentElem = (key) => {
         switch (key) {
             case '1':
-                return <div>Bla bla {key}</div>;
+                return <AddClass />;
             case '2':
                 return <div>Bla bla {key}</div>;
             case '3':
                 return <div>Bla bla {key}</div>;
             default:
-                return <div>Bla bla {key}</div>;
+                return <AddClass />;
         }
     };
 
     return (
-        <Layout className={styles.layout}>
+        <Layout className={styles.layout} hasSider>
             <Sider
                 className={styles.sider}
                 collapsible
@@ -61,7 +62,7 @@ const Main = () => {
                     items={items}
                 />
             </Sider>
-            <Layout>
+            <Layout className={`${styles.siteLayout} ${collapsed ? styles.big : styles.small}`}>
                 <Content style={{ margin: '24px 16px 0', overflow: 'initial' }}>
                     {ContentElem(key)}
                 </Content>

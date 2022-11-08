@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { Button } from 'antd';
 import Sketch from 'react-p5';
+import { CameraOutlined } from '@ant-design/icons';
 
 const MainCanvas2 = () => {
     const [on, setOn] = useState(false);
@@ -65,8 +67,13 @@ const MainCanvas2 = () => {
     return (
         <div>
             {on ? <Sketch setup={setup} draw={draw} /> : ''}
-
-            <button onClick={() => turnOffCamera(!on)}>Click here</button>
+            <Button
+                onClick={turnOffCamera}
+                type="primary"
+                shape="circle"
+                icon={<CameraOutlined />}
+                size={'large'}
+            />
         </div>
     );
 };
