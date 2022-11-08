@@ -1,14 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './App.scss';
-import Home from './components/Home/Home';
-import Content from './components/Content/Content';
+import Routing from './views/Routing';
 
 function App() {
-    const [started, setStarted] = useState(false);
-    console.log(started);
     return (
         <div className="App">
-            {!started ? <Home started={started} setStarted={setStarted} /> : <Content />}
+            <Routing />
         </div>
     );
 }

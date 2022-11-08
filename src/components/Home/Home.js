@@ -1,9 +1,10 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from 'antd';
 import { Typography } from 'antd';
 import styles from './Home.module.scss';
 
-const Home = ({ started, setStarted }) => {
+const Home = () => {
     const { Title, Paragraph } = Typography;
     return (
         <div className={styles.home}>
@@ -17,8 +18,8 @@ const Home = ({ started, setStarted }) => {
                     nec porttitor risus sodales quis. Mauris egestas tempus velit non aliquet.
                 </Paragraph>
                 <div>
-                    <Button type="primary" onClick={() => setStarted(!started)}>
-                        Getting started
+                    <Button type="primary">
+                        <Link to="/train">Get Started</Link>
                     </Button>
                 </div>
             </Typography>
