@@ -36,6 +36,25 @@
     .samples{
         max-height: 200px;
         overflow-y: scroll;
+        scrollbar-width: auto;
+        scrollbar-color: #99def0 #ffffff;
+        /* ===== Scrollbar CSS ===== */
+        /* Firefox */
+
+        /* Chrome, Edge, and Safari */
+        &::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: #ffffff;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: #bae7ff;
+            border-radius: 5px;
+            border: 0px solid #ffffff;
+        }
         img{
             border-radius: 5px;
             margin: 5px 0;

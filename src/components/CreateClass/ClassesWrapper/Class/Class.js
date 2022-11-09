@@ -24,13 +24,9 @@ const Class = ({ index }) => {
     // Todo: Data states
 
     const setup = (p5, canvasParentRef) => {
-        const canvas = p5.createCanvas(265, 265).parent(canvasParentRef);
+        p5.createCanvas(265, 265).parent(canvasParentRef);
         let constraints = {
             video: {
-                mandatory: {
-                    minWidth: 530,
-                    minHeight: 530
-                },
                 optional: [{ maxFrameRate: 10 }]
             }
         };
@@ -41,9 +37,6 @@ const Class = ({ index }) => {
         c.hide();
         c.size(500, 400);
         setCapture(c);
-        canvas.mousePressed((event) => {
-            console.log('Clicked on the canvas. Event:', event);
-        });
     };
 
     const draw = (p5) => {
