@@ -1,31 +1,24 @@
 .layout{
     min-height: 100vh;
-    .sider{
-        padding-top: 24px;;
-        overflow: auto;
-        height: 100vh;
-        position: fixed;
-        left: 0;
-        top: 0;
-        bottom: 0;
+    .header{
         background-color: #fff;
-        border-right: 1px solid #f0f0f0;
-        .ant-layout-sider-trigger{
-            background-color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .homeIcon{
+            font-size: 1.25rem;
         }
-        .menu{
-            border-right: 0;
+    }
+    .siteLayout {
+        margin-bottom: 24px;
+        transition: all .2s;
+        text-align: left;
+        &.big{
+            margin-left: 80px;
+        }
+        &.small{
+            margin-left: 200px;
         }
     }
 }
 
-.siteLayout {
-    transition: all .2s;
-    text-align: left;
-    &.big{
-        margin-left: 80px;
-    }
-    &.small{
-        margin-left: 200px;
-    }
-}

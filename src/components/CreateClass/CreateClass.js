@@ -1,8 +1,8 @@
 import React from 'react';
+import ClassesWrapper from './ClassesWrapper/ClassesWrapper';
 import { Typography } from 'antd';
-import MainCanvas2 from '../MainCanvas/MainCanvas2';
 
-const AddClass = () => {
+const CreateClass = () => {
     const { Title, Paragraph } = Typography;
     return (
         <div>
@@ -14,12 +14,9 @@ const AddClass = () => {
                     efficitur.{' '}
                 </Paragraph>
             </Typography>
-            <Typography>
-                <Title level={3}>Class 1</Title>
-            </Typography>
-            <MainCanvas2 id={0} label="class1" />
+            <ClassesWrapper />
         </div>
     );
 };
 
-export default AddClass;
+export default CreateClass;

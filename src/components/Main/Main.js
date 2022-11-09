@@ -1,68 +1,40 @@
 import React, { useState } from 'react';
-import { AimOutlined, SettingOutlined, PlusSquareOutlined, HomeOutlined } from '@ant-design/icons';
-import { Layout, Menu } from 'antd';
+import { Layout } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import styles from './Main.module.scss';
-import AddClass from '../AddClass/AddClass';
+import CreateClass from '../CreateClass/CreateClass';
+import SideNav from './SideNav/SideNav';
+import { HomeOutlined } from '@ant-design/icons';
 
 const Main = () => {
     let navigate = useNavigate();
-    const { Sider, Content } = Layout;
+    const { Header, Content } = Layout;
     const [collapsed, setCollapsed] = useState(true);
-    const [key, setKey] = useState(1);
-
-    function getItem(label, key, icon, children) {
-        return {
-            key,
-            icon,
-            children,
-            label
-        };
-    }
-
-    const items = [
-        getItem('Home', '0', <HomeOutlined />),
-        getItem('Create Classes', '1', <PlusSquareOutlined />),
-        getItem('Setup Parameters', '2', <SettingOutlined />),
-        getItem('Train', '3', <AimOutlined />)
-    ];
-
-    const onClick = (e) => {
-        setKey(e.key);
-        if (e.key === '0') {
-            navigate('/');
-        }
-    };
+    const [key, setKey] = useState('1');
 
     const ContentElem = (key) => {
         switch (key) {
+            case '0':
+                navigate('/');
+                break;
             case '1':
-                return <AddClass />;
+                return <CreateClass />;
             case '2':
                 return <div>Bla bla {key}</div>;
             case '3':
                 return <div>Bla bla {key}</div>;
             default:
-                return <AddClass />;
+                return <CreateClass />;
         }
     };
 
     return (
         <Layout className={styles.layout} hasSider>
-            <Sider
-                className={styles.sider}
-                collapsible
-                collapsed={collapsed}
-                onCollapse={(value) => setCollapsed(value)}>
-                <Menu
-                    onClick={onClick}
-                    className={styles.menu}
-                    defaultSelectedKeys={['1']}
-                    mode="inline"
-                    items={items}
-                />
-            </Sider>
+            <SideNav collapsed={collapsed} setCollapsed={setCollapsed} setKey={setKey} />
             <Layout className={`${styles.siteLayout} ${collapsed ? styles.big : styles.small}`}>
+                <Header className={styles.header}>
+                    <HomeOutlined className={styles.homeIcon} onClick={() => navigate('/')} />
+                </Header>
                 <Content style={{ margin: '24px 16px 0', overflow: 'initial' }}>
                     {ContentElem(key)}
                 </Content>

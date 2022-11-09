@@ -1,0 +1,30 @@
+.class{
+    background-color: #fff;
+    border: 1px solid #f0f0f0;
+    border-radius: 10px;
+    padding: 0.75rem;
+    width: 100%;
+    max-width: 500px;
+    .canvasWrapper{
+        padding: 1rem;
+        background-color: #e6f7ff;
+        border-radius: 10px;
+        width: 100%;
+    }
+    .camera{
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        .turnOffButton{
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+        canvas{
+            border-radius: 10px;
+        }
+    }
+    
+}
