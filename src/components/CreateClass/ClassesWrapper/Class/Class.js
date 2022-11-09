@@ -6,15 +6,15 @@ import {
     UploadOutlined,
     PauseCircleOutlined
 } from '@ant-design/icons';
-import { Typography, Divider, Button, Upload } from 'antd';
+import { Typography, Divider, Button, Upload, Space } from 'antd';
 import styles from './Class.module.scss';
 
-const Class = () => {
+const Class = ({ index }) => {
     const { Title, Paragraph } = Typography;
 
     // Content Related States
     const [on, setOn] = useState(false);
-    const [editableTitle, setEditableTitle] = useState('Class 1');
+    const [editableTitle, setEditableTitle] = useState('Class ' + (index + 1));
     const [capture, setCapture] = useState(null);
     const [stream, setStream] = useState(null);
     const [isRecord, setIsRecord] = useState(null);
@@ -130,17 +130,16 @@ const Class = () => {
                     </div>
                 </div>
             ) : (
-                <>
+                <Space>
                     <Button onClick={turnOnCamera} type="primary">
                         Turn On Camera
                     </Button>
-                    <Divider type="vertical" />
                     <Upload directory disabled>
                         <Button icon={<UploadOutlined />} disabled>
                             Upload Directory
                         </Button>
                     </Upload>
-                </>
+                </Space>
             )}
             <Divider />
             <div className={styles.samplesSection}>
@@ -150,11 +149,11 @@ const Class = () => {
                     </Title>
                 </Typography>
                 {imageSamples.length !== 0 ? (
-                    <div className={styles.samples}>
+                    <Space wrap className={styles.samples}>
                         {imageSamples.map((img, i) => {
                             return <img key={i} src={img} width={60} height={50} />;
                         })}
-                    </div>
+                    </Space>
                 ) : (
                     <Typography>
                         <Paragraph>No samples</Paragraph>
