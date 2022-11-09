@@ -69,12 +69,15 @@ const Class = () => {
     };
 
     const turnOffCamera = () => {
+        setOn(false);
+        stopStreamTracks();
+    };
+
+    const stopStreamTracks = () => {
         const tracks = stream.getTracks();
         tracks.forEach((track) => {
             track.stop();
         });
-        console.log(tracks);
-        setOn(false);
     };
 
     const turnOnCamera = () => {
