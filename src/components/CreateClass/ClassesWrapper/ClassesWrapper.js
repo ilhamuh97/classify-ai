@@ -6,6 +6,7 @@ const ClassesWrapper = () => {
     return (
         <div className={styles.classesWrapper}>
             <Class />
+            <Class />
         </div>
     );
 };

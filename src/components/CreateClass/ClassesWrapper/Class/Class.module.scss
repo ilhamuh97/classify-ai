@@ -2,9 +2,15 @@
     background-color: #fff;
     border: 1px solid #f0f0f0;
     border-radius: 10px;
-    padding: 0.75rem;
+    padding: 24px;
     width: 100%;
     max-width: 500px;
+    min-width: 500px;
+    height: fit-content;
+    .className{
+        margin: 0;
+        width: fit-content;
+    }
     .canvasWrapper{
         padding: 1rem;
         background-color: #e6f7ff;
@@ -17,6 +23,7 @@
         flex-direction: column;
         align-items: center;
         width: 100%;
+        gap: 10px;
         .turnOffButton{
             position: absolute;
             right: 0;
@@ -26,5 +33,12 @@
             border-radius: 10px;
         }
     }
-    
+    .samples{
+        max-height: 200px;
+        overflow-y: scroll;
+        img{
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+    }
 }

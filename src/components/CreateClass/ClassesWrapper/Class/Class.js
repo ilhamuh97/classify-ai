@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import Sketch from 'react-p5';
-import { CameraOutlined, CloseOutlined, UploadOutlined } from '@ant-design/icons';
+import {
+    CameraOutlined,
+    CloseOutlined,
+    UploadOutlined,
+    PauseCircleOutlined
+} from '@ant-design/icons';
 import { Typography, Divider, Button, Upload } from 'antd';
 import styles from './Class.module.scss';
 
@@ -12,13 +17,24 @@ const Class = () => {
     const [editableTitle, setEditableTitle] = useState('Class 1');
     const [capture, setCapture] = useState(null);
     const [stream, setStream] = useState(null);
+    const [isRecord, setIsRecord] = useState(null);
 
     // Data Related States
+    const [imageSamples, setImageSamples] = useState([]);
     // Todo: Data states
 
     const setup = (p5, canvasParentRef) => {
         const canvas = p5.createCanvas(265, 265).parent(canvasParentRef);
-        const c = p5.createCapture(p5.VIDEO, (mediaStream) => {
+        let constraints = {
+            video: {
+                mandatory: {
+                    minWidth: 530,
+                    minHeight: 530
+                },
+                optional: [{ maxFrameRate: 10 }]
+            }
+        };
+        const c = p5.createCapture(constraints, (mediaStream) => {
             setStream(mediaStream);
             console.log('Camera Turned On!', mediaStream);
         });
@@ -45,6 +61,10 @@ const Class = () => {
                 p5.width,
                 ((5 / 4) * (p5.height * capture.height)) / capture.width
             );
+            if (isRecord) {
+                const getCanvas = p5.get();
+                setImageSamples((current) => [...current, getCanvas.canvas.toDataURL()]);
+            }
         }
     };
 
@@ -61,10 +81,15 @@ const Class = () => {
         setOn(true);
     };
 
+    const recordButtonOnClick = () => {
+        setIsRecord(!isRecord);
+    };
+
     return (
         <div className={styles.class}>
             <Typography>
                 <Title
+                    className={styles.className}
                     editable={{
                         tooltip: 'click to edit text',
                         onChange: setEditableTitle
@@ -86,38 +111,52 @@ const Class = () => {
                             size="small"
                             type="primary"
                             ghost
+                            shape="circle"
                             icon={<CloseOutlined />}
                         />
                         <Typography>
                             <Title level={5}>Webcam</Title>
                         </Typography>
                         <Sketch className={styles.canvas} setup={setup} draw={draw} />
-                        <Button type="primary" icon={<CameraOutlined />} size={'large'}>
-                            Hold to Record
+                        <Button
+                            onClick={() => recordButtonOnClick()}
+                            type={`${isRecord ? 'danger' : 'primary'}`}
+                            icon={isRecord ? <PauseCircleOutlined /> : <CameraOutlined />}>
+                            {isRecord ? 'Stop the record' : 'Click to Record'}
                         </Button>
                     </div>
                 </div>
             ) : (
                 <>
-                    <Button onClick={turnOnCamera} type="primary" size={'large'}>
+                    <Button onClick={turnOnCamera} type="primary">
                         Turn On Camera
                     </Button>
                     <Divider type="vertical" />
                     <Upload directory disabled>
-                        <Button size={'large'} icon={<UploadOutlined />} disabled>
+                        <Button icon={<UploadOutlined />} disabled>
                             Upload Directory
                         </Button>
                     </Upload>
                 </>
             )}
             <Divider />
-            <div className={styles.samples}>
+            <div className={styles.samplesSection}>
                 <Typography>
-                    <Title level={4}>Your samples</Title>
+                    <Title level={4}>
+                        Your samples {imageSamples.length ? `(${imageSamples.length})` : ''}
+                    </Title>
                 </Typography>
-                <Typography>
-                    <Paragraph>No samples</Paragraph>
-                </Typography>
+                {imageSamples.length !== 0 ? (
+                    <div className={styles.samples}>
+                        {imageSamples.map((img, i) => {
+                            return <img key={i} src={img} width={60} height={50} />;
+                        })}
+                    </div>
+                ) : (
+                    <Typography>
+                        <Paragraph>No samples</Paragraph>
+                    </Typography>
+                )}
             </div>
         </div>
     );
