@@ -4,10 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import styles from './Main.module.scss';
 import CreateClass from '../CreateClass/CreateClass';
 import SideNav from './SideNav/SideNav';
-import { HomeOutlined } from '@ant-design/icons';
+import { Space, Typography } from 'antd';
 
 const Main = () => {
     let navigate = useNavigate();
+    const { Text } = Typography;
     const { Header, Content } = Layout;
     const [collapsed, setCollapsed] = useState(true);
     const [key, setKey] = useState('1');
@@ -33,7 +34,9 @@ const Main = () => {
             <SideNav collapsed={collapsed} setCollapsed={setCollapsed} setKey={setKey} />
             <Layout className={`${styles.siteLayout} ${collapsed ? styles.big : styles.small}`}>
                 <Header className={styles.header}>
-                    <HomeOutlined className={styles.homeIcon} onClick={() => navigate('/')} />
+                    <Space className={styles.logo} onClick={() => navigate('/')}>
+                        <Text>C Y O M</Text>
+                    </Space>
                 </Header>
                 <Content style={{ margin: '24px 16px 0', overflow: 'initial' }}>
                     {ContentElem(key)}

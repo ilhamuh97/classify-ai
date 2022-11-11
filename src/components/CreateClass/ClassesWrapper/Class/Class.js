@@ -6,12 +6,7 @@ const Class = () => {
 
     const setup = (p5, canvasParentRef) => {
         p5.createCanvas(265, 265).parent(canvasParentRef);
-        let constraints = {
-            video: {
-                optional: [{ maxFrameRate: 10 }]
-            }
-        };
-        const c = p5.createCapture(constraints);
+        const c = p5.createCapture(p5.VIDEO);
         c.hide();
         c.size(500, 400);
         setCapture(c);
