@@ -1,27 +1,48 @@
-import React, { useState } from 'react';
+import { Button } from 'antd';
+import React from 'react';
 import Class from './Class/Class';
 import styles from './ClassesWrapper.module.scss';
 
-const ClassesWrapper = () => {
-    const [datasets, setDatasets] = useState([]);
-
-    const initialClasses = () => {
-        var indents = [];
-        for (var i = 0; i < 2; i++) {
-            indents.push(<Class key={i} index={i} setDatasets={setDatasets} />);
-        }
-        return indents;
+const ClassesWrapper = ({
+    classConfig,
+    setClassConfig,
+    keysDataset,
+    setKeysDataset,
+    dataset,
+    setDataset
+}) => {
+    const datasetsClasses = () => {
+        return classConfig.map((config, i) => {
+            return (
+                <Class
+                    key={i}
+                    config={config}
+                    classConfig={classConfig}
+                    setClassConfig={setClassConfig}
+                    keysDataset={keysDataset}
+                    setKeysDataset={setKeysDataset}
+                    dataset={dataset}
+                    setDataset={setDataset}
+                />
+            );
+        });
     };
 
-    const datasetsClasses = () => {
-        return datasets.map((dataset, i) => {
-            return <Class key={i} index={i} setDatasets={setDatasets} dataset={dataset} />;
-        });
+    const onClickHandler = () => {
+        setClassConfig((current) => [
+            ...current,
+            {
+                key: classConfig.length + 1,
+                label: `Class ${classConfig.length + 1}`,
+                cameraState: 0
+            }
+        ]);
     };
 
     return (
         <div className={styles.classesWrapper}>
-            {datasets.length === 0 ? initialClasses() : datasetsClasses()}
+            {datasetsClasses()}
+            <Button onClick={() => onClickHandler()}>Add Class</Button>
         </div>
     );
 };

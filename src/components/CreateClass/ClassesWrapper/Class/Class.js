@@ -9,34 +9,29 @@ import {
 import { Typography, Divider, Button, Upload, Space, Alert } from 'antd';
 import styles from './Class.module.scss';
 
-const Class = ({ index }) => {
+const Class = ({ config, dataset, setDataset }) => {
     const { Title, Paragraph } = Typography;
 
     // Content Related States
     const [showError, setShowError] = useState(false);
     const [showCanvas, setShowCanvas] = useState(false);
-    const [editableTitle, setEditableTitle] = useState('Class ' + (index + 1));
+    const [editableTitle, setEditableTitle] = useState(config.label);
     const [capture, setCapture] = useState(null);
     const [stream, setStream] = useState(null);
     const [isRecord, setIsRecord] = useState(null);
-
+    const filteredDataset = dataset.filter((ds) => ds.key == config.key);
     // Data Related States
-    const [imageSamples, setImageSamples] = useState([]);
+    //const [imageSamples, setImageSamples] = useState(dataset);
     // Todo: Data states
 
     const setup = (p5, canvasParentRef) => {
         p5.createCanvas(265, 265).parent(canvasParentRef);
-        let constraints = {
-            video: {
-                optional: [{ maxFrameRate: 10 }]
-            }
-        };
-        const c = p5.createCapture(constraints, (mediaStream) => {
+        let fr = 10; //starting FPS
+        p5.frameRate(fr);
+        const c = p5.createCapture(p5.VIDEO, (mediaStream) => {
             setShowError(false);
-            console.log(mediaStream);
             if (mediaStream) {
                 setStream(mediaStream);
-                console.log('Camera Turned On!', mediaStream);
             }
         });
         c.hide();
@@ -47,7 +42,6 @@ const Class = ({ index }) => {
     const draw = (p5) => {
         if (showCanvas) {
             if (!showError) {
-                p5.background(255);
                 //move image by the width of image to the left
                 p5.translate(p5.width, 0);
                 //then scale it by -1 in the x-axis
@@ -62,7 +56,13 @@ const Class = ({ index }) => {
                 );
                 if (isRecord) {
                     const getCanvas = p5.get();
-                    setImageSamples((current) => [...current, getCanvas.canvas.toDataURL()]);
+                    setDataset((current) => [
+                        ...current,
+                        {
+                            key: config.key,
+                            img: getCanvas.canvas.toDataURL()
+                        }
+                    ]);
                 }
             } else {
                 p5.background(0);
@@ -82,7 +82,6 @@ const Class = ({ index }) => {
 
     const stopStreamTracks = () => {
         const tracks = stream.getTracks();
-        console.log(tracks);
         tracks.forEach((track) => {
             track.stop();
         });
@@ -91,7 +90,6 @@ const Class = ({ index }) => {
     const turnOnCamera = () => {
         setShowCanvas(true);
         if (!stream) {
-            console.log('not stream');
             setShowError(true);
         }
     };
@@ -143,7 +141,7 @@ const Class = ({ index }) => {
                             </Button>
                         ) : (
                             <Alert
-                                message="Webcam permission denied. Please enabale permission to your camera"
+                                message="Webcam permission denied. Please enable permission to your webcam"
                                 type="error"
                                 showIcon
                             />
@@ -166,13 +164,13 @@ const Class = ({ index }) => {
             <div className={styles.samplesSection}>
                 <Typography>
                     <Title level={4}>
-                        Your samples {imageSamples.length ? `(${imageSamples.length})` : ''}
+                        Your samples {filteredDataset.length ? `(${filteredDataset.length})` : ''}
                     </Title>
                 </Typography>
-                {imageSamples.length !== 0 ? (
+                {dataset.length !== 0 ? (
                     <Space wrap className={styles.samples}>
-                        {imageSamples.map((img, i) => {
-                            return <img key={i} src={img} width={60} height={50} />;
+                        {filteredDataset.map((fds, i) => {
+                            return <img key={i} src={fds.img} width={60} height={50} />;
                         })}
                     </Space>
                 ) : (

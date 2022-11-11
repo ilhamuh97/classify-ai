@@ -12,6 +12,21 @@ const Main = () => {
     const { Header, Content } = Layout;
     const [collapsed, setCollapsed] = useState(true);
     const [key, setKey] = useState('1');
+    const [classConfig, setClassConfig] = useState([
+        {
+            key: 0,
+            label: 'Class 1',
+            cameraState: 0
+        },
+        {
+            key: 1,
+            label: 'Class 2',
+            cameraState: 0
+        }
+    ]);
+
+    const [keysDataset, setKeysDataset] = useState([]);
+    const [dataset, setDataset] = useState([]);
 
     const ContentElem = (key) => {
         switch (key) {
@@ -19,13 +34,31 @@ const Main = () => {
                 navigate('/');
                 break;
             case '1':
-                return <CreateClass />;
+                return (
+                    <CreateClass
+                        classConfig={classConfig}
+                        setClassConfig={setClassConfig}
+                        keysDataset={keysDataset}
+                        setKeysDataset={setKeysDataset}
+                        dataset={dataset}
+                        setDataset={setDataset}
+                    />
+                );
             case '2':
                 return <div>Bla bla {key}</div>;
             case '3':
                 return <div>Bla bla {key}</div>;
             default:
-                return <CreateClass />;
+                return (
+                    <CreateClass
+                        classConfig={classConfig}
+                        setClassConfig={setClassConfig}
+                        keysDataset={keysDataset}
+                        setKeysDataset={setKeysDataset}
+                        dataset={dataset}
+                        setDataset={setDataset}
+                    />
+                );
         }
     };
 

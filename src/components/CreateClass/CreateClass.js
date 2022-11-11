@@ -1,11 +1,19 @@
 import React from 'react';
 import ClassesWrapper from './ClassesWrapper/ClassesWrapper';
 import { Typography } from 'antd';
+import styles from './CreateClass.module.scss';
 
-const CreateClass = () => {
+const CreateClass = ({
+    classConfig,
+    setClassConfig,
+    keysDataset,
+    setKeysDataset,
+    dataset,
+    setDataset
+}) => {
     const { Title, Paragraph } = Typography;
     return (
-        <div>
+        <div className={styles.CreateClass}>
             <Typography>
                 <Title level={2}>Create Class</Title>
                 <Paragraph>
@@ -14,7 +22,14 @@ const CreateClass = () => {
                     efficitur.{' '}
                 </Paragraph>
             </Typography>
-            <ClassesWrapper />
+            <ClassesWrapper
+                classConfig={classConfig}
+                setClassConfig={setClassConfig}
+                keysDataset={keysDataset}
+                setKeysDataset={setKeysDataset}
+                dataset={dataset}
+                setDataset={setDataset}
+            />
         </div>
     );
 };
