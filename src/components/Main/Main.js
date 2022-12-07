@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Layout } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './Main.module.scss';
 import CreateClass from '../CreateClass/CreateClass';
+import SetupParameters from '../SetupParameters/SetupParameters';
 import SideNav from './SideNav/SideNav';
+import { Layout } from 'antd';
 import { Space, Typography } from 'antd';
+import styles from './Main.module.scss';
 
 const Main = () => {
     let navigate = useNavigate();
@@ -12,6 +13,10 @@ const Main = () => {
     const { Header, Content } = Layout;
     const [collapsed, setCollapsed] = useState(true);
     const [key, setKey] = useState('1');
+    const [keysDataset, setKeysDataset] = useState([]);
+    const [dataset, setDataset] = useState([]);
+    const [graphModel, setGraphModel] = useState(null);
+    const [model, setModel] = useState(null);
     const [classConfig, setClassConfig] = useState([
         {
             key: 0,
@@ -25,8 +30,17 @@ const Main = () => {
         }
     ]);
 
-    const [keysDataset, setKeysDataset] = useState([]);
-    const [dataset, setDataset] = useState([]);
+    useEffect(() => {
+        if (model) {
+            model.summary();
+        }
+    }, [graphModel]);
+
+    useEffect(() => {
+        if (model) {
+            model.summary();
+        }
+    }, [model]);
 
     const ContentElem = (key) => {
         switch (key) {
@@ -45,7 +59,15 @@ const Main = () => {
                     />
                 );
             case '2':
-                return <div>Bla bla {key}</div>;
+                return (
+                    <SetupParameters
+                        model={model}
+                        graphModel={graphModel}
+                        setModel={setModel}
+                        setGraphModel={setGraphModel}
+                        classesLength={classConfig.length}
+                    />
+                );
             case '3':
                 return <div>Bla bla {key}</div>;
             default:
