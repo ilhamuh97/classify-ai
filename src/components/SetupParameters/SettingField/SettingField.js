@@ -4,12 +4,26 @@ import { Typography } from 'antd';
 import { Select } from 'antd';
 import styles from './SettingField.module.scss';
 
-const SetupParameters = ({ graphModel, setGraphModel, setModel, model, classesLength }) => {
+const SetupParameters = ({
+    graphModel,
+    setGraphModel,
+    setModel,
+    model,
+    classesLength,
+    paramConfig,
+    setParamConfig
+}) => {
     const { Title } = Typography;
     const [isLoading, setIsloading] = useState(false);
-    const [urlModel, setUrlModel] = useState(
-        'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_100_224/feature_vector/5/default/1'
-    );
+    const [optimizer, setOptimizer] = useState(paramConfig.optimizer);
+    const [urlModel, setUrlModel] = useState(paramConfig.modelURL);
+
+    useEffect(() => {
+        setParamConfig({
+            modelURL: urlModel,
+            optimizer: optimizer
+        });
+    }, [urlModel, optimizer]);
 
     useEffect(() => {
         tf.disposeVariables();
@@ -56,6 +70,7 @@ const SetupParameters = ({ graphModel, setGraphModel, setModel, model, classesLe
 
     const handleChangeModelConfig = (value) => {
         model.dispose();
+        setOptimizer(value);
         initialModel(value);
     };
 
@@ -76,6 +91,7 @@ const SetupParameters = ({ graphModel, setGraphModel, setModel, model, classesLe
                         placeholder="Please select the Model"
                         onChange={handleChange}
                         loading={isLoading}
+                        defaultValue={paramConfig.modelURL}
                         options={[
                             {
                                 value: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_100_224/feature_vector/5/default/1',
@@ -94,6 +110,7 @@ const SetupParameters = ({ graphModel, setGraphModel, setModel, model, classesLe
                         className={styles.input}
                         onChange={handleChangeModelConfig}
                         placeholder="Please select the Optimizer"
+                        defaultValue={paramConfig.optimizer}
                         options={[
                             {
                                 value: 'adam',

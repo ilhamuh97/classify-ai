@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Sketch from 'react-p5';
 import {
     CameraOutlined,
@@ -9,12 +9,10 @@ import {
 import { Typography, Divider, Button, Upload, Space, Alert } from 'antd';
 import styles from './Class.module.scss';
 
-const Class = ({ config, dataset, setDataset }) => {
+const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => {
     const { Title, Paragraph } = Typography;
-
     // Content Related States
     const [showError, setShowError] = useState(false);
-    const [showCanvas, setShowCanvas] = useState(false);
     const [editableTitle, setEditableTitle] = useState(config.label);
     const [capture, setCapture] = useState(null);
     const [stream, setStream] = useState(null);
@@ -23,6 +21,16 @@ const Class = ({ config, dataset, setDataset }) => {
     // Data Related States
     //const [imageSamples, setImageSamples] = useState(dataset);
     // Todo: Data states
+
+    useEffect(() => {
+        const newState = classConfig.map((c) => {
+            if (c.key === config.key) {
+                return { ...config, label: editableTitle };
+            }
+            return c;
+        });
+        setClassConfig(newState);
+    }, [editableTitle]);
 
     const setup = (p5, canvasParentRef) => {
         p5.createCanvas(265, 265).parent(canvasParentRef);
@@ -40,7 +48,7 @@ const Class = ({ config, dataset, setDataset }) => {
     };
 
     const draw = (p5) => {
-        if (showCanvas) {
+        if (config.cameraState) {
             if (!showError) {
                 //move image by the width of image to the left
                 p5.translate(p5.width, 0);
@@ -71,7 +79,12 @@ const Class = ({ config, dataset, setDataset }) => {
     };
 
     const turnOffCamera = () => {
-        setShowCanvas(false);
+        const newState = classConfig.map((c) => {
+            if (c.key === config.key) return { ...c, cameraState: false };
+            return c;
+        });
+        setClassConfig(newState);
+
         setShowError(false);
         setIsRecord(false);
         if (stream) {
@@ -88,7 +101,13 @@ const Class = ({ config, dataset, setDataset }) => {
     };
 
     const turnOnCamera = () => {
-        setShowCanvas(true);
+        const newState = classConfig.map((c) => {
+            if (c.key === config.key) return { ...c, cameraState: true };
+            if (c.key !== config.key) return { ...c, cameraState: false };
+            return c;
+        });
+        setClassConfig(newState);
+
         if (!stream) {
             setShowError(true);
         }
@@ -115,7 +134,7 @@ const Class = ({ config, dataset, setDataset }) => {
             <Typography>
                 <Title level={4}>Add your samples here</Title>
             </Typography>
-            {showCanvas ? (
+            {config.cameraState ? (
                 <div className={styles.canvasWrapper}>
                     <div className={styles.camera}>
                         <Button

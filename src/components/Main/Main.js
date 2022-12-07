@@ -17,16 +17,21 @@ const Main = () => {
     const [dataset, setDataset] = useState([]);
     const [graphModel, setGraphModel] = useState(null);
     const [model, setModel] = useState(null);
+    const [paramConfig, setParamConfig] = useState({
+        modelURL:
+            'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_100_224/feature_vector/5/default/1',
+        optimizer: 'adam'
+    });
     const [classConfig, setClassConfig] = useState([
         {
             key: 0,
             label: 'Class 1',
-            cameraState: 0
+            cameraState: false
         },
         {
             key: 1,
             label: 'Class 2',
-            cameraState: 0
+            cameraState: false
         }
     ]);
 
@@ -66,6 +71,8 @@ const Main = () => {
                         setModel={setModel}
                         setGraphModel={setGraphModel}
                         classesLength={classConfig.length}
+                        paramConfig={paramConfig}
+                        setParamConfig={setParamConfig}
                     />
                 );
             case '3':
