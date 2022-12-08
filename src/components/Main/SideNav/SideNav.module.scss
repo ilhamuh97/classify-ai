@@ -5,10 +5,10 @@
     left: 0;
     top: 0;
     bottom: 0;
-    background: #fff !important;
     border-right: 1px solid #f0f0f0;
     :global(.ant-layout-sider-zero-width-trigger){
-        top: 9px !important
+        top: 12px;
+        border: 1px solid #f0f0f0;
     }
     .menu{
         border-right: 0;

@@ -24,11 +24,11 @@ const SideNav = ({ collapsed, setCollapsed, setKey }) => {
     return (
         <Sider
             className={styles.sider}
-            breakpoint="lg"
+            breakpoint="md"
             collapsedWidth="0"
             collapsed={collapsed}
+            theme="light"
             onCollapse={(value) => setCollapsed(value)}>
-            <div className="logo"></div>
             <Menu
                 onClick={(e) => setKey(e.key)}
                 className={styles.menu}
