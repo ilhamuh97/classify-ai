@@ -32,6 +32,17 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
         setClassConfig(newState);
     }, [editableTitle]);
 
+    useEffect(() => {
+        if (config.cameraState === false) {
+            setShowError(false);
+            setIsRecord(false);
+            if (stream) {
+                stopStreamTracks();
+                setStream(null);
+            }
+        }
+    }, [config.cameraState]);
+
     const setup = (p5, canvasParentRef) => {
         p5.createCanvas(265, 265).parent(canvasParentRef);
         let fr = 10; //starting FPS
@@ -84,13 +95,6 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
             return c;
         });
         setClassConfig(newState);
-
-        setShowError(false);
-        setIsRecord(false);
-        if (stream) {
-            stopStreamTracks();
-            setStream(null);
-        }
     };
 
     const stopStreamTracks = () => {
