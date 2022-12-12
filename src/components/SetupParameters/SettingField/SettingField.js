@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import * as tf from '@tensorflow/tfjs';
-import { Typography } from 'antd';
 import { Select } from 'antd';
 import styles from './SettingField.module.scss';
 
@@ -13,7 +12,6 @@ const SetupParameters = ({
     paramConfig,
     setParamConfig
 }) => {
-    const { Title } = Typography;
     const [isLoading, setIsloading] = useState(false);
     const [optimizer, setOptimizer] = useState(paramConfig.optimizer);
     const [urlModel, setUrlModel] = useState(paramConfig.modelURL);
@@ -82,7 +80,6 @@ const SetupParameters = ({
 
     return (
         <div className={styles.settingField}>
-            <Title level={2}>Setup Model</Title>
             <div className={styles.formField}>
                 <div className={styles.inputWrapper}>
                     <label>Model:</label>

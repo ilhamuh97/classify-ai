@@ -79,7 +79,8 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
                         ...current,
                         {
                             key: config.key,
-                            img: getCanvas.canvas.toDataURL()
+                            img: getCanvas.canvas.toDataURL(),
+                            data: p5.drawingContext.getImageData(0, 0, 500, 400)
                         }
                     ]);
                 }

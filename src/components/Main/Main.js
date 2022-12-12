@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CreateClass from '../CreateClass/CreateClass';
 import SetupParameters from '../SetupParameters/SetupParameters';
+import Train from '../Train/Train';
 import SideNav from './SideNav/SideNav';
 import { Layout } from 'antd';
 import { Space, Typography } from 'antd';
@@ -76,7 +77,7 @@ const Main = () => {
                     />
                 );
             case '3':
-                return <div>Bla bla {key}</div>;
+                return <Train dataset={dataset} model={model} graphModel={graphModel} />;
             default:
                 return (
                     <CreateClass
