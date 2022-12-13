@@ -21,7 +21,9 @@ const Main = () => {
     const [paramConfig, setParamConfig] = useState({
         modelURL:
             'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_100_224/feature_vector/5/default/1',
-        optimizer: 'adam'
+        optimizer: 'adam',
+        epochs: 20,
+        batchSize: 5
     });
     const [classConfig, setClassConfig] = useState([
         {
@@ -77,7 +79,14 @@ const Main = () => {
                     />
                 );
             case '3':
-                return <Train dataset={dataset} model={model} graphModel={graphModel} />;
+                return (
+                    <Train
+                        dataset={dataset}
+                        model={model}
+                        graphModel={graphModel}
+                        paramConfig={paramConfig}
+                    />
+                );
             default:
                 return (
                     <CreateClass

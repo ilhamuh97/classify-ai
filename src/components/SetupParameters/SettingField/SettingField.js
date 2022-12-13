@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import * as tf from '@tensorflow/tfjs';
-import { Select } from 'antd';
+import { Select, InputNumber } from 'antd';
 import styles from './SettingField.module.scss';
 
 const SetupParameters = ({
@@ -15,13 +15,17 @@ const SetupParameters = ({
     const [isLoading, setIsloading] = useState(false);
     const [optimizer, setOptimizer] = useState(paramConfig.optimizer);
     const [urlModel, setUrlModel] = useState(paramConfig.modelURL);
+    const [epochs, setEpochs] = useState(paramConfig.epochs);
+    const [batchSize, setBatchSize] = useState(paramConfig.batchSize);
 
     useEffect(() => {
         setParamConfig({
             modelURL: urlModel,
-            optimizer: optimizer
+            optimizer: optimizer,
+            epochs: epochs,
+            batchSize: batchSize
         });
-    }, [urlModel, optimizer]);
+    }, [urlModel, optimizer, epochs, batchSize]);
 
     useEffect(() => {
         tf.disposeVariables();
@@ -95,7 +99,7 @@ const SetupParameters = ({
                                 label: 'mobilenet v3 small 100 224'
                             },
                             {
-                                value: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v2_130_224/feature_vector/1/default/1',
+                                value: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v2_130_224/feature_vector/3/default/1',
                                 label: 'mobilenet v2 small 130 224'
                             }
                         ]}
@@ -118,6 +122,24 @@ const SetupParameters = ({
                                 label: 'SGD'
                             }
                         ]}
+                    />
+                </div>
+                <div className={styles.inputWrapper}>
+                    <label>Epochs:</label>
+                    <InputNumber
+                        className={styles.input}
+                        min={1}
+                        defaultValue={epochs}
+                        onChange={(value) => setEpochs(value)}
+                    />
+                </div>
+                <div className={styles.inputWrapper}>
+                    <label>Batch Size:</label>
+                    <InputNumber
+                        className={styles.input}
+                        min={1}
+                        defaultValue={batchSize}
+                        onChange={(value) => setBatchSize(value)}
                     />
                 </div>
             </div>

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import * as tf from '@tensorflow/tfjs';
-import { Button, Typography, Alert, Progress } from 'antd';
+import { Button, Typography, Alert, Progress, Space } from 'antd';
 import styles from './Train.module.scss';
 
-const Train = ({ dataset, model, graphModel }) => {
+const Train = ({ dataset, model, graphModel, paramConfig }) => {
     const { Title, Paragraph } = Typography;
     const [predict, setPredict] = useState(false);
     const [dataIsPrepared, setDataIsPrepared] = useState(false);
@@ -66,11 +66,11 @@ const Train = ({ dataset, model, graphModel }) => {
         let outputsAsTensor = tf.tensor1d(trainingDataOutputs, 'int32');
         let oneHotOutputs = tf.oneHot(outputsAsTensor, 2);
         let inputsAsTensor = tf.stack(trainingDataInputs);
-
+        console.log(paramConfig);
         await model.fit(inputsAsTensor, oneHotOutputs, {
             shuffle: true,
-            batchSize: 5,
-            epochs: 20,
+            batchSize: paramConfig.batchSize,
+            epochs: paramConfig.epochs,
             callbacks: { onEpochEnd: logProgress }
         });
 
@@ -150,41 +150,55 @@ const Train = ({ dataset, model, graphModel }) => {
     */
     return (
         <div className={styles.train}>
-            <Typography>
-                <Title level={2}>Train Your Model</Title>
-                <Paragraph>
-                    In this section you can start to train your model. During training the model,
-                    the report of training will be recorded and visualized.
-                </Paragraph>
-            </Typography>
-            <Button onClick={() => train()} disabled={dataset.length === 0} loading={isTraining}>
-                Start Training
-            </Button>
-            {isTraining ? (
-                <Progress percent={(epochs / 20) * 100} format={() => `${epochs + 1}/20 Epoch`} />
-            ) : null}
-            {showAlert ? (
-                isTrainingSucceed ? (
-                    <Alert
-                        message="Training succeed!"
-                        description={`Loss: ${logs[logs.length - 1].loss}, Accuracy: ${
-                            logs[logs.length - 1].acc
-                        }`}
-                        type="success"
-                        showIcon
-                        closable
-                    />
+            <Space size="small" direction="vertical" className={styles.layout}>
+                <Typography>
+                    <Title level={2}>Train Your Model</Title>
+                    <Paragraph>
+                        In this section you can start to train your model. During training the
+                        model, the report of training will be recorded and visualized.
+                    </Paragraph>
+                </Typography>
+
+                <Button
+                    onClick={() => train()}
+                    disabled={dataset.length === 0 || isTraining}
+                    loading={isTraining}>
+                    Start Training
+                </Button>
+
+                {isTraining ? (
+                    <div className={styles.progressWrapper}>
+                        <Progress
+                            className={styles.progress}
+                            percent={(epochs / paramConfig.epochs) * 100}
+                            format={() => `${epochs + 1}/${paramConfig.epochs} Epoch`}
+                        />
+                    </div>
+                ) : null}
+
+                {showAlert ? (
+                    isTrainingSucceed ? (
+                        <Alert
+                            message="Training succeed!"
+                            description={`Loss: ${logs[logs.length - 1].loss}, Accuracy: ${
+                                logs[logs.length - 1].acc
+                            }`}
+                            type="success"
+                            showIcon
+                            closable
+                        />
+                    ) : (
+                        <Alert
+                            message="Error Text"
+                            showIcon
+                            description="Training Failed"
+                            type="error"
+                        />
+                    )
                 ) : (
-                    <Alert
-                        message="Error Text"
-                        showIcon
-                        description="Training Failed"
-                        type="error"
-                    />
-                )
-            ) : (
-                ''
-            )}
+                    ''
+                )}
+            </Space>
         </div>
     );
 };
