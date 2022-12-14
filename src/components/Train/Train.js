@@ -6,30 +6,11 @@ import styles from './Train.module.scss';
 const Train = ({ dataset, model, graphModel, paramConfig }) => {
     const { Title, Paragraph } = Typography;
     const [predict, setPredict] = useState(false);
-    const [dataIsPrepared, setDataIsPrepared] = useState(false);
-    const [trainingDataInputs, setTrainingDataInputs] = useState([]);
-    const [trainingDataOutputs, setTrainingDataOutputs] = useState([]);
     const [isTraining, setIsTraining] = useState(false);
     const [isTrainingSucceed, setIsTrainingSucceed] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
     const [epochs, setEpochs] = useState(0);
     const [logs, setLogs] = useState([]);
-    console.log(logs);
-
-    const train = () => {
-        setIsTraining(true);
-        trainClicked();
-    };
-
-    useEffect(() => {
-        if (dataIsPrepared) {
-            try {
-                trainAndPredict();
-            } catch (error) {
-                setIsTraining(false);
-            }
-        }
-    }, [dataIsPrepared]);
 
     useEffect(() => {
         if (predict) {
@@ -39,13 +20,13 @@ const Train = ({ dataset, model, graphModel, paramConfig }) => {
     }, [predict]);
 
     const trainClicked = () => {
-        setDataIsPrepared(false);
-        dataset.map((d) => {
-            let imageFeatures = calculateFeaturesOnCurrentFrame(d.data);
-            setTrainingDataInputs((current) => [...current, imageFeatures]);
-            setTrainingDataOutputs((current) => [...current, d.key]);
+        setIsTraining(true);
+        const imageFeatures = [];
+        const key = dataset.map((d) => {
+            imageFeatures.push(calculateFeaturesOnCurrentFrame(d.data));
+            return d.key;
         });
-        setDataIsPrepared(true);
+        trainAndPredict(key, imageFeatures);
     };
 
     const calculateFeaturesOnCurrentFrame = (img) => {
@@ -60,7 +41,7 @@ const Train = ({ dataset, model, graphModel, paramConfig }) => {
         });
     };
 
-    async function trainAndPredict() {
+    async function trainAndPredict(trainingDataOutputs, trainingDataInputs) {
         setPredict(false);
         shuffleCombo(trainingDataInputs, trainingDataOutputs);
         let outputsAsTensor = tf.tensor1d(trainingDataOutputs, 'int32');
@@ -160,7 +141,7 @@ const Train = ({ dataset, model, graphModel, paramConfig }) => {
                 </Typography>
 
                 <Button
-                    onClick={() => train()}
+                    onClick={() => trainClicked()}
                     disabled={dataset.length === 0 || isTraining}
                     loading={isTraining}>
                     Start Training
@@ -170,7 +151,7 @@ const Train = ({ dataset, model, graphModel, paramConfig }) => {
                     <div className={styles.progressWrapper}>
                         <Progress
                             className={styles.progress}
-                            percent={(epochs / paramConfig.epochs) * 100}
+                            percent={((epochs + 1) / paramConfig.epochs) * 100}
                             format={() => `${epochs + 1}/${paramConfig.epochs} Epoch`}
                         />
                     </div>
