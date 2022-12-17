@@ -93,7 +93,7 @@ const TestModel = ({ model, graphModel, classConfig }) => {
                         <Progress
                             className={styles.predict}
                             percent={predictionPercent}
-                            format={() => `${predictionPercent} Percent ${predictionClass || ''}`}
+                            format={() => `${predictionPercent}%  ${predictionClass || ''}`}
                         />
                     </div>
                 ) : (

@@ -5,8 +5,8 @@ import styles from './DisplayImage.module.scss';
 const DisplayImage = ({ isCameraOn, webcamRef }) => {
     const constraints = {
         video: true,
-        width: 640,
-        height: 480
+        width: 265,
+        height: 265
     };
 
     return (

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import Sketch from 'react-p5';
+import React, { useState, useRef, useEffect } from 'react';
+import Webcam from 'react-webcam';
 import {
     CameraOutlined,
     CloseOutlined,
@@ -11,16 +11,37 @@ import styles from './Class.module.scss';
 
 const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => {
     const { Title, Paragraph } = Typography;
-    // Content Related States
-    const [showError, setShowError] = useState(false);
     const [editableTitle, setEditableTitle] = useState(config.label);
-    const [capture, setCapture] = useState(null);
-    const [stream, setStream] = useState(null);
-    const [isRecord, setIsRecord] = useState(null);
+    const [isRecord, setIsRecord] = useState(false);
+    const [showError, setShowError] = useState(false);
+    const intervalRef = useRef(null);
+    const webcamRef = useRef(null);
+    const canvasRef = useRef(null);
     const filteredDataset = dataset.filter((ds) => ds.key == config.key);
-    // Data Related States
-    //const [imageSamples, setImageSamples] = useState(dataset);
-    // Todo: Data states
+    const capture = (imgData) => {
+        const imageSrc = webcamRef.current.getScreenshot();
+        setDataset((current) => [
+            ...current,
+            {
+                key: config.key,
+                img: imageSrc,
+                data: imgData
+            }
+        ]);
+    };
+
+    const videoConstraints = {
+        video: true,
+        width: 265,
+        height: 265,
+        facingMode: 'user'
+    };
+
+    useEffect(() => {
+        return () => {
+            if (intervalRef.current) clearInterval(intervalRef.current);
+        };
+    }, []);
 
     useEffect(() => {
         const newState = classConfig.map((c) => {
@@ -32,61 +53,27 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
         setClassConfig(newState);
     }, [editableTitle]);
 
-    useEffect(() => {
-        if (config.cameraState === false) {
-            setShowError(false);
-            setIsRecord(false);
-            if (stream) {
-                stopStreamTracks();
-                setStream(null);
-            }
-        }
-    }, [config.cameraState]);
+    const recordButtonOnClick = () => {
+        const newRecordStatus = !isRecord;
+        setIsRecord(newRecordStatus);
+        if (
+            newRecordStatus === true &&
+            typeof webcamRef.current !== 'undefined' &&
+            webcamRef.current !== null &&
+            webcamRef.current.video.readyState === 4
+        ) {
+            const video = webcamRef.current.video;
 
-    const setup = (p5, canvasParentRef) => {
-        p5.createCanvas(265, 265).parent(canvasParentRef);
-        let fr = 10; //starting FPS
-        p5.frameRate(fr);
-        const c = p5.createCapture(p5.VIDEO, (mediaStream) => {
-            setShowError(false);
-            if (mediaStream) {
-                setStream(mediaStream);
-            }
-        });
-        c.hide();
-        c.size(500, 400);
-        setCapture(c);
-    };
+            const ctx = canvasRef.current.getContext('2d');
+            ctx.drawImage(video, 0, 0, 265, 265);
+            const imageData = ctx.getImageData(0, 0, 265, 265);
 
-    const draw = (p5) => {
-        if (config.cameraState) {
-            if (!showError) {
-                //move image by the width of image to the left
-                p5.translate(p5.width, 0);
-                //then scale it by -1 in the x-axis
-                //to flip the image
-                p5.scale(-1, 1);
-                p5.image(
-                    capture,
-                    0,
-                    0,
-                    p5.width,
-                    ((5 / 4) * (p5.height * capture.height)) / capture.width
-                );
-                if (isRecord) {
-                    const getCanvas = p5.get();
-                    setDataset((current) => [
-                        ...current,
-                        {
-                            key: config.key,
-                            img: getCanvas.canvas.toDataURL(),
-                            data: p5.drawingContext.getImageData(0, 0, 500, 400)
-                        }
-                    ]);
-                }
-            } else {
-                p5.background(0);
-            }
+            const id = setInterval(() => {
+                capture(imageData);
+            }, 100);
+            intervalRef.current = id;
+        } else {
+            clearInterval(intervalRef.current);
         }
     };
 
@@ -98,13 +85,6 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
         setClassConfig(newState);
     };
 
-    const stopStreamTracks = () => {
-        const tracks = stream.getTracks();
-        tracks.forEach((track) => {
-            track.stop();
-        });
-    };
-
     const turnOnCamera = () => {
         const newState = classConfig.map((c) => {
             if (c.key === config.key) return { ...c, cameraState: true };
@@ -112,14 +92,6 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
             return c;
         });
         setClassConfig(newState);
-
-        if (!stream) {
-            setShowError(true);
-        }
-    };
-
-    const recordButtonOnClick = () => {
-        setIsRecord(!isRecord);
     };
 
     return (
@@ -154,7 +126,26 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
                         <Typography>
                             <Title level={5}>Webcam</Title>
                         </Typography>
-                        <Sketch className={styles.canvas} setup={setup} draw={draw} />
+                        {!showError ? (
+                            <>
+                                <Webcam
+                                    audio={false}
+                                    height={265}
+                                    ref={webcamRef}
+                                    width={265}
+                                    screenshotFormat="image/jpeg"
+                                    videoConstraints={videoConstraints}
+                                    screenshotQuality={0.8}
+                                    onUserMediaError={() => setShowError(true)}
+                                />
+                                <canvas
+                                    ref={canvasRef}
+                                    style={{
+                                        display: 'none'
+                                    }}
+                                />
+                            </>
+                        ) : null}
 
                         {!showError ? (
                             <Button
