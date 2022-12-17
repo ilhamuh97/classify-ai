@@ -4,6 +4,7 @@ import CreateClass from '../CreateClass/CreateClass';
 import SetupParameters from '../SetupParameters/SetupParameters';
 import Train from '../Train/Train';
 import SideNav from './SideNav/SideNav';
+import TestModel from '../TestModel/TestModel';
 import { Layout } from 'antd';
 import { Space, Typography } from 'antd';
 import styles from './Main.module.scss';
@@ -85,7 +86,12 @@ const Main = () => {
                         model={model}
                         graphModel={graphModel}
                         paramConfig={paramConfig}
+                        classConfig={classConfig}
                     />
+                );
+            case '4':
+                return (
+                    <TestModel model={model} graphModel={graphModel} classConfig={classConfig} />
                 );
             default:
                 return (

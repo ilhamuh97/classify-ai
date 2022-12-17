@@ -63,7 +63,7 @@ const SetupParameters = ({
         };
         const currModel = tf.sequential();
         currModel.add(tf.layers.dense({ inputShape: [1024], units: 128, activation: 'relu' }));
-        currModel.add(tf.layers.dense({ units: 2, activation: 'softmax' }));
+        currModel.add(tf.layers.dense({ units: classesLength, activation: 'softmax' }));
         currModel.summary();
         currModel.compile(modelConfig);
         setModel(currModel);

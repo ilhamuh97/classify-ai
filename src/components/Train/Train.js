@@ -1,23 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import * as tf from '@tensorflow/tfjs';
 import { Button, Typography, Alert, Progress, Space } from 'antd';
 import styles from './Train.module.scss';
 
-const Train = ({ dataset, model, graphModel, paramConfig }) => {
+const Train = ({ dataset, model, graphModel, paramConfig, classConfig }) => {
     const { Title, Paragraph } = Typography;
-    const [predict, setPredict] = useState(false);
     const [isTraining, setIsTraining] = useState(false);
     const [isTrainingSucceed, setIsTrainingSucceed] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
     const [epochs, setEpochs] = useState(0);
     const [logs, setLogs] = useState([]);
-
-    useEffect(() => {
-        if (predict) {
-            //predictLoop();
-            console.log(predict);
-        }
-    }, [predict]);
 
     const trainClicked = () => {
         setIsTraining(true);
@@ -42,10 +34,10 @@ const Train = ({ dataset, model, graphModel, paramConfig }) => {
     };
 
     async function trainAndPredict(trainingDataOutputs, trainingDataInputs) {
-        setPredict(false);
         shuffleCombo(trainingDataInputs, trainingDataOutputs);
+        console.log(trainingDataInputs, trainingDataOutputs);
         let outputsAsTensor = tf.tensor1d(trainingDataOutputs, 'int32');
-        let oneHotOutputs = tf.oneHot(outputsAsTensor, 2);
+        let oneHotOutputs = tf.oneHot(outputsAsTensor, classConfig.length);
         let inputsAsTensor = tf.stack(trainingDataInputs);
         console.log(paramConfig);
         await model.fit(inputsAsTensor, oneHotOutputs, {
@@ -60,18 +52,12 @@ const Train = ({ dataset, model, graphModel, paramConfig }) => {
         inputsAsTensor.dispose();
 
         // setup finish training parameter
-        setPredict(true);
         setShowAlert(true);
         setIsTrainingSucceed(true);
         setIsTraining(false);
     }
 
-    function shuffleCombo(
-        // tslint:disable-next-line:no-any
-        array,
-        // tslint:disable-next-line:no-any
-        array2
-    ) {
+    function shuffleCombo(array, array2) {
         if (array.length !== array2.length) {
             throw new Error(
                 `Array sizes must match to be shuffled together ` +
@@ -107,28 +93,6 @@ const Train = ({ dataset, model, graphModel, paramConfig }) => {
         setLogs((current) => [...current, logs]);
     };
 
-    /**
-     *  Make live predictions from webcam once trained.
-     **/
-    /*
-    function predictLoop() {
-        if (predict) {
-            tf.tidy(function () {
-                let imageFeatures = calculateFeaturesOnCurrentFrame();
-                let prediction = model.predict(imageFeatures.expandDims()).squeeze();
-                let highestIndex = prediction.argMax().arraySync();
-                let predictionArray = prediction.arraySync();
-                console.log(
-                    'Prediction: ' +
-                        highestIndex +
-                        ' with ' +
-                        Math.floor(predictionArray[highestIndex] * 100) +
-                        '% confidence'
-                );
-            });
-        }
-    }
-    */
     return (
         <div className={styles.train}>
             <Space size="small" direction="vertical" className={styles.layout}>

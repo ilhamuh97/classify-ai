@@ -32,7 +32,7 @@ const ClassesWrapper = ({
         setClassConfig((current) => [
             ...current,
             {
-                key: classConfig.length + 1,
+                key: classConfig.length,
                 label: `Class ${classConfig.length + 1}`,
                 cameraState: 0
             }

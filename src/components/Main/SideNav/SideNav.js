@@ -18,7 +18,8 @@ const SideNav = ({ collapsed, setCollapsed, setKey }) => {
     const steps = [
         getItem('Create Classes', '1', <PlusSquareOutlined />),
         getItem('Setup Parameters', '2', <SettingOutlined />),
-        getItem('Train', '3', <AimOutlined />)
+        getItem('Train', '3', <AimOutlined />),
+        getItem('Test', '4', <AimOutlined />)
     ];
 
     return (
