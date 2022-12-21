@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from 'antd';
-import { Typography } from 'antd';
+import { Typography, Button } from 'antd';
 import styles from './Home.module.scss';
 
 const Home = () => {

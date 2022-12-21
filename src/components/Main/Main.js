@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CreateClass from '../CreateClass/CreateClass';
-import SetupParameters from '../SetupParameters/SetupParameters';
-import Train from '../Train/Train';
+import CreateClass from '../Sections/CreateClass/CreateClass';
+import SetupParameters from '../Sections//SetupParameters/SetupParameters';
+import Train from '../Sections//Train/Train';
+import TestModel from '../Sections//TestModel/TestModel';
 import SideNav from './SideNav/SideNav';
-import TestModel from '../TestModel/TestModel';
-import { Layout } from 'antd';
-import { Space, Typography } from 'antd';
+import { Space, Typography, Layout } from 'antd';
 import styles from './Main.module.scss';
 
 const Main = () => {
@@ -43,13 +42,7 @@ const Main = () => {
         if (model) {
             model.summary();
         }
-    }, [graphModel]);
-
-    useEffect(() => {
-        if (model) {
-            model.summary();
-        }
-    }, [model]);
+    }, [model, graphModel]);
 
     const ContentElem = (key) => {
         switch (key) {

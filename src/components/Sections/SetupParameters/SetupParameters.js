@@ -1,6 +1,6 @@
 import React from 'react';
-import { Typography } from 'antd';
 import SettingField from './SettingField/SettingField';
+import { Typography } from 'antd';
 import styles from './SetupParameters.module.scss';
 
 const SetupParameters = ({

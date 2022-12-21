@@ -1,5 +1,5 @@
-import { Button } from 'antd';
 import React from 'react';
+import { Button } from 'antd';
 import Class from './Class/Class';
 import styles from './ClassesWrapper.module.scss';
 

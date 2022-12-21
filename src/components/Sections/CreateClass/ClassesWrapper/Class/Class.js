@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Webcam from 'react-webcam';
+import { Typography, Divider, Button, Upload, Space, Alert } from 'antd';
 import {
     CameraOutlined,
     CloseOutlined,
     UploadOutlined,
     PauseCircleOutlined
 } from '@ant-design/icons';
-import { Typography, Divider, Button, Upload, Space, Alert } from 'antd';
 import styles from './Class.module.scss';
 
 const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => {

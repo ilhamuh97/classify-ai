@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import DisplayImage from './DisplayImage/DisplayImage';
-import { CameraOutlined } from '@ant-design/icons';
 import { Typography, Button, Progress, Space } from 'antd';
 import * as tf from '@tensorflow/tfjs';
+import { CameraOutlined } from '@ant-design/icons';
 import styles from './TestModel.module.scss';
 
 const TestModel = ({ model, graphModel, classConfig }) => {
