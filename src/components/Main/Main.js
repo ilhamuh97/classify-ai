@@ -67,7 +67,7 @@ const Main = () => {
                         setParamConfig={setParamConfig}
                     />
                 );
-            case 3:
+            case 2:
                 return (
                     <Train
                         dataset={dataset}
@@ -77,7 +77,7 @@ const Main = () => {
                         classConfig={classConfig}
                     />
                 );
-            case 2:
+            case 3:
                 return (
                     <TestModel model={model} graphModel={graphModel} classConfig={classConfig} />
                 );
