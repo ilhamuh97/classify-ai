@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Webcam from 'react-webcam';
-import { Typography, Divider, Button, Upload, Space, Alert } from 'antd';
+import { Typography, Divider, Button, Upload, Space, Alert, Row, Col } from 'antd';
 import {
     CameraOutlined,
     CloseOutlined,
@@ -183,11 +183,15 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
                     </Title>
                 </Typography>
                 {dataset.length !== 0 ? (
-                    <Space wrap className={styles.samples}>
+                    <Row gutter={[4, 8]} className={styles.samples}>
                         {filteredDataset.map((fds, i) => {
-                            return <img key={i} src={fds.img} width={60} height={50} />;
+                            return (
+                                <Col key={i} className="gutter-row" span={6}>
+                                    <img src={fds.img} width={65} height={55} />
+                                </Col>
+                            );
                         })}
-                    </Space>
+                    </Row>
                 ) : (
                     <Typography>
                         <Paragraph>No samples</Paragraph>

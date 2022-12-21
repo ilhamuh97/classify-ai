@@ -1,40 +1,45 @@
 import React from 'react';
-import { Layout, Menu } from 'antd';
-import { AimOutlined, SettingOutlined, PlusSquareOutlined } from '@ant-design/icons';
+import { Steps, Layout } from 'antd';
 import styles from './SideNav.module.scss';
 
-const SideNav = ({ collapsed, setCollapsed, setKey }) => {
+const SideNav = ({ collapsed, setCollapsed, setKey, currKey }) => {
     const { Sider } = Layout;
 
-    function getItem(label, key, icon, children) {
-        return {
-            key,
-            icon,
-            children,
-            label
-        };
-    }
-
     const steps = [
-        getItem('Create Classes', '1', <PlusSquareOutlined />),
-        getItem('Setup Parameters', '2', <SettingOutlined />),
-        getItem('Train', '3', <AimOutlined />),
-        getItem('Test', '4', <AimOutlined />)
+        {
+            title: 'Create Classes',
+            description: 'Collect the dataset for 2 or more classes'
+        },
+        {
+            title: 'Setup Parameters',
+            description:
+                'Choose your own parameters in order to find the best result for you training'
+        },
+        {
+            title: 'Train model',
+            description: 'Train your model and see the result of the training'
+        },
+        {
+            title: 'Predict',
+            description: 'Use your own model to classify the image from your camera'
+        }
     ];
 
     return (
         <Sider
             className={styles.sider}
-            breakpoint="md"
             collapsedWidth="0"
             collapsed={collapsed}
             theme="light"
-            onCollapse={(value) => setCollapsed(value)}>
-            <Menu
-                onClick={(e) => setKey(e.key)}
-                className={styles.menu}
-                defaultSelectedKeys={['1']}
-                mode="inline"
+            width={250}
+            collapsible={true}
+            onCollapse={(value) => setCollapsed(value)}
+            trigger={null}>
+            <Steps
+                className={styles.steps}
+                current={currKey}
+                onChange={(current) => setKey(current)}
+                direction="vertical"
                 items={steps}
             />
         </Sider>

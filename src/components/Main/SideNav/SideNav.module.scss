@@ -1,16 +1,21 @@
 .sider{
-    padding-top: 60px;;
     height: 100vh;
     position: fixed !important;
     left: 0;
     top: 0;
     bottom: 0;
     border-right: 1px solid #f0f0f0;
+    position: fixed;
+    z-index: 99;
+    overflow-y: auto;
     :global(.ant-layout-sider-zero-width-trigger){
         top: 12px;
         border: 1px solid #f0f0f0;
     }
     .menu{
         border-right: 0;
+    }
+    .steps{
+        padding: 2rem 1rem;
     }
 }

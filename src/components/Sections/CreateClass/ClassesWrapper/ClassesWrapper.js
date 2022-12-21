@@ -1,5 +1,4 @@
 import React from 'react';
-import { Button } from 'antd';
 import Class from './Class/Class';
 import styles from './ClassesWrapper.module.scss';
 
@@ -42,7 +41,9 @@ const ClassesWrapper = ({
     return (
         <div className={styles.classesWrapper}>
             {datasetsClasses()}
-            <Button onClick={() => onClickHandler()}>Add Class</Button>
+            <div className={styles.addClass} onClick={() => onClickHandler()}>
+                Add Class
+            </div>
         </div>
     );
 };

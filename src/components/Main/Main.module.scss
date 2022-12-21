@@ -1,5 +1,6 @@
 .layout{
-    min-height: 100vh;
+    min-height: 100vh !important;
+    padding: 1rem;
     .header{
         background-color: #fff;
         display: flex;
@@ -13,12 +14,27 @@
         }
     }
     .siteLayout {
-        margin-bottom: 24px;
-        transition: all .2s;
         text-align: left;
-        &.small{
-            margin-left: 200px;
-        }
+        height: 100%;
+        max-width: 768px;
+        margin: 0 auto 0px;
+    }
+    .sideToggleButton{
+        position: fixed;
+        z-index: 99;
+    }
+    .overlay{
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: #000;
+        z-index: 98;
+        backdrop-filter: blur(10px);
+        opacity: 0.6;
     }
 }
 

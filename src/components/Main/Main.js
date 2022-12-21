@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import CreateClass from '../Sections/CreateClass/CreateClass';
 import SetupParameters from '../Sections//SetupParameters/SetupParameters';
 import Train from '../Sections//Train/Train';
 import TestModel from '../Sections//TestModel/TestModel';
 import SideNav from './SideNav/SideNav';
-import { Space, Typography, Layout } from 'antd';
+import { Layout, Button } from 'antd';
+import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import styles from './Main.module.scss';
 
 const Main = () => {
-    let navigate = useNavigate();
-    const { Text } = Typography;
-    const { Header, Content } = Layout;
+    const { Content } = Layout;
     const [collapsed, setCollapsed] = useState(true);
-    const [key, setKey] = useState('1');
+    const [key, setKey] = useState(0);
     const [keysDataset, setKeysDataset] = useState([]);
     const [dataset, setDataset] = useState([]);
     const [graphModel, setGraphModel] = useState(null);
@@ -46,10 +44,7 @@ const Main = () => {
 
     const ContentElem = (key) => {
         switch (key) {
-            case '0':
-                navigate('/');
-                break;
-            case '1':
+            case 0:
                 return (
                     <CreateClass
                         classConfig={classConfig}
@@ -60,7 +55,7 @@ const Main = () => {
                         setDataset={setDataset}
                     />
                 );
-            case '2':
+            case 1:
                 return (
                     <SetupParameters
                         model={model}
@@ -72,7 +67,7 @@ const Main = () => {
                         setParamConfig={setParamConfig}
                     />
                 );
-            case '3':
+            case 3:
                 return (
                     <Train
                         dataset={dataset}
@@ -82,7 +77,7 @@ const Main = () => {
                         classConfig={classConfig}
                     />
                 );
-            case '4':
+            case 2:
                 return (
                     <TestModel model={model} graphModel={graphModel} classConfig={classConfig} />
                 );
@@ -101,15 +96,26 @@ const Main = () => {
     };
 
     return (
-        <Layout className={styles.layout} hasSider>
-            <SideNav collapsed={collapsed} setCollapsed={setCollapsed} setKey={setKey} />
+        <Layout className={styles.layout}>
+            <Button
+                style={collapsed ? { left: 0 } : { left: 250 }}
+                className={styles.sideToggleButton}
+                type="primary"
+                onClick={() => setCollapsed(!collapsed)}>
+                {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            </Button>
+            <SideNav
+                collapsed={collapsed}
+                setCollapsed={setCollapsed}
+                setKey={setKey}
+                currKey={key}
+            />
             <Layout className={`${styles.siteLayout} ${collapsed ? styles.big : styles.small}`}>
-                <Header className={styles.header}>
-                    <Space className={styles.logo} onClick={() => navigate('/')}>
-                        <Text>C Y O M</Text>
-                    </Space>
-                </Header>
-                <Content style={{ margin: '24px 16px 0', overflow: 'initial' }}>
+                {!collapsed ? (
+                    <div className={styles.overlay} onClick={() => setCollapsed(true)} />
+                ) : null}
+
+                <Content style={{ margin: '32px 0', overflow: 'initial' }}>
                     {ContentElem(key)}
                 </Content>
             </Layout>
