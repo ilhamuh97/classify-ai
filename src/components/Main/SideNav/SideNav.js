@@ -13,7 +13,7 @@ const SideNav = ({ collapsed, setCollapsed, setKey, currKey }) => {
         {
             title: 'Setup Parameters',
             description:
-                'Choose your own parameters in order to find the best result for you training'
+                'Choose your own parameters in order to find the best result for your training'
         },
         {
             title: 'Train model',

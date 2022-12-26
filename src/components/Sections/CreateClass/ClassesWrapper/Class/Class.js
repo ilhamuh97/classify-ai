@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Webcam from 'react-webcam';
+import { MdOutlineCameraswitch } from 'react-icons/md';
 import { Typography, Divider, Button, Upload, Space, Alert, Row, Col } from 'antd';
 import {
     CameraOutlined,
@@ -14,6 +15,12 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
     const [editableTitle, setEditableTitle] = useState(config.label);
     const [isRecord, setIsRecord] = useState(false);
     const [showError, setShowError] = useState(false);
+    const [videoConstraints, setVideoConstraints] = useState({
+        video: true,
+        width: 265,
+        height: 265,
+        facingMode: 'user'
+    });
     const intervalRef = useRef(null);
     const webcamRef = useRef(null);
     const canvasRef = useRef(null);
@@ -28,13 +35,6 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
                 data: imgData
             }
         ]);
-    };
-
-    const videoConstraints = {
-        video: true,
-        width: 265,
-        height: 265,
-        facingMode: 'user'
     };
 
     useEffect(() => {
@@ -94,6 +94,16 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
         setClassConfig(newState);
     };
 
+    const flipCamera = () => {
+        if (videoConstraints.facingMode === 'user') {
+            setVideoConstraints({ ...videoConstraints, facingMode: 'environment' });
+        } else {
+            setVideoConstraints({ ...videoConstraints, facingMode: 'user' });
+        }
+    };
+
+    console.log(videoConstraints);
+
     return (
         <div className={styles.class}>
             <Typography>
@@ -127,7 +137,7 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
                             <Title level={5}>Webcam</Title>
                         </Typography>
                         {!showError ? (
-                            <>
+                            <div className={styles.displayImageField}>
                                 <Webcam
                                     audio={false}
                                     height={265}
@@ -144,9 +154,12 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
                                         display: 'none'
                                     }}
                                 />
-                            </>
+                                <MdOutlineCameraswitch
+                                    onClick={() => flipCamera()}
+                                    className={styles.flipButton}
+                                />
+                            </div>
                         ) : null}
-
                         {!showError ? (
                             <Button
                                 onClick={() => recordButtonOnClick()}

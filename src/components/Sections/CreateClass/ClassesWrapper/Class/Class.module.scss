@@ -41,6 +41,16 @@
         canvas{
             border-radius: 10px;
         }
+        .displayImageField {
+            color: #fff;
+            position: relative;
+            .flipButton {
+                font-size: 24px;
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+            }
+        }
     }
     .samples{
         max-height: 200px;
