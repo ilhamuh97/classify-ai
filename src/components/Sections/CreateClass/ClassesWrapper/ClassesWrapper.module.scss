@@ -8,9 +8,10 @@
     scrollbar-color: #99def0 #ffffff;
     padding: 1rem 0.5rem;
     /* ===== Scrollbar CSS ===== */
+
+    /* Chrome, Edge, and Safari */
     &::-webkit-scrollbar {
-        background-color: transparent;
-        width: 15px;
+        width: 10px;
     }
 
     &::-webkit-scrollbar-track {
@@ -18,10 +19,12 @@
     }
 
     &::-webkit-scrollbar-thumb {
-        border-radius: 20px;
-        border: 4px solid transparent;
-        background-color: rgba(0,0,0,0.2);
-        background-clip: content-box;
+        background-color: #bae7ff;
+        border-radius: 5px;
+        border: 0px solid #ffffff;
+        &:hover{
+            background: #a2dfff;; 
+        }
     }
 
     .addClass{
@@ -32,8 +35,8 @@
         padding: 24px;
         color: #d9d9d9;
         font-size: 30px;
-        max-width: 400px;
-        min-width: 400px;
+        max-width: 345px;
+        min-width: 345px;
         height: -moz-fit-content;
         max-height: 308.4px;
         margin-bottom: 1rem;

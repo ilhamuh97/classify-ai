@@ -30,6 +30,7 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
         setDataset((current) => [
             ...current,
             {
+                id: current.length,
                 key: config.key,
                 img: imageSrc,
                 data: imgData
@@ -101,8 +102,6 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
             setVideoConstraints({ ...videoConstraints, facingMode: 'user' });
         }
     };
-
-    console.log(videoConstraints);
 
     return (
         <div className={styles.class}>

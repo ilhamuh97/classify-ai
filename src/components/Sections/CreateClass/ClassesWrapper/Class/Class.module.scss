@@ -73,7 +73,11 @@
             background-color: #bae7ff;
             border-radius: 5px;
             border: 0px solid #ffffff;
+            &:hover{
+                background: #a2dfff;; 
+            }
         }
+
         img{
             border-radius: 5px;
             margin: 5px 0;
