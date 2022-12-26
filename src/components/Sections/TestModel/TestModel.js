@@ -55,7 +55,6 @@ const TestModel = ({ model, graphModel, classConfig }) => {
             let prediction = model.predict(imageFeatures.expandDims()).squeeze();
             let highestIndex = prediction.argMax().arraySync();
             let predictionArray = prediction.arraySync();
-            console.log(predictionArray);
             const innerText =
                 'Prediction: ' +
                 classConfig[highestIndex].label +
@@ -80,25 +79,27 @@ const TestModel = ({ model, graphModel, classConfig }) => {
                         sit amet efficitur.{' '}
                     </Paragraph>
                 </Typography>
-                <DisplayImage
-                    isCameraOn={isCameraOn}
-                    setIsCameraOn={setIsCameraOn}
-                    webcamRef={webcamRef}
-                />
-                <Button onClick={() => setIsCameraOn(!isCameraOn)} icon={<CameraOutlined />}>
-                    {isCameraOn ? 'Turn off' : 'Turn on'}
-                </Button>
-                {isCameraOn ? (
-                    <div className={styles.predictWrapper}>
-                        <Progress
-                            className={styles.predict}
-                            percent={predictionPercent}
-                            format={() => `${predictionPercent}%  ${predictionClass || ''}`}
-                        />
-                    </div>
-                ) : (
-                    ''
-                )}
+                <div className={styles.displayWrapper}>
+                    <DisplayImage
+                        isCameraOn={isCameraOn}
+                        setIsCameraOn={setIsCameraOn}
+                        webcamRef={webcamRef}
+                    />
+                    <Button onClick={() => setIsCameraOn(!isCameraOn)} icon={<CameraOutlined />}>
+                        {isCameraOn ? 'Turn off' : 'Turn on'}
+                    </Button>
+                    {isCameraOn ? (
+                        <div className={styles.predictWrapper}>
+                            <Progress
+                                className={styles.predict}
+                                percent={predictionPercent}
+                                format={() => `${predictionPercent}%  ${predictionClass || ''}`}
+                            />
+                        </div>
+                    ) : (
+                        ''
+                    )}
+                </div>
             </Space>
         </div>
     );

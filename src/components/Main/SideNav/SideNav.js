@@ -25,6 +25,11 @@ const SideNav = ({ collapsed, setCollapsed, setKey, currKey }) => {
         }
     ];
 
+    const changeKey = (currentKey) => {
+        setCollapsed(true);
+        setKey(currentKey);
+    };
+
     return (
         <Sider
             className={styles.sider}
@@ -38,7 +43,7 @@ const SideNav = ({ collapsed, setCollapsed, setKey, currKey }) => {
             <Steps
                 className={styles.steps}
                 current={currKey}
-                onChange={(current) => setKey(current)}
+                onChange={(current) => changeKey(current)}
                 direction="vertical"
                 items={steps}
             />

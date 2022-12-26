@@ -35,11 +35,9 @@ const Train = ({ dataset, model, graphModel, paramConfig, classConfig }) => {
 
     async function trainAndPredict(trainingDataOutputs, trainingDataInputs) {
         shuffleCombo(trainingDataInputs, trainingDataOutputs);
-        console.log(trainingDataInputs, trainingDataOutputs);
         let outputsAsTensor = tf.tensor1d(trainingDataOutputs, 'int32');
         let oneHotOutputs = tf.oneHot(outputsAsTensor, classConfig.length);
         let inputsAsTensor = tf.stack(trainingDataInputs);
-        console.log(paramConfig);
         await model.fit(inputsAsTensor, oneHotOutputs, {
             shuffle: true,
             batchSize: paramConfig.batchSize,

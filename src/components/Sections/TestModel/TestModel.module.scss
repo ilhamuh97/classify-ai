@@ -12,5 +12,14 @@
                 }
             }
         }
+        .displayWrapper {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            width: fit-content;
+            align-items: center;
+            margin: auto;
+            gap: 1rem;
+        }
     }
 }

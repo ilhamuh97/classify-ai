@@ -1,0 +1,13 @@
+.displayImage {
+    color: #fff;
+    position: relative;
+    margin: auto;
+    width: 265px;
+    height: 265px;
+    .flipButton {
+        font-size: 24px;
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+    }
+}
