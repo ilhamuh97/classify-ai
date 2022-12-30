@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Report from './Report/Report';
 import * as tf from '@tensorflow/tfjs';
 import { Button, Typography, Alert, Progress, Space } from 'antd';
 import styles from './Train.module.scss';
@@ -8,8 +9,18 @@ const Train = ({ dataset, model, graphModel, paramConfig, classConfig }) => {
     const [isTraining, setIsTraining] = useState(false);
     const [isTrainingSucceed, setIsTrainingSucceed] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
-    const [epochs, setEpochs] = useState(0);
     const [logs, setLogs] = useState([]);
+    const [models, setModels] = useState([]);
+    const [reports, setReports] = useState([]);
+
+    useEffect(() => {
+        if (!isTraining && isTrainingSucceed) {
+            // store logs into the report history
+            setReports((current) => [...current, { modelIdx: models.length, logs: logs }]);
+            // clean up current logs
+            setLogs([]);
+        }
+    }, [isTrainingSucceed, isTraining]);
 
     const trainClicked = () => {
         setIsTraining(true);
@@ -18,7 +29,7 @@ const Train = ({ dataset, model, graphModel, paramConfig, classConfig }) => {
             imageFeatures.push(calculateFeaturesOnCurrentFrame(d.data));
             return d.key;
         });
-        trainAndPredict(key, imageFeatures);
+        trainAndPredict(key, imageFeatures, model);
     };
 
     const calculateFeaturesOnCurrentFrame = (img) => {
@@ -33,12 +44,12 @@ const Train = ({ dataset, model, graphModel, paramConfig, classConfig }) => {
         });
     };
 
-    async function trainAndPredict(trainingDataOutputs, trainingDataInputs) {
+    async function trainAndPredict(trainingDataOutputs, trainingDataInputs, currModel) {
         shuffleCombo(trainingDataInputs, trainingDataOutputs);
         let outputsAsTensor = tf.tensor1d(trainingDataOutputs, 'int32');
         let oneHotOutputs = tf.oneHot(outputsAsTensor, classConfig.length);
         let inputsAsTensor = tf.stack(trainingDataInputs);
-        await model.fit(inputsAsTensor, oneHotOutputs, {
+        await currModel.fit(inputsAsTensor, oneHotOutputs, {
             shuffle: true,
             batchSize: paramConfig.batchSize,
             epochs: paramConfig.epochs,
@@ -50,6 +61,7 @@ const Train = ({ dataset, model, graphModel, paramConfig, classConfig }) => {
         inputsAsTensor.dispose();
 
         // setup finish training parameter
+        setModels((current) => [...current, currModel]);
         setShowAlert(true);
         setIsTrainingSucceed(true);
         setIsTraining(false);
@@ -87,8 +99,13 @@ const Train = ({ dataset, model, graphModel, paramConfig, classConfig }) => {
      * Log training progress.
      **/
     const logProgress = (epoch, logs) => {
-        setEpochs(epoch);
-        setLogs((current) => [...current, logs]);
+        setLogs((current) => [
+            ...current,
+            {
+                epoch: epoch,
+                lossAndAccuracy: logs
+            }
+        ]);
     };
 
     return (
@@ -113,23 +130,39 @@ const Train = ({ dataset, model, graphModel, paramConfig, classConfig }) => {
                     <div className={styles.progressWrapper}>
                         <Progress
                             className={styles.progress}
-                            percent={((epochs + 1) / paramConfig.epochs) * 100}
-                            format={() => `${epochs + 1}/${paramConfig.epochs} Epoch`}
+                            percent={
+                                (((logs[logs.length - 1]?.epoch ?? 0) + 1) / paramConfig.epochs) *
+                                100
+                            }
+                            format={() =>
+                                `${(logs[logs.length - 1]?.epoch ?? 0) + 1}/${
+                                    paramConfig.epochs
+                                } Epoch`
+                            }
                         />
                     </div>
                 ) : null}
 
                 {showAlert ? (
                     isTrainingSucceed ? (
-                        <Alert
-                            message="Training succeed!"
-                            description={`Loss: ${logs[logs.length - 1].loss}, Accuracy: ${
-                                logs[logs.length - 1].acc
-                            }`}
-                            type="success"
-                            showIcon
-                            closable
-                        />
+                        logs.length === 0 ? (
+                            <Alert
+                                message="Training succeed!"
+                                description={`Loss: ${
+                                    reports[reports.length - 1].logs[
+                                        reports[reports.length - 1].logs.length - 1
+                                    ].lossAndAccuracy.loss
+                                }, Accuracy: ${
+                                    reports[reports.length - 1].logs[
+                                        reports[reports.length - 1].logs.length - 1
+                                    ].lossAndAccuracy.acc
+                                }`}
+                                type="success"
+                                showIcon
+                                closable
+                                onClose={() => setIsTrainingSucceed(false)}
+                            />
+                        ) : null
                     ) : (
                         <Alert
                             message="Error Text"
@@ -141,6 +174,9 @@ const Train = ({ dataset, model, graphModel, paramConfig, classConfig }) => {
                 ) : (
                     ''
                 )}
+                {showAlert && isTrainingSucceed && logs.length === 0 ? (
+                    <Report reports={reports} />
+                ) : null}
             </Space>
         </div>
     );

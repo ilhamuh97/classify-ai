@@ -10,14 +10,14 @@ const DisplayImage = ({ isCameraOn, webcamRef }) => {
         video: true,
         width: 265,
         height: 265,
-        facingMode: 'user'
+        facingMode: 'environment'
     });
 
     const flipCamera = () => {
-        if (videoConstraints.facingMode === 'user') {
-            setVideoConstraints({ ...videoConstraints, facingMode: 'environment' });
-        } else {
+        if (videoConstraints.facingMode === 'environment') {
             setVideoConstraints({ ...videoConstraints, facingMode: 'user' });
+        } else {
+            setVideoConstraints({ ...videoConstraints, facingMode: 'environment' });
         }
     };
 
