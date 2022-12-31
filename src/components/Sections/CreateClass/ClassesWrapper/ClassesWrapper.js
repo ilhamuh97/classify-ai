@@ -12,11 +12,12 @@ const ClassesWrapper = ({
     setDataset
 }) => {
     const removeClass = (classKey) => {
+        const foundedClass = classConfig.filter((d) => d.key === classKey);
         const newDataset = dataset.filter((d) => d.key !== classKey);
         const newClasses = classConfig.filter((c) => c.key !== classKey);
         setDataset(newDataset);
         setClassConfig(newClasses);
-        message.success('Class is successfully deleted');
+        message.success(`Class '${foundedClass[0].label}' is successfully deleted`);
     };
 
     const datasetsClasses = () => {

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import SamplesSection from './SamplesSection/SamplesSection';
 import CanvasWrapper from './CanvasWrapper/CanvasWrapper';
 import ClassTitle from './ClassTitle/ClassTitle';
-import { Typography, Divider, Button, Upload, Space } from 'antd';
+import { Typography, Divider, Button, Upload, Space, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import styles from './Class.module.scss';
 
@@ -82,6 +82,7 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig, remov
     const removeAllDataset = (classKey) => {
         const newDataset = dataset.filter((d) => d.key !== classKey);
         setDataset(newDataset);
+        message.success(`All samples in class '${config.label}' successfully deleted`);
     };
 
     const turnOnCamera = () => {
