@@ -1,42 +1,22 @@
 import React, { useState, useRef, useEffect } from 'react';
-import Webcam from 'react-webcam';
-import { MdOutlineCameraswitch } from 'react-icons/md';
-import { Typography, Divider, Button, Upload, Space, Alert, Row, Col } from 'antd';
-import {
-    CameraOutlined,
-    CloseOutlined,
-    UploadOutlined,
-    PauseCircleOutlined
-} from '@ant-design/icons';
+import SamplesSection from './SamplesSection/SamplesSection';
+import CanvasWrapper from './CanvasWrapper/CanvasWrapper';
+import ClassTitle from './ClassTitle/ClassTitle';
+import { Typography, Divider, Button, Upload, Space } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 import styles from './Class.module.scss';
 
-const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => {
-    const { Title, Paragraph } = Typography;
-    const [editableTitle, setEditableTitle] = useState(config.label);
+const Class = ({ config, dataset, setDataset, classConfig, setClassConfig, removeClass }) => {
+    const { Title } = Typography;
+    const [editableTitle, setEditableTitle] = useState('');
     const [isRecord, setIsRecord] = useState(false);
-    const [showError, setShowError] = useState(false);
-    const [videoConstraints, setVideoConstraints] = useState({
-        video: true,
-        width: 265,
-        height: 265,
-        facingMode: 'environment'
-    });
     const intervalRef = useRef(null);
     const webcamRef = useRef(null);
     const canvasRef = useRef(null);
-    const filteredDataset = dataset.filter((ds) => ds.key == config.key);
-    const capture = (imgData) => {
-        const imageSrc = webcamRef.current.getScreenshot();
-        setDataset((current) => [
-            ...current,
-            {
-                id: current.length,
-                key: config.key,
-                img: imageSrc,
-                data: imgData
-            }
-        ]);
-    };
+
+    useEffect(() => {
+        setEditableTitle(config.label);
+    }, []);
 
     useEffect(() => {
         return () => {
@@ -53,6 +33,19 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
         });
         setClassConfig(newState);
     }, [editableTitle]);
+
+    const capture = (imgData) => {
+        const imageSrc = webcamRef.current.getScreenshot();
+        setDataset((current) => [
+            ...current,
+            {
+                id: current.length,
+                key: config.key,
+                img: imageSrc,
+                data: imgData
+            }
+        ]);
+    };
 
     const recordButtonOnClick = () => {
         const newRecordStatus = !isRecord;
@@ -86,6 +79,11 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
         setClassConfig(newState);
     };
 
+    const removeAllDataset = (classKey) => {
+        const newDataset = dataset.filter((d) => d.key !== classKey);
+        setDataset(newDataset);
+    };
+
     const turnOnCamera = () => {
         const newState = classConfig.map((c) => {
             if (c.key === config.key) return { ...c, cameraState: true };
@@ -95,86 +93,31 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
         setClassConfig(newState);
     };
 
-    const flipCamera = () => {
-        if (videoConstraints.facingMode === 'environment') {
-            setVideoConstraints({ ...videoConstraints, facingMode: 'user' });
-        } else {
-            setVideoConstraints({ ...videoConstraints, facingMode: 'environment' });
-        }
+    const deleteImage = (id) => {
+        const newDataset = dataset.filter((d) => d.id !== id);
+        setDataset(newDataset);
     };
 
     return (
         <div className={styles.class}>
-            <Typography>
-                <Title
-                    className={styles.className}
-                    editable={{
-                        tooltip: 'click to edit text',
-                        onChange: setEditableTitle
-                    }}
-                    level={3}>
-                    {editableTitle}
-                </Title>
-            </Typography>
+            <ClassTitle
+                classTitle={config.label}
+                setEditableTitle={setEditableTitle}
+                removeClass={removeClass}
+                configKey={config.key}
+            />
             <Divider />
             <Typography>
                 <Title level={4}>Add your samples here</Title>
             </Typography>
             {config.cameraState ? (
-                <div className={styles.canvasWrapper}>
-                    <div className={styles.camera}>
-                        <Button
-                            className={styles.turnOffButton}
-                            onClick={turnOffCamera}
-                            size="small"
-                            type="primary"
-                            ghost
-                            shape="circle"
-                            icon={<CloseOutlined />}
-                        />
-                        <Typography>
-                            <Title level={5}>Webcam</Title>
-                        </Typography>
-                        {!showError ? (
-                            <div className={styles.displayImageField}>
-                                <Webcam
-                                    audio={false}
-                                    height={265}
-                                    ref={webcamRef}
-                                    width={265}
-                                    screenshotFormat="image/jpeg"
-                                    videoConstraints={videoConstraints}
-                                    screenshotQuality={0.8}
-                                    onUserMediaError={() => setShowError(true)}
-                                />
-                                <canvas
-                                    ref={canvasRef}
-                                    style={{
-                                        display: 'none'
-                                    }}
-                                />
-                                <MdOutlineCameraswitch
-                                    onClick={() => flipCamera()}
-                                    className={styles.flipButton}
-                                />
-                            </div>
-                        ) : null}
-                        {!showError ? (
-                            <Button
-                                onClick={() => recordButtonOnClick()}
-                                type={`${isRecord ? 'danger' : 'primary'}`}
-                                icon={isRecord ? <PauseCircleOutlined /> : <CameraOutlined />}>
-                                {isRecord ? 'Stop the record' : 'Click to Record'}
-                            </Button>
-                        ) : (
-                            <Alert
-                                message="Webcam permission denied. Please enable permission to your webcam"
-                                type="error"
-                                showIcon
-                            />
-                        )}
-                    </div>
-                </div>
+                <CanvasWrapper
+                    turnOffCamera={turnOffCamera}
+                    webcamRef={webcamRef}
+                    recordButtonOnClick={recordButtonOnClick}
+                    isRecord={isRecord}
+                    canvasRef={canvasRef}
+                />
             ) : (
                 <Space>
                     <Button onClick={turnOnCamera} type="primary">
@@ -188,28 +131,12 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
                 </Space>
             )}
             <Divider />
-            <div className={styles.samplesSection}>
-                <Typography>
-                    <Title level={4}>
-                        Your samples {filteredDataset.length ? `(${filteredDataset.length})` : ''}
-                    </Title>
-                </Typography>
-                {dataset.length !== 0 ? (
-                    <Row gutter={[4, 8]} className={styles.samples}>
-                        {filteredDataset.map((fds, i) => {
-                            return (
-                                <Col key={i} className="gutter-row" span={6}>
-                                    <img src={fds.img} width={65} height={55} />
-                                </Col>
-                            );
-                        })}
-                    </Row>
-                ) : (
-                    <Typography>
-                        <Paragraph>No samples</Paragraph>
-                    </Typography>
-                )}
-            </div>
+            <SamplesSection
+                configKey={config.key}
+                dataset={dataset}
+                removeAllDataset={removeAllDataset}
+                deleteImage={deleteImage}
+            />
         </div>
     );
 };

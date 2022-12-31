@@ -1,5 +1,6 @@
 import React from 'react';
 import Class from './Class/Class';
+import { message } from 'antd';
 import styles from './ClassesWrapper.module.scss';
 
 const ClassesWrapper = ({
@@ -10,6 +11,14 @@ const ClassesWrapper = ({
     dataset,
     setDataset
 }) => {
+    const removeClass = (classKey) => {
+        const newDataset = dataset.filter((d) => d.key !== classKey);
+        const newClasses = classConfig.filter((c) => c.key !== classKey);
+        setDataset(newDataset);
+        setClassConfig(newClasses);
+        message.success('Class is successfully deleted');
+    };
+
     const datasetsClasses = () => {
         return classConfig.map((config, i) => {
             return (
@@ -22,18 +31,49 @@ const ClassesWrapper = ({
                     setKeysDataset={setKeysDataset}
                     dataset={dataset}
                     setDataset={setDataset}
+                    removeClass={removeClass}
                 />
             );
         });
     };
 
+    const generateKey = (key = 0) => {
+        let emptyKey = false;
+        while (!emptyKey) {
+            const foundedClass = classConfig.find((config) => config.key === key);
+            if (!foundedClass) {
+                emptyKey = true;
+            } else {
+                key++;
+            }
+        }
+
+        return key;
+    };
+
+    const generateClassName = (key = 0) => {
+        let emptyKey = false;
+        while (!emptyKey) {
+            const foundedClass = classConfig.find((config) => config.label === `Class ${key + 1}`);
+            if (!foundedClass) {
+                emptyKey = true;
+            } else {
+                key++;
+            }
+        }
+
+        return `Class ${key + 1}`;
+    };
+
     const onClickHandler = () => {
+        const key = generateKey();
+        const className = generateClassName();
         setClassConfig((current) => [
             ...current,
             {
-                key: classConfig.length,
-                label: `Class ${classConfig.length + 1}`,
-                cameraState: 0
+                key: key,
+                label: className,
+                cameraState: false
             }
         ]);
     };
