@@ -3,6 +3,9 @@
         width: 100%;
         .predictWrapper{
             width: 100%;
+            .predictedClass {
+                text-align: center;
+            }
             .predict{
                 display: flex;
                 justify-content: center;

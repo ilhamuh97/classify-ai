@@ -4,6 +4,7 @@ import { Typography, Button, Progress, Space } from 'antd';
 import * as tf from '@tensorflow/tfjs';
 import { CameraOutlined } from '@ant-design/icons';
 import styles from './TestModel.module.scss';
+import SectionHeader from '../../common/SectionHeader/SectionHeader';
 
 const TestModel = ({ model, graphModel, classConfig }) => {
     const [isCameraOn, setIsCameraOn] = useState(false);
@@ -11,7 +12,7 @@ const TestModel = ({ model, graphModel, classConfig }) => {
     const webcamRef = useRef(null);
     const [predictionPercent, setPredictionPercent] = useState(0);
     const [predictionClass, setPredictClass] = useState('');
-    const { Title, Paragraph } = Typography;
+    const { Title } = Typography;
 
     useEffect(() => {
         if (isCameraOn) {
@@ -55,6 +56,10 @@ const TestModel = ({ model, graphModel, classConfig }) => {
             let prediction = model.predict(imageFeatures.expandDims()).squeeze();
             let highestIndex = prediction.argMax().arraySync();
             let predictionArray = prediction.arraySync();
+
+            setPredictionPercent(Math.floor(predictionArray[highestIndex] * 100));
+            setPredictClass(classConfig[highestIndex].label);
+            /*
             const innerText =
                 'Prediction: ' +
                 classConfig[highestIndex].label +
@@ -62,23 +67,20 @@ const TestModel = ({ model, graphModel, classConfig }) => {
                 Math.floor(predictionArray[highestIndex] * 100) +
                 '% confidence';
 
-            setPredictionPercent(Math.floor(predictionArray[highestIndex] * 100));
-            setPredictClass(classConfig[highestIndex].label);
             console.log(innerText);
+            */
         });
     };
 
     return (
         <div className={styles.testModel}>
             <Space size="small" direction="vertical" className={styles.layout}>
-                <Typography>
-                    <Title level={2}>Test the Model</Title>
-                    <Paragraph>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin aliquet
-                        luctus aliquam. Phasellus eget lacinia mauris. Aliquam varius malesuada diam
-                        sit amet efficitur.{' '}
-                    </Paragraph>
-                </Typography>
+                <SectionHeader
+                    title="Test the Model"
+                    subTitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin aliquet
+                luctus aliquam. Phasellus eget lacinia mauris. Aliquam varius malesuada diam
+                sit amet efficitur."
+                />
                 <div className={styles.displayWrapper}>
                     <DisplayImage
                         isCameraOn={isCameraOn}
@@ -90,10 +92,15 @@ const TestModel = ({ model, graphModel, classConfig }) => {
                     </Button>
                     {isCameraOn ? (
                         <div className={styles.predictWrapper}>
+                            <Typography>
+                                <Title className={styles.predictedClass} level={3}>
+                                    {predictionClass || ''}
+                                </Title>
+                            </Typography>
                             <Progress
                                 className={styles.predict}
                                 percent={predictionPercent}
-                                format={() => `${predictionPercent}%  ${predictionClass || ''}`}
+                                format={() => `${predictionPercent}%`}
                             />
                         </div>
                     ) : (

@@ -17,11 +17,11 @@ const Main = () => {
     const [graphModel, setGraphModel] = useState(null);
     const [model, setModel] = useState(null);
     const [paramConfig, setParamConfig] = useState({
-        modelURL:
-            'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_100_224/feature_vector/5/default/1',
+        model: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_100_224/feature_vector/5/default/1',
         optimizer: 'adam',
-        epochs: 20,
-        batchSize: 5
+        learningRate: '0.001',
+        epochs: 10,
+        batchSize: 4
     });
     const [classConfig, setClassConfig] = useState([
         {
@@ -72,7 +72,9 @@ const Main = () => {
                     <Train
                         dataset={dataset}
                         model={model}
+                        setModel={setModel}
                         graphModel={graphModel}
+                        setGraphModel={setGraphModel}
                         paramConfig={paramConfig}
                         classConfig={classConfig}
                     />

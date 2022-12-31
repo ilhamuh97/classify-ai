@@ -1,17 +1,52 @@
 import React, { useState, useEffect } from 'react';
-import Report from './Report/Report';
 import * as tf from '@tensorflow/tfjs';
-import { Button, Typography, Alert, Progress, Space } from 'antd';
+import Report from './Report/Report';
+import SuccessAlert from './Alerts/SuccessAlert/SuccessAlert';
+import FailedAlert from './Alerts/FailedAlert/FailedAlert';
+import SectionHeader from '../../common/SectionHeader/SectionHeader';
+import ProgressEpoch from './ProgressEpoch/ProgressEpoch';
+import { Button, Space } from 'antd';
 import styles from './Train.module.scss';
 
-const Train = ({ dataset, model, graphModel, paramConfig, classConfig }) => {
-    const { Title, Paragraph } = Typography;
+const Train = ({
+    dataset,
+    paramConfig,
+    classConfig,
+    graphModel,
+    setGraphModel,
+    model,
+    setModel
+}) => {
     const [isTraining, setIsTraining] = useState(false);
     const [isTrainingSucceed, setIsTrainingSucceed] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
     const [logs, setLogs] = useState([]);
     const [models, setModels] = useState([]);
     const [reports, setReports] = useState([]);
+    const [progressMessage, setProgressMessage] = useState('');
+    const [graphModelIsReady, setGraphModelIsReady] = useState(false);
+    const [modelIsReady, setModelIsReady] = useState(false);
+    const [dataIsReady, setDataIsReady] = useState(false);
+    const [featureVectors, setFeactureVectors] = useState(null);
+    const [keys, setKeys] = useState(null);
+
+    useEffect(() => {
+        tf.disposeVariables();
+    }, []);
+
+    useEffect(() => {
+        if (isTraining) {
+            if (!graphModelIsReady) {
+                initialGraphModel();
+            } else if (!modelIsReady) {
+                initialModel();
+            } else if (!dataIsReady) {
+                prepareData();
+            } else {
+                trainAndPredict(keys, featureVectors, model);
+            }
+        }
+    }, [isTraining, graphModelIsReady, modelIsReady, dataIsReady]);
 
     useEffect(() => {
         if (!isTraining && isTrainingSucceed) {
@@ -22,14 +57,68 @@ const Train = ({ dataset, model, graphModel, paramConfig, classConfig }) => {
         }
     }, [isTrainingSucceed, isTraining]);
 
-    const trainClicked = () => {
-        setIsTraining(true);
+    const initialGraphModel = () => {
+        setProgressMessage('Preparing graph model...');
+        const loadMobileNetFeatureModel = async () => {
+            const URL = paramConfig.model;
+            const mobilenet = await tf.loadGraphModel(URL, { fromTFHub: true });
+            // Warm up the model by passing zeros through it once.
+            return mobilenet;
+        };
+
+        loadMobileNetFeatureModel()
+            .then((result) => {
+                setGraphModel(result);
+                setProgressMessage('Preparing model...');
+                setGraphModelIsReady(true);
+                console.log('Tensors in memory after graph loaded: ' + tf.memory().numTensors);
+            })
+            .catch((e) => {
+                setIsTraining(false);
+                showAlert(true);
+                setIsTrainingSucceed(false);
+                console.log(e);
+            });
+    };
+
+    const initialModel = () => {
+        const modelConfig = {
+            optimizer: paramConfig.optimizer || 'adam',
+            loss: classConfig.length === 2 ? 'binaryCrossentropy' : 'categoricalCrossentropy',
+            metrics: ['accuracy']
+        };
+        const currModel = tf.sequential();
+        currModel.add(tf.layers.dense({ inputShape: [1024], units: 128, activation: 'relu' }));
+        currModel.add(tf.layers.dense({ units: classConfig.length, activation: 'softmax' }));
+        currModel.summary();
+        currModel.compile(modelConfig);
+        setModel(currModel);
+        setProgressMessage('Preparing feature vectors...');
+        setModelIsReady(true);
+        console.log('Tensors in memory after model loaded: ' + tf.memory().numTensors);
+    };
+
+    const prepareData = () => {
         const imageFeatures = [];
         const key = dataset.map((d) => {
             imageFeatures.push(calculateFeaturesOnCurrentFrame(d.data));
             return d.key;
         });
-        trainAndPredict(key, imageFeatures, model);
+        setFeactureVectors(imageFeatures);
+        setKeys(key);
+        setProgressMessage('Training model...');
+        setDataIsReady(true);
+    };
+
+    const trainClicked = () => {
+        tf.disposeVariables();
+        setIsTraining(true);
+        showAlert(false);
+        setKeys(null);
+        setFeactureVectors(null);
+        setGraphModel(null);
+        setModel(null);
+        setProgressMessage('Setting up graph model...');
     };
 
     const calculateFeaturesOnCurrentFrame = (img) => {
@@ -62,9 +151,13 @@ const Train = ({ dataset, model, graphModel, paramConfig, classConfig }) => {
 
         // setup finish training parameter
         setModels((current) => [...current, currModel]);
+        setProgressMessage('Training is completed');
         setShowAlert(true);
         setIsTrainingSucceed(true);
         setIsTraining(false);
+        setGraphModelIsReady(false);
+        setModelIsReady(false);
+        setDataIsReady(false);
     }
 
     function shuffleCombo(array, array2) {
@@ -111,13 +204,11 @@ const Train = ({ dataset, model, graphModel, paramConfig, classConfig }) => {
     return (
         <div className={styles.train}>
             <Space size="small" direction="vertical" className={styles.layout}>
-                <Typography>
-                    <Title level={2}>Train Your Model</Title>
-                    <Paragraph>
-                        In this section you can start to train your model. During training the
-                        model, the report of training will be recorded and visualized.
-                    </Paragraph>
-                </Typography>
+                <SectionHeader
+                    title="Train Your Model"
+                    subTitle="In this section you can start to train your model. During training the
+                        model, the report of training will be recorded and visualized."
+                />
 
                 <Button
                     onClick={() => trainClicked()}
@@ -125,56 +216,21 @@ const Train = ({ dataset, model, graphModel, paramConfig, classConfig }) => {
                     loading={isTraining}>
                     Start Training
                 </Button>
-
-                {isTraining ? (
-                    <div className={styles.progressWrapper}>
-                        <Progress
-                            className={styles.progress}
-                            percent={
-                                (((logs[logs.length - 1]?.epoch ?? 0) + 1) / paramConfig.epochs) *
-                                100
-                            }
-                            format={() =>
-                                `${(logs[logs.length - 1]?.epoch ?? 0) + 1}/${
-                                    paramConfig.epochs
-                                } Epoch`
-                            }
-                        />
-                    </div>
+                <span>{progressMessage}</span>
+                {isTraining && logs.length > 0 && logs ? (
+                    <ProgressEpoch logs={logs} paramConfig={paramConfig} />
                 ) : null}
-
-                {showAlert ? (
+                {!isTraining && showAlert ? (
                     isTrainingSucceed ? (
                         logs.length === 0 ? (
-                            <Alert
-                                message="Training succeed!"
-                                description={`Loss: ${
-                                    reports[reports.length - 1].logs[
-                                        reports[reports.length - 1].logs.length - 1
-                                    ].lossAndAccuracy.loss
-                                }, Accuracy: ${
-                                    reports[reports.length - 1].logs[
-                                        reports[reports.length - 1].logs.length - 1
-                                    ].lossAndAccuracy.acc
-                                }`}
-                                type="success"
-                                showIcon
-                                closable
-                                onClose={() => setIsTrainingSucceed(false)}
-                            />
+                            <SuccessAlert reports={reports} />
                         ) : null
                     ) : (
-                        <Alert
-                            message="Error Text"
-                            showIcon
-                            description="Training Failed"
-                            type="error"
-                        />
+                        <FailedAlert />
                     )
-                ) : (
-                    ''
-                )}
-                {showAlert && isTrainingSucceed && logs.length === 0 ? (
+                ) : null}
+
+                {!isTraining && showAlert && isTrainingSucceed && logs.length === 0 ? (
                     <Report reports={reports} />
                 ) : null}
             </Space>

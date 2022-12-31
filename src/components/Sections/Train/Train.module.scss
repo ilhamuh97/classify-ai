@@ -1,17 +1,7 @@
 .train{
     .layout {
         width: 100%;
-        .progressWrapper{
-            width: 100%;
-            .progress{
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                :global(.ant-progress-text){
-                    width: unset;
-                }
-            }
-        }
+        
     }
     
 }
