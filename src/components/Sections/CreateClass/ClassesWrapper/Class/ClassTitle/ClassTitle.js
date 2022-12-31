@@ -6,7 +6,7 @@ import styles from './ClassTitle.module.scss';
 const ClassTitle = ({ classTitle, setEditableTitle, removeClass, configKey }) => {
     return (
         <Row justify="space-between" align="middle" className={styles.classTitle}>
-            <Col>
+            <Col className={styles.title}>
                 <Typography>
                     <Typography.Title
                         className={styles.className}

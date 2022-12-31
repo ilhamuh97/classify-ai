@@ -82,7 +82,7 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig, remov
     const removeAllDataset = (classKey) => {
         const newDataset = dataset.filter((d) => d.key !== classKey);
         setDataset(newDataset);
-        message.success(`All samples in class '${config.label}' successfully deleted`);
+        message.success(`All samples in '${config.label}' successfully deleted`);
     };
 
     const turnOnCamera = () => {
