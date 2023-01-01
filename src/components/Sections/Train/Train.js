@@ -31,10 +31,6 @@ const Train = ({
     const [keys, setKeys] = useState(null);
 
     useEffect(() => {
-        tf.disposeVariables();
-    }, []);
-
-    useEffect(() => {
         if (isTraining) {
             if (!graphModelIsReady) {
                 initialGraphModel();
