@@ -75,7 +75,7 @@ const Train = ({
             })
             .catch((e) => {
                 setIsTraining(false);
-                showAlert(true);
+                setShowAlert(true);
                 setIsTrainingSucceed(false);
                 console.log(e);
             });
@@ -113,7 +113,7 @@ const Train = ({
     const trainClicked = () => {
         tf.disposeVariables();
         setIsTraining(true);
-        showAlert(false);
+        setShowAlert(false);
         setKeys(null);
         setFeactureVectors(null);
         setGraphModel(null);

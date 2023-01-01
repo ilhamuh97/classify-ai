@@ -36,11 +36,11 @@ const SamplesSection = ({ configKey, dataset, removeAllDataset, deleteImage }) =
                     {filteredDataset.map((fds, i) => {
                         return (
                             <Col key={i} span={6}>
-                                <div className={styles.imageWrapper}>
+                                <div key={i + 'img'} className={styles.imageWrapper}>
                                     <img src={fds.img} width={65} height={55} />
                                     <span
                                         className={styles.deleteImage}
-                                        onClick={() => deleteImage(fds.id)}>
+                                        onClick={() => deleteImage(fds)}>
                                         <CloseOutlined />
                                     </span>
                                 </div>

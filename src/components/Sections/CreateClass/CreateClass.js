@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import SectionHeader from '../../common/SectionHeader/SectionHeader';
 import ClassesWrapper from './ClassesWrapper/ClassesWrapper';
 import styles from './CreateClass.module.scss';
@@ -11,6 +11,21 @@ const CreateClass = ({
     dataset,
     setDataset
 }) => {
+    const classConfigRef = useRef();
+
+    useEffect(() => {
+        classConfigRef.current = classConfig;
+    }, [classConfig]);
+
+    useEffect(() => {
+        return () => {
+            const newState = classConfigRef.current.map((c) => {
+                return { ...c, cameraState: false };
+            });
+            setClassConfig(newState);
+        };
+    }, []);
+
     return (
         <div className={styles.CreateClass}>
             <SectionHeader

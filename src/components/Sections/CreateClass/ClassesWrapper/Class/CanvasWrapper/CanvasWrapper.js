@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import { MdOutlineCameraswitch } from 'react-icons/md';
 import { Typography, Button, Alert } from 'antd';
@@ -21,6 +21,12 @@ const CanvasWrapper = ({ turnOffCamera, webcamRef, recordButtonOnClick, isRecord
             setVideoConstraints({ ...videoConstraints, facingMode: 'environment' });
         }
     };
+
+    useEffect(() => {
+        return () => {
+            if (isRecord) recordButtonOnClick();
+        };
+    }, []);
 
     return (
         <div className={styles.canvasWrapper}>

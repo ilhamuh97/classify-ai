@@ -6,7 +6,7 @@ import { Typography, Divider, Button, Upload, Space, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import styles from './Class.module.scss';
 
-const Class = ({ config, dataset, setDataset, classConfig, setClassConfig, removeClass }) => {
+const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => {
     const { Title } = Typography;
     const [editableTitle, setEditableTitle] = useState('');
     const [isRecord, setIsRecord] = useState(false);
@@ -34,12 +34,20 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig, remov
         setClassConfig(newState);
     }, [editableTitle]);
 
+    const removeClass = (classKey) => {
+        const foundedClass = classConfig.filter((d) => d.key === classKey);
+        const newDataset = dataset.filter((d) => d.key !== classKey);
+        const newClasses = classConfig.filter((c) => c.key !== classKey);
+        setDataset(newDataset);
+        setClassConfig(newClasses);
+        message.success(`'${foundedClass[0].label}' is successfully deleted`);
+    };
+
     const capture = (imgData) => {
         const imageSrc = webcamRef.current.getScreenshot();
         setDataset((current) => [
             ...current,
             {
-                id: current.length,
                 key: config.key,
                 img: imageSrc,
                 data: imgData
@@ -94,8 +102,8 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig, remov
         setClassConfig(newState);
     };
 
-    const deleteImage = (id) => {
-        const newDataset = dataset.filter((d) => d.id !== id);
+    const deleteImage = (img) => {
+        const newDataset = dataset.filter((d) => d !== img);
         setDataset(newDataset);
     };
 

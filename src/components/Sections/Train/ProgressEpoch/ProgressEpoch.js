@@ -3,7 +3,6 @@ import { Progress } from 'antd';
 import styles from './ProgressEpoch.module.scss';
 
 const ProgressEpoch = ({ logs, paramConfig }) => {
-    console.log(logs);
     return (
         <div className={styles.progressWrapper}>
             <Progress

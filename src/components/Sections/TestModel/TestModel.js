@@ -15,13 +15,22 @@ const TestModel = ({ model, graphModel, classConfig }) => {
     const { Title } = Typography;
 
     useEffect(() => {
-        if (isCameraOn) {
-            const id = setInterval(() => {
-                predictLoop();
-            }, 100);
-            intervalRef.current = id;
-        } else {
-            clearInterval(intervalRef.current);
+        return () => {
+            setIsCameraOn(false);
+            if (intervalRef.current) clearInterval(intervalRef.current);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (model) {
+            if (isCameraOn) {
+                const id = setInterval(() => {
+                    predictLoop();
+                }, 100);
+                intervalRef.current = id;
+            } else {
+                clearInterval(intervalRef.current);
+            }
         }
     }, [isCameraOn]);
 
@@ -43,23 +52,24 @@ const TestModel = ({ model, graphModel, classConfig }) => {
      **/
     const predictLoop = () => {
         // Get Video Properties
-        const video = webcamRef.current.video;
-        const videoWidth = webcamRef.current.video.videoWidth;
-        const videoHeight = webcamRef.current.video.videoHeight;
+        if (isCameraOn) {
+            const video = webcamRef.current.video;
+            const videoWidth = webcamRef.current.video.videoWidth;
+            const videoHeight = webcamRef.current.video.videoHeight;
 
-        // Set video width
-        webcamRef.current.video.width = videoWidth;
-        webcamRef.current.video.height = videoHeight;
+            // Set video width
+            webcamRef.current.video.width = videoWidth;
+            webcamRef.current.video.height = videoHeight;
 
-        tf.tidy(function () {
-            let imageFeatures = calculateFeaturesOnCurrentFrame(video);
-            let prediction = model.predict(imageFeatures.expandDims()).squeeze();
-            let highestIndex = prediction.argMax().arraySync();
-            let predictionArray = prediction.arraySync();
+            tf.tidy(function () {
+                let imageFeatures = calculateFeaturesOnCurrentFrame(video);
+                let prediction = model.predict(imageFeatures.expandDims()).squeeze();
+                let highestIndex = prediction.argMax().arraySync();
+                let predictionArray = prediction.arraySync();
 
-            setPredictionPercent(Math.floor(predictionArray[highestIndex] * 100));
-            setPredictClass(classConfig[highestIndex].label);
-            /*
+                setPredictionPercent(Math.floor(predictionArray[highestIndex] * 100));
+                setPredictClass(classConfig[highestIndex].label);
+                /*
             const innerText =
                 'Prediction: ' +
                 classConfig[highestIndex].label +
@@ -69,7 +79,8 @@ const TestModel = ({ model, graphModel, classConfig }) => {
 
             console.log(innerText);
             */
-        });
+            });
+        }
     };
 
     return (

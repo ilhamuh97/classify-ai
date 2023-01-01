@@ -1,6 +1,5 @@
 import React from 'react';
 import Class from './Class/Class';
-import { message } from 'antd';
 import styles from './ClassesWrapper.module.scss';
 
 const ClassesWrapper = ({
@@ -11,15 +10,6 @@ const ClassesWrapper = ({
     dataset,
     setDataset
 }) => {
-    const removeClass = (classKey) => {
-        const foundedClass = classConfig.filter((d) => d.key === classKey);
-        const newDataset = dataset.filter((d) => d.key !== classKey);
-        const newClasses = classConfig.filter((c) => c.key !== classKey);
-        setDataset(newDataset);
-        setClassConfig(newClasses);
-        message.success(`'${foundedClass[0].label}' is successfully deleted`);
-    };
-
     const datasetsClasses = () => {
         return classConfig.map((config, i) => {
             return (
@@ -32,7 +22,6 @@ const ClassesWrapper = ({
                     setKeysDataset={setKeysDataset}
                     dataset={dataset}
                     setDataset={setDataset}
-                    removeClass={removeClass}
                 />
             );
         });
