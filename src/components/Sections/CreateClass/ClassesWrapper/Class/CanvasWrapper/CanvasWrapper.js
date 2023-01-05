@@ -48,8 +48,8 @@ const CanvasWrapper = ({ turnOffCamera, webcamRef, recordButtonOnClick, isRecord
                         <Webcam
                             audio={false}
                             height={265}
-                            ref={webcamRef}
                             width={265}
+                            ref={webcamRef}
                             screenshotFormat="image/jpeg"
                             videoConstraints={videoConstraints}
                             screenshotQuality={0.8}
@@ -57,6 +57,8 @@ const CanvasWrapper = ({ turnOffCamera, webcamRef, recordButtonOnClick, isRecord
                         />
                         <canvas
                             ref={canvasRef}
+                            height={265}
+                            width={265}
                             style={{
                                 display: 'none'
                             }}

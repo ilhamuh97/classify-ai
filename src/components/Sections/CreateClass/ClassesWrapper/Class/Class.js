@@ -69,7 +69,6 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
             const ctx = canvasRef.current.getContext('2d');
             ctx.drawImage(video, 0, 0, 265, 265);
             const imageData = ctx.getImageData(0, 0, 265, 265);
-
             const id = setInterval(() => {
                 capture(imageData);
             }, 100);
