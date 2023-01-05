@@ -7,6 +7,8 @@
     scrollbar-width: auto;
     scrollbar-color: #99def0 #ffffff;
     padding: 1rem 0.5rem;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
     /* ===== Scrollbar CSS ===== */
 
     /* Chrome, Edge, and Safari */
@@ -46,6 +48,7 @@
         -moz-transition: all 0.3s ease;
         transition: all 0.3s ease;
         cursor: pointer;
+        scroll-snap-align: start;
         &:hover{
             border-color: #a7a7a7;
             color: #a7a7a7;

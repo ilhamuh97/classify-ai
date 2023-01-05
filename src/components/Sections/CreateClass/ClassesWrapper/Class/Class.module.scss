@@ -13,6 +13,7 @@
     -webkit-transition: all 0.3s ease;
     -moz-transition: all 0.3s ease;
     transition: all 0.3s ease;
+    scroll-snap-align: start;
     &:hover{
         box-shadow: 0 0 10px rgb(0 0 0 / 15%);
     }

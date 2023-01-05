@@ -1,6 +1,7 @@
 import React from 'react';
 import { Typography, Row, Col, Popconfirm, Button } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
+import { Collapse } from 'antd';
 import styles from './SamplesSection.module.scss';
 
 const SamplesSection = ({ configKey, dataset, removeAllDataset, deleteImage }) => {
@@ -32,22 +33,26 @@ const SamplesSection = ({ configKey, dataset, removeAllDataset, deleteImage }) =
                 ) : null}
             </Row>
             {filteredDataset.length !== 0 ? (
-                <Row gutter={[4, 8]} className={styles.samples}>
-                    {filteredDataset.map((fds, i) => {
-                        return (
-                            <Col key={i} span={6}>
-                                <div key={i + 'img'} className={styles.imageWrapper}>
-                                    <img src={fds.img} width={65} height={55} />
-                                    <span
-                                        className={styles.deleteImage}
-                                        onClick={() => deleteImage(fds)}>
-                                        <CloseOutlined />
-                                    </span>
-                                </div>
-                            </Col>
-                        );
-                    })}
-                </Row>
+                <Collapse accordion>
+                    <Collapse.Panel header="Images" key="1">
+                        <Row gutter={[4, 8]} className={styles.samples}>
+                            {filteredDataset.map((fds, i) => {
+                                return (
+                                    <Col key={i} span={6}>
+                                        <div key={i + 'img'} className={styles.imageWrapper}>
+                                            <img src={fds.img} width={65} height={55} />
+                                            <span
+                                                className={styles.deleteImage}
+                                                onClick={() => deleteImage(fds)}>
+                                                <CloseOutlined />
+                                            </span>
+                                        </div>
+                                    </Col>
+                                );
+                            })}
+                        </Row>
+                    </Collapse.Panel>
+                </Collapse>
             ) : (
                 <Typography>
                     <Typography.Paragraph>No samples</Typography.Paragraph>

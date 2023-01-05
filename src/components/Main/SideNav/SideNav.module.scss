@@ -8,6 +8,7 @@
     position: fixed;
     z-index: 99;
     overflow-y: auto;
+    overflow-x: hidden;
     :global(.ant-layout-sider-zero-width-trigger){
         top: 12px;
         border: 1px solid #f0f0f0;
@@ -16,6 +17,7 @@
         border-right: 0;
     }
     .steps{
+        min-width: 250px;
         padding: 2rem 1rem;
     }
 }
