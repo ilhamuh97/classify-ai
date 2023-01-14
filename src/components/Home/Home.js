@@ -8,13 +8,12 @@ const Home = () => {
     return (
         <div className={styles.home}>
             <Typography className={styles.subContent}>
-                <Title>Create Own Model</Title>
+                <Title>ClassifyAI</Title>
                 <Paragraph>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin aliquet luctus
-                    aliquam. Phasellus eget lacinia mauris. Aliquam varius malesuada diam sit amet
-                    efficitur. Aliquam justo metus, blandit at metus sed, euismod accumsan metus.
-                    Proin iaculis tortor non tellus finibus vulputate. Aliquam fringilla metus arcu,
-                    nec porttitor risus sodales quis. Mauris egestas tempus velit non aliquet.
+                    Welcome to ClassifyAI! Create your own CNN models for image classification
+                    without coding. Our easy-to-use platform allows you to gather data, train models
+                    and test them with just a few clicks. Ideal for researchers, students and
+                    business owners. Try it now!
                 </Paragraph>
                 <div>
                     <Button type="primary">

@@ -201,9 +201,8 @@ const Train = ({
         <div className={styles.train}>
             <Space size="small" direction="vertical" className={styles.layout}>
                 <SectionHeader
-                    title="Train Your Model"
-                    subTitle="In this section you can start to train your model. During training the
-                        model, the report of training will be recorded and visualized."
+                    title="Train and Evaluate"
+                    subTitle="In this section, you can start training your model using the dataset and configuration you have set up. You can also view the training progress, evaluation metrics such as accuracy and loss, and other results in an easy-to-understand format."
                 />
 
                 <Button

@@ -29,10 +29,8 @@ const CreateClass = ({
     return (
         <div className={styles.CreateClass}>
             <SectionHeader
-                title="Create Class"
-                subTitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin aliquet luctus
-                aliquam. Phasellus eget lacinia mauris. Aliquam varius malesuada diam sit amet
-                efficitur."
+                title="Snap and Label: Create Your Dataset in Real-Time"
+                subTitle="Creating a dataset has never been easier! Our platform allows you to snap pictures using your own camera and label them on the spot. It is a great feature for anyone who is looking to build a dataset in real-time scenarios. Just hit the snap button and start creating your dataset."
             />
             <ClassesWrapper
                 classConfig={classConfig}

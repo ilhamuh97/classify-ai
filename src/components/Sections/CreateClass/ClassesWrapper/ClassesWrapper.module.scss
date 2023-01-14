@@ -9,6 +9,12 @@
     padding: 1rem;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
+    >div:first-child{
+        margin-left: 345px;
+    }
+    >div:last-child{
+        margin-right: 345px;
+    }
     /* ===== Scrollbar CSS ===== */
 
     /* Chrome, Edge, and Safari */
@@ -48,7 +54,7 @@
         -moz-transition: all 0.3s ease;
         transition: all 0.3s ease;
         cursor: pointer;
-        scroll-snap-align: start;
+        scroll-snap-align: center;
         &:hover{
             border-color: #a7a7a7;
             color: #a7a7a7;

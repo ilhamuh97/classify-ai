@@ -7,7 +7,7 @@ const SideNav = ({ collapsed, setCollapsed, setKey, currKey }) => {
 
     const steps = [
         {
-            title: 'Create Classes',
+            title: 'Create Your Dataset',
             description: 'Collect the dataset for 2 or more classes'
         },
         {
