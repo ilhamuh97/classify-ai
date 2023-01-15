@@ -1,5 +1,7 @@
 import React from 'react';
 import { Steps, Layout } from 'antd';
+import { Link } from 'react-router-dom';
+import Logo from '../../../assets/logo/classify.svg';
 import styles from './SideNav.module.scss';
 
 const SideNav = ({ collapsed, setCollapsed, setKey, currKey }) => {
@@ -40,6 +42,12 @@ const SideNav = ({ collapsed, setCollapsed, setKey, currKey }) => {
             collapsible={true}
             onCollapse={(value) => setCollapsed(value)}
             trigger={null}>
+            <div className={styles.logo}>
+                <Link to="/">
+                    <img src={Logo} />
+                </Link>
+            </div>
+
             <Steps
                 className={styles.steps}
                 current={currKey}

@@ -5,11 +5,28 @@
     text-align: left;
     justify-content: center;
     align-items: center;
+    header{
+        background-color: unset;
+        .logo{
+            margin: 1rem;
+            width: 60px;
+            height: 60px;
+            img{
+                width: 100%;
+                height: 100%;
+            }
+        }
+    }
+    main{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .subContent{
+            border-radius: 5px;
+            padding: 10%;
+            color: #002766;
+            max-width: 1024px;
+        }
+    }
 }
 
-.subContent{
-    border-radius: 5px;
-    padding: 10%;
-    color: #002766;
-    max-width: 1024px;
-}
