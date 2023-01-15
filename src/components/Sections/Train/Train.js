@@ -63,7 +63,8 @@ const Train = ({
     const initialGraphModel = () => {
         setProgressMessage('Preparing graph model...');
         const loadMobileNetFeatureModel = async () => {
-            const URL = paramConfig.model;
+            const model = paramConfig.model;
+            const URL = JSON.parse(model).URL;
             const mobilenet = await tf.loadGraphModel(URL, { fromTFHub: true });
             // Warm up the model by passing zeros through it once.
             return mobilenet;
@@ -84,14 +85,31 @@ const Train = ({
             });
     };
 
+    const getOptimizer = (optimizerName, learningRate) => {
+        switch (optimizerName) {
+            case 'sgd':
+                return tf.train.sgd(learningRate);
+            case 'adam':
+                return tf.train.adam(learningRate);
+            default:
+                return tf.train.adam(learningRate);
+        }
+    };
+
     const initialModel = () => {
+        const learningRate = paramConfig.learningRate;
+        const optimizer = getOptimizer(paramConfig.optimizer, learningRate);
         const modelConfig = {
-            optimizer: paramConfig.optimizer || 'adam',
+            optimizer: optimizer,
             loss: classConfig.length === 2 ? 'binaryCrossentropy' : 'categoricalCrossentropy',
             metrics: ['accuracy']
         };
+        const model = paramConfig.model;
+        const inputShape = JSON.parse(model).inputShape;
         const currModel = tf.sequential();
-        currModel.add(tf.layers.dense({ inputShape: [1024], units: 128, activation: 'relu' }));
+        currModel.add(
+            tf.layers.dense({ inputShape: [inputShape], units: 128, activation: 'relu' })
+        );
         currModel.add(tf.layers.dense({ units: classConfig.length, activation: 'softmax' }));
         currModel.summary();
         currModel.compile(modelConfig);

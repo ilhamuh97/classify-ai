@@ -14,7 +14,7 @@ const SetupParameters = ({
         <div className={styles.setupParameters}>
             <SectionHeader
                 title="Setup Parameters: Model Configuration and Data Augmentation"
-                subTitle="In this section, you can fine-tune both your model and your dataset to achieve the best performance. You can set the model's hyperparameters, such as learning rate, number of epochs, and feature vector model. You can also perform data augmentation techniques like rotation, flipping, scaling, and more, on the dataset to increase its diversity and prevent overfitting. With our user-friendly interface, you can easily make adjustments to both your model and dataset to achieve your desired level of accuracy."
+                subTitle="This section allows you to make your model and dataset work better together. You can change the settings of the model such as the learning rate and the number of times the model will go through the dataset. You can also use tools like rotation, flipping and scaling to improve the diversity of the dataset and prevent overfitting. With ClassifyAI's user-friendly interface, it's easy to adjust your model and dataset to achieve your desired level of accuracy."
             />
             <SettingField
                 paramConfig={paramConfig}
