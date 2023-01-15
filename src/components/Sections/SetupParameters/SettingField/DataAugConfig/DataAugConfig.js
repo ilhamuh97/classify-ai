@@ -1,15 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Sketch from 'react-p5';
-import { Form, Switch, InputNumber, Typography, Space } from 'antd';
+import { Form, Switch, InputNumber, Typography, Space, Button, Divider } from 'antd';
+import { ReloadOutlined } from '@ant-design/icons';
+import styles from './DataAugConfig.module.scss';
 
-const DataAugConfig = ({
-    dataAugmentationConfig,
-    setDataAugmentationConfig,
-    dataAugmentationFormHandler,
-    dataset
-}) => {
-    console.log(dataAugmentationConfig, setDataAugmentationConfig);
-    console.log(dataset[0].data);
+const DataAugConfig = ({ dataAugmentationConfig, dataAugmentationFormHandler, dataset }) => {
+    const [clickedSeed, setClickedSeed] = useState(parseInt(Math.random() * 100000));
     const setup = (p5, canvasParentRef) => {
         // use parent to render the canvas in this ref
         // (without that p5 will render the canvas outside of your component)
@@ -17,17 +13,23 @@ const DataAugConfig = ({
         p5.pixelDensity(1);
         //this will make placement and rotation easier because the anchor point is moved to the center of the image
         p5.imageMode(p5.CENTER);
-
         //By default, rotations are specified in radians
     };
 
     const draw = (p5) => {
+        p5.randomSeed(clickedSeed);
         p5.background(0);
+        let randomImgIndex = 0;
+        randomImgIndex = parseInt(p5.random(0, dataset.length - 1));
         // load image
-        let img = p5.createImage(dataset[0].data.width, dataset[0].data.height);
+        let img;
+        img = p5.createImage(
+            dataset[randomImgIndex].data.width,
+            dataset[randomImgIndex].data.height
+        );
         if (!dataAugmentationConfig.isActive) {
             img.loadPixels();
-            const arr = dataset[0].data.data;
+            const arr = dataset[randomImgIndex].data.data;
             for (let y = 0; y < img.height; y++) {
                 for (let x = 0; x < img.width; x++) {
                     let index = (x + y * img.width) * 4;
@@ -43,7 +45,7 @@ const DataAugConfig = ({
             p5.image(img, 0, 0);
         } else {
             img.loadPixels();
-            const arr = dataset[0].data.data;
+            const arr = dataset[randomImgIndex].data.data;
             for (let y = 0; y < img.height; y++) {
                 for (let x = 0; x < img.width; x++) {
                     let index = (x + y * img.width) * 4;
@@ -63,27 +65,37 @@ const DataAugConfig = ({
             }
             img.updatePixels();
             // Data augmentation
+
             // image translation
-            const translationXRand = p5.random(
-                -dataAugmentationConfig.translationX,
-                dataAugmentationConfig.translationX
-            );
-            const translationYRand = p5.random(
-                -dataAugmentationConfig.translationY,
-                dataAugmentationConfig.translationY
-            );
+            let translationXRand = 0;
+            let translationYRand = 0;
+            if (dataAugmentationConfig.translationX) {
+                translationXRand = p5.random(
+                    -dataAugmentationConfig.translationX,
+                    dataAugmentationConfig.translationX
+                );
+            }
+
+            if (dataAugmentationConfig.translationY) {
+                translationYRand = p5.random(
+                    -dataAugmentationConfig.translationY,
+                    dataAugmentationConfig.translationY
+                );
+            }
             const xTranslation = img.width * translationXRand;
             const yTranslation = img.height * translationYRand;
             p5.translate(img.width / 2 + xTranslation, img.height / 2 + yTranslation);
 
             // image rotation
-            const rotationRand = p5.random(
-                -dataAugmentationConfig.rotateLeft,
-                dataAugmentationConfig.rotateRight
-            );
-            p5.rotate(p5.PI * rotationRand);
+            if (dataAugmentationConfig.rotation) {
+                const rotationRand = p5.random(
+                    -dataAugmentationConfig.rotation,
+                    dataAugmentationConfig.rotation
+                );
+                p5.rotate(p5.PI * rotationRand);
+            }
 
-            //flip and scale
+            //flip scale
             let flipX = 1;
             if (dataAugmentationConfig.flipX && 0.5 > p5.random(0, 1)) {
                 flipX = -1;
@@ -92,34 +104,36 @@ const DataAugConfig = ({
             if (dataAugmentationConfig.flipY && 0.5 > p5.random(0, 1)) {
                 flipY = -1;
             }
-            const scaleXRand = p5.random(
-                dataAugmentationConfig.scaleX,
-                dataAugmentationConfig.scaleX
-            );
-            const scaleYRand = p5.random(
-                dataAugmentationConfig.scaleY,
-                dataAugmentationConfig.scaleY
-            );
-            const scaleX = scaleXRand * flipX * 0;
-            const scaleY = scaleYRand * flipY * 0;
+
+            //scale
+            let scaleXRand = 0;
+            let scaleYRand = 0;
+            if (dataAugmentationConfig.scale) {
+                scaleXRand = p5.random(dataAugmentationConfig.scale, -dataAugmentationConfig.scale);
+                scaleYRand = p5.random(dataAugmentationConfig.scale, -dataAugmentationConfig.scale);
+            }
+
+            const scaleX = scaleXRand * flipX;
+            const scaleY = scaleYRand * flipY;
             p5.scale(1 * flipX + scaleX, 1 * flipY + scaleY);
             p5.image(img, 0, 0);
         }
     };
 
+    const formItemLayout = {
+        labelCol: { span: 7 },
+        wrapperCol: { span: 14 }
+    };
+
     return (
-        <Space direction="vertical">
+        <Space direction="vertical" className={styles.dataAugConfig}>
             <Form
+                {...formItemLayout}
+                layout="horizontal"
                 initialValues={dataAugmentationConfig}
-                labelCol={{
-                    sm: { span: 7 }
-                }}
-                wrapperCol={{
-                    sm: { span: 10 }
-                }}
                 onValuesChange={dataAugmentationFormHandler}>
                 <Form.Item name="isActive" label="Data augmentation" valuePropName="checked">
-                    <Switch />
+                    <Switch disabled={dataset.length === 0} />
                 </Form.Item>
                 {dataAugmentationConfig.isActive ? (
                     <>
@@ -132,10 +146,7 @@ const DataAugConfig = ({
                         <Form.Item name="translationY" label="Vertical translation">
                             <InputNumber min={-1} max={1} step="0.01" />
                         </Form.Item>
-                        <Form.Item name="rotateLeft" label="Left rotation">
-                            <InputNumber min={-1} max={1} step="0.01" />
-                        </Form.Item>
-                        <Form.Item name="rotateRight" label="Right rotation">
+                        <Form.Item name="rotation" label="Rotation">
                             <InputNumber min={-1} max={1} step="0.01" />
                         </Form.Item>
                         <Form.Item name="flipX" label="Horizontal flip" valuePropName="checked">
@@ -150,10 +161,27 @@ const DataAugConfig = ({
                     </>
                 ) : null}
             </Form>
-            <Typography>
-                <Typography.Title level={4}>Display Image</Typography.Title>
-            </Typography>
-            <Sketch setup={setup} draw={draw} />
+            {dataAugmentationConfig.isActive ? <Divider /> : null}
+            {dataAugmentationConfig.isActive ? (
+                <Space align="center" direction="vertical" className={styles.displaySection}>
+                    <Typography>
+                        <Space align="center" direction="vertical">
+                            <Typography.Title level={4}>Display Image</Typography.Title>
+                            <Typography.Paragraph>
+                                Below is the display of your augmented image. Click the
+                                &quot;Generate Image&quot; button to see another random image from
+                                your dataset.
+                            </Typography.Paragraph>
+                        </Space>
+                    </Typography>
+                    <Sketch setup={setup} draw={draw} />
+                    <Button
+                        onClick={() => setClickedSeed(parseInt(Math.random() * 100000))}
+                        icon={<ReloadOutlined />}>
+                        Generate Image
+                    </Button>
+                </Space>
+            ) : null}
         </Space>
     );
 };

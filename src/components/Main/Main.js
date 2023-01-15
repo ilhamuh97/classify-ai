@@ -28,12 +28,10 @@ const Main = () => {
         noise: 0.0,
         translationX: 0.0,
         translationY: 0.0,
-        rotateLeft: 0.0,
-        rotateRight: 0.0,
+        rotation: 0.0,
         flipX: false,
         flipY: false,
-        scaleX: 0.0,
-        scaleY: 0.0
+        scale: 0.0
     });
     const [classConfig, setClassConfig] = useState([
         {
@@ -92,6 +90,7 @@ const Main = () => {
                         setGraphModel={setGraphModel}
                         paramConfig={paramConfig}
                         classConfig={classConfig}
+                        dataAugmentationConfig={dataAugmentationConfig}
                     />
                 );
             case 3:

@@ -16,7 +16,6 @@ const SettingField = ({
     };
 
     const dataAugmentationFormHandler = (value, allValues) => {
-        console.log(allValues);
         setDataAugmentationConfig(allValues);
     };
 

@@ -65,11 +65,11 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
             webcamRef.current.video.readyState === 4
         ) {
             const video = webcamRef.current.video;
-
             const ctx = canvasRef.current.getContext('2d');
-            ctx.drawImage(video, 0, 0, 265, 265);
-            const imageData = ctx.getImageData(0, 0, 265, 265);
+
             const id = setInterval(() => {
+                ctx.drawImage(video, 0, 0, 265, 265);
+                const imageData = ctx.getImageData(0, 0, 265, 265);
                 capture(imageData);
             }, 100);
             intervalRef.current = id;
