@@ -23,6 +23,18 @@ const Main = () => {
         epochs: 10,
         batchSize: 4
     });
+    const [dataAugmentationConfig, setDataAugmentationConfig] = useState({
+        isActive: false,
+        noise: 0.0,
+        translationX: 0.0,
+        translationY: 0.0,
+        rotateLeft: 0.0,
+        rotateRight: 0.0,
+        flipX: false,
+        flipY: false,
+        scaleX: 0.0,
+        scaleY: 0.0
+    });
     const [classConfig, setClassConfig] = useState([
         {
             key: 0,
@@ -64,7 +76,10 @@ const Main = () => {
                         setGraphModel={setGraphModel}
                         classesLength={classConfig.length}
                         paramConfig={paramConfig}
+                        dataAugmentationConfig={dataAugmentationConfig}
+                        setDataAugmentationConfig={setDataAugmentationConfig}
                         setParamConfig={setParamConfig}
+                        dataset={dataset}
                     />
                 );
             case 2:
