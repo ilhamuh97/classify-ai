@@ -88,11 +88,14 @@ const TestModel = ({ model, graphModel, classConfig }) => {
             <Space size="small" direction="vertical" className={styles.layout}>
                 <SectionHeader
                     title="Test the Model"
-                    subTitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin aliquet
-                luctus aliquam. Phasellus eget lacinia mauris. Aliquam varius malesuada diam
-                sit amet efficitur."
+                    subTitle="In this section you are able to test your trained model by providing an image through your webcam. Just click the button and your model will classify the image and show the result."
                 />
                 <div className={styles.displayWrapper}>
+                    <Typography>
+                        <Title className={styles.predictedClass} level={5}>
+                            Camera
+                        </Title>
+                    </Typography>
                     <DisplayImage
                         isCameraOn={isCameraOn}
                         setIsCameraOn={setIsCameraOn}

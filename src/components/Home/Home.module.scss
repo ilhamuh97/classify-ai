@@ -7,6 +7,9 @@
     align-items: center;
     header{
         background-color: unset;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         .logo{
             margin: 1rem;
             width: 60px;
@@ -27,6 +30,10 @@
             color: #002766;
             max-width: 1024px;
         }
+    }
+    footer{
+        background-color: unset;
+        color: #858585;
     }
 }
 

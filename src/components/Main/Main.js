@@ -4,6 +4,7 @@ import SetupParameters from '../Sections//SetupParameters/SetupParameters';
 import Train from '../Sections//Train/Train';
 import TestModel from '../Sections//TestModel/TestModel';
 import SideNav from './SideNav/SideNav';
+import Logo from '../../assets/logo/classify.svg';
 import { Layout, Button } from 'antd';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import styles from './Main.module.scss';
@@ -17,9 +18,12 @@ const Main = () => {
     const [graphModel, setGraphModel] = useState(null);
     const [model, setModel] = useState(null);
     const [paramConfig, setParamConfig] = useState({
-        model: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_100_224/feature_vector/5/default/1',
+        model: JSON.stringify({
+            inputShape: 1024,
+            URL: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_100_224/feature_vector/5/default/1'
+        }),
         optimizer: 'adam',
-        learningRate: '0.001',
+        learningRate: 0.001,
         epochs: 10,
         batchSize: 4
     });
@@ -127,6 +131,11 @@ const Main = () => {
                 currKey={key}
             />
             <Layout className={`${styles.siteLayout} ${collapsed ? styles.big : styles.small}`}>
+                <Layout.Header>
+                    <div className={styles.logo}>
+                        <img src={Logo} />
+                    </div>
+                </Layout.Header>
                 {!collapsed ? (
                     <div className={styles.overlay} onClick={() => setCollapsed(true)} />
                 ) : null}
@@ -134,6 +143,7 @@ const Main = () => {
                 <Content style={{ margin: '32px 0', overflow: 'initial' }}>
                     {ContentElem(key)}
                 </Content>
+                <Layout.Footer>© Copyright {new Date().getFullYear()} Ilhamuh97</Layout.Footer>
             </Layout>
         </Layout>
     );

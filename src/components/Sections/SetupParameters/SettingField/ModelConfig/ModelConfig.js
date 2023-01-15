@@ -6,23 +6,57 @@ const ModelConfig = ({ paramConfig, modelFormHandler }) => {
         <Form
             initialValues={paramConfig}
             labelCol={{
-                sm: { span: 7 }
+                sm: { span: 8 }
             }}
             wrapperCol={{
                 sm: { span: 10 }
             }}
             onValuesChange={modelFormHandler}>
-            <Form.Item name="model" label="Model Version">
+            <Form.Item name="model" label="Model for features vector">
                 <Select
                     placeholder="Please select the Model"
                     options={[
                         {
-                            value: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_100_224/feature_vector/5/default/1',
-                            label: 'mobilenet v3 small'
+                            value: JSON.stringify({
+                                inputShape: 1024,
+                                URL: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_100_224/feature_vector/5/default/1'
+                            }),
+                            label: 'mobilenet small 100 225'
                         },
                         {
-                            value: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v2_130_224/feature_vector/3/default/1',
-                            label: 'mobilenet v2 small'
+                            value: JSON.stringify({
+                                inputShape: 1024,
+                                URL: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_075_224/feature_vector/5/default/1'
+                            }),
+                            label: 'mobilenet small 075 224'
+                        },
+                        {
+                            value: JSON.stringify({
+                                inputShape: 1280,
+                                URL: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_large_075_224/feature_vector/5/default/1'
+                            }),
+                            label: 'mobilenet large 075 224'
+                        },
+                        {
+                            value: JSON.stringify({
+                                inputShape: 1280,
+                                URL: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_large_100_224/feature_vector/5/default/1'
+                            }),
+                            label: 'mobilenet large 100 224'
+                        },
+                        {
+                            value: JSON.stringify({
+                                inputShape: 2048,
+                                URL: 'https://tfhub.dev/google/tfjs-model/imagenet/inception_v3/feature_vector/3/default/1'
+                            }),
+                            label: 'inception'
+                        },
+                        {
+                            value: JSON.stringify({
+                                inputShape: 2048,
+                                URL: 'https://tfhub.dev/google/tfjs-model/inaturalist/inception_v3/feature_vector/3/default/1'
+                            }),
+                            label: 'inception (from iNaturalist dataset)'
                         }
                     ]}
                 />

@@ -120,15 +120,15 @@ const DataAugConfig = ({ dataAugmentationConfig, dataAugmentationFormHandler, da
         }
     };
 
-    const formItemLayout = {
-        labelCol: { span: 7 },
-        wrapperCol: { span: 14 }
-    };
-
     return (
         <Space direction="vertical" className={styles.dataAugConfig}>
             <Form
-                {...formItemLayout}
+                labelCol={{
+                    sm: { span: 8 }
+                }}
+                wrapperCol={{
+                    sm: { span: 10 }
+                }}
                 layout="horizontal"
                 initialValues={dataAugmentationConfig}
                 onValuesChange={dataAugmentationFormHandler}>
