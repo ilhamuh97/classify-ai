@@ -1,0 +1,9 @@
+.dataAugConfig{
+    width: 100%;
+    .displaySection{
+        width: 100%;
+        >div{
+            max-width: 500px;
+        }
+    }
+}

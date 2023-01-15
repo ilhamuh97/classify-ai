@@ -7,9 +7,11 @@ import SectionHeader from '../../common/SectionHeader/SectionHeader';
 import ProgressEpoch from './ProgressEpoch/ProgressEpoch';
 import { Button, Space } from 'antd';
 import styles from './Train.module.scss';
+import Canvas from './Canvas/Canvas';
 
 const Train = ({
     dataset,
+    dataAugmentationConfig,
     paramConfig,
     classConfig,
     graphModel,
@@ -17,6 +19,9 @@ const Train = ({
     model,
     setModel
 }) => {
+    const [isAugmenting, setIsAugmenting] = useState(false);
+    const [augmentingIsReady, setAugmentingIsReady] = useState(false);
+    const [augmentedDataset, setAugmentedDataset] = useState([]);
     const [isTraining, setIsTraining] = useState(false);
     const [isTrainingSucceed, setIsTrainingSucceed] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
@@ -36,13 +41,15 @@ const Train = ({
                 initialGraphModel();
             } else if (!modelIsReady) {
                 initialModel();
+            } else if (!augmentingIsReady && dataAugmentationConfig.isActive === true) {
+                setIsAugmenting(true);
             } else if (!dataIsReady) {
                 prepareData();
             } else {
                 trainAndPredict(keys, featureVectors, model);
             }
         }
-    }, [isTraining, graphModelIsReady, modelIsReady, dataIsReady]);
+    }, [isTraining, graphModelIsReady, modelIsReady, dataIsReady, augmentingIsReady]);
 
     useEffect(() => {
         if (!isTraining && isTrainingSucceed) {
@@ -89,19 +96,29 @@ const Train = ({
         currModel.summary();
         currModel.compile(modelConfig);
         setModel(currModel);
-        setProgressMessage('Preparing feature vectors...');
+        const message = dataAugmentationConfig.isActive
+            ? 'Preparing augmented images...'
+            : 'Preparing feature vectors';
+        setProgressMessage(message);
         setModelIsReady(true);
         console.log('Tensors in memory after model loaded: ' + tf.memory().numTensors);
     };
 
     const prepareData = () => {
         const imageFeatures = [];
-        const key = dataset.map((d) => {
+        const keys = [];
+        if (dataAugmentationConfig.isActive) {
+            augmentedDataset.forEach((d) => {
+                imageFeatures.push(calculateFeaturesOnCurrentFrame(d.data));
+                keys.push(d.key);
+            });
+        }
+        dataset.forEach((d) => {
             imageFeatures.push(calculateFeaturesOnCurrentFrame(d.data));
-            return d.key;
+            keys.push(d.key);
         });
         setFeactureVectors(imageFeatures);
-        setKeys(key);
+        setKeys(keys);
         setProgressMessage('Training model...');
         setDataIsReady(true);
     };
@@ -154,6 +171,7 @@ const Train = ({
         setGraphModelIsReady(false);
         setModelIsReady(false);
         setDataIsReady(false);
+        setAugmentingIsReady(false);
     }
 
     function shuffleCombo(array, array2) {
@@ -204,7 +222,18 @@ const Train = ({
                     title="Train and Evaluate"
                     subTitle="In this section, you can start training your model using the dataset and configuration you have set up. You can also view the training progress, evaluation metrics such as accuracy and loss, and other results in an easy-to-understand format."
                 />
-
+                {isTraining && dataAugmentationConfig.isActive && isAugmenting ? (
+                    <Canvas
+                        dataset={dataset}
+                        dataAugmentationConfig={dataAugmentationConfig}
+                        setAugmentedDataset={setAugmentedDataset}
+                        setAugmentingIsReady={setAugmentingIsReady}
+                        setProgressMessage={setProgressMessage}
+                        style={{
+                            display: 'none'
+                        }}
+                    />
+                ) : null}
                 <Button
                     onClick={() => trainClicked()}
                     disabled={dataset.length === 0 || isTraining}
