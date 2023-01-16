@@ -1,5 +1,5 @@
-.classesWrapper{
-    display:flex;
+.classesWrapper {
+    display: flex;
     gap: 1rem;
     flex-direction: row;
     max-width: 1024px;
@@ -9,12 +9,11 @@
     padding: 1rem;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
-    >div:first-child{
+
+    >div:first-child {
         margin-left: 345px;
     }
-    >div:last-child{
-        margin-right: 345px;
-    }
+
     /* ===== Scrollbar CSS ===== */
 
     /* Chrome, Edge, and Safari */
@@ -30,12 +29,14 @@
         background-color: #bae7ff;
         border-radius: 5px;
         border: 0px solid #ffffff;
-        &:hover{
-            background: #a2dfff;; 
+
+        &:hover {
+            background: #a2dfff;
+            ;
         }
     }
 
-    .addClass{
+    .addClass {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -55,7 +56,9 @@
         transition: all 0.3s ease;
         cursor: pointer;
         scroll-snap-align: center;
-        &:hover{
+        margin-right: 345px;
+
+        &:hover {
             border-color: #a7a7a7;
             color: #a7a7a7;
         }
