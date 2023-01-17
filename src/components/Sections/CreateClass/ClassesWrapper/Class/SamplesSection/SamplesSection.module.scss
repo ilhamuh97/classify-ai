@@ -1,5 +1,5 @@
-.samplesSection{
-    .samples{
+.samplesSection {
+    .samples {
         max-height: 200px;
         overflow-y: scroll;
         scrollbar-width: auto;
@@ -20,13 +20,17 @@
             background-color: #bae7ff;
             border-radius: 5px;
             border: 0px solid #ffffff;
-            &:hover{
-                background: #a2dfff;; 
+
+            &:hover {
+                background: #a2dfff;
+                ;
             }
         }
-        .imageWrapper{
+
+        .imageWrapper {
             position: relative;
-            .deleteImage{
+
+            .deleteImage {
                 display: none;
                 position: absolute;
                 top: 5px;
@@ -40,8 +44,9 @@
                 font-size: 7px;
                 cursor: pointer;
             }
+
             &:hover {
-                .deleteImage{
+                .deleteImage {
                     display: flex;
                     justify-content: center;
                     align-items: center;
@@ -49,7 +54,7 @@
             }
         }
 
-        img{
+        img {
             border-radius: 5px;
             padding: 2px;
             width: 100%;

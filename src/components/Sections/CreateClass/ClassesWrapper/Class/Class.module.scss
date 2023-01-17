@@ -1,4 +1,4 @@
-.class{
+.class {
     background-color: #fff;
     border-radius: 10px;
     padding: 1rem 1rem;
@@ -13,7 +13,8 @@
     -moz-transition: all 0.3s ease;
     transition: all 0.3s ease;
     scroll-snap-align: center;
-    &:hover{
+
+    &:hover {
         box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     }
 }

@@ -1,26 +1,31 @@
-.canvasWrapper{
+.canvasWrapper {
     padding: 1rem;
     background-color: #e6f7ff;
     border-radius: 10px;
     width: 100%;
-    .camera{
+
+    .camera {
         position: relative;
         display: flex;
         flex-direction: column;
         align-items: center;
         width: 100%;
         gap: 10px;
-        .turnOffButton{
+
+        .turnOffButton {
             position: absolute;
             right: 0;
             top: 0;
         }
-        canvas{
+
+        canvas {
             border-radius: 10px;
         }
+
         .displayImageField {
             color: #fff;
             position: relative;
+
             .flipButton {
                 font-size: 24px;
                 position: absolute;
