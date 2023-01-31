@@ -38,7 +38,7 @@ const Train = ({
                 initialGraphModel();
             } else if (state === 'SET_MODEL') {
                 initialModel();
-            } else if (state === 'SET_AUGMENTED_DATA' && dataAugmentationConfig.isActive === true) {
+            } else if (state === 'SET_AUGMENTED_DATA') {
                 setIsAugmenting(true);
             } else if (state === 'SET_DATA') {
                 prepareData();
@@ -117,7 +117,11 @@ const Train = ({
             ? 'Preparing augmented images...'
             : 'Preparing feature vectors';
         setProgressMessage(message);
-        setState('SET_AUGMENTED_DATA');
+        if (dataAugmentationConfig.isActive === true) {
+            setState('SET_AUGMENTED_DATA');
+        } else {
+            setState('SET_DATA');
+        }
         console.log('Tensors in memory after model loaded: ' + tf.memory().numTensors);
     };
 
