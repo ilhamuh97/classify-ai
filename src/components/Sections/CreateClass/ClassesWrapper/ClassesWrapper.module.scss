@@ -40,17 +40,17 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        border: 5px dashed #d9d9d9;
+        border: 5px dashed #d9d9d9ab;
         padding: 24px;
-        color: #d9d9d9;
+        color: #d9d9d9ab;
         font-size: 30px;
         max-width: 345px;
         min-width: 345px;
         height: -moz-fit-content;
-        max-height: 318px;
-        min-height: 318px;
+        max-height: 302.8px;
+        min-height: 302.8px;
         margin-bottom: 1rem;
-        border-radius: 5px;
+        border-radius: 3px;
         -webkit-transition: all 0.3s ease;
         -moz-transition: all 0.3s ease;
         transition: all 0.3s ease;
@@ -59,8 +59,8 @@
         margin-right: 345px;
 
         &:hover {
-            border-color: #a7a7a7;
-            color: #a7a7a7;
+            border-color: #d9d9d9;
+            color: #d9d9d9;
         }
     }
 }

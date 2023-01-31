@@ -1,11 +1,13 @@
-import { Typography } from 'antd';
 import React from 'react';
-Typography;
+import { Typography } from 'antd';
+import styles from './SectionHeader.module.scss';
 
 const SectionHeader = ({ title, subTitle }) => {
     return (
-        <Typography>
-            <Typography.Title level={2}>{title}</Typography.Title>
+        <Typography className={styles.sectionHeader}>
+            <Typography.Title className={styles.title} level={2}>
+                {title}
+            </Typography.Title>
             <Typography.Paragraph>{subTitle}</Typography.Paragraph>
         </Typography>
     );

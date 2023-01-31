@@ -20,7 +20,7 @@ const Train = ({
     setModel
 }) => {
     const [isAugmenting, setIsAugmenting] = useState(false);
-    const [augmentingIsReady, setAugmentingIsReady] = useState(false);
+    const [state, setState] = useState('');
     const [augmentedDataset, setAugmentedDataset] = useState([]);
     const [isTraining, setIsTraining] = useState(false);
     const [isTrainingSucceed, setIsTrainingSucceed] = useState(false);
@@ -29,27 +29,26 @@ const Train = ({
     const [models, setModels] = useState([]);
     const [reports, setReports] = useState([]);
     const [progressMessage, setProgressMessage] = useState('');
-    const [graphModelIsReady, setGraphModelIsReady] = useState(false);
-    const [modelIsReady, setModelIsReady] = useState(false);
-    const [dataIsReady, setDataIsReady] = useState(false);
     const [featureVectors, setFeactureVectors] = useState(null);
     const [keys, setKeys] = useState(null);
 
     useEffect(() => {
         if (isTraining) {
-            if (!graphModelIsReady) {
+            if (state === 'SET_GRAPH_MODEL') {
                 initialGraphModel();
-            } else if (!modelIsReady) {
+            } else if (state === 'SET_MODEL') {
                 initialModel();
-            } else if (!augmentingIsReady && dataAugmentationConfig.isActive === true) {
+            } else if (state === 'SET_AUGMENTED_DATA' && dataAugmentationConfig.isActive === true) {
                 setIsAugmenting(true);
-            } else if (!dataIsReady) {
+            } else if (state === 'SET_DATA') {
                 prepareData();
-            } else {
+            } else if (state === 'TRAIN_AND_PREDICT') {
                 trainAndPredict(keys, featureVectors, model);
+            } else {
+                resetStates();
             }
         }
-    }, [isTraining, graphModelIsReady, modelIsReady, dataIsReady, augmentingIsReady]);
+    }, [isTraining, state]);
 
     useEffect(() => {
         if (!isTraining && isTrainingSucceed) {
@@ -74,7 +73,7 @@ const Train = ({
             .then((result) => {
                 setGraphModel(result);
                 setProgressMessage('Preparing model...');
-                setGraphModelIsReady(true);
+                setState('SET_MODEL');
                 console.log('Tensors in memory after graph loaded: ' + tf.memory().numTensors);
             })
             .catch((e) => {
@@ -118,7 +117,7 @@ const Train = ({
             ? 'Preparing augmented images...'
             : 'Preparing feature vectors';
         setProgressMessage(message);
-        setModelIsReady(true);
+        setState('SET_AUGMENTED_DATA');
         console.log('Tensors in memory after model loaded: ' + tf.memory().numTensors);
     };
 
@@ -138,7 +137,7 @@ const Train = ({
         setFeactureVectors(imageFeatures);
         setKeys(keys);
         setProgressMessage('Training model...');
-        setDataIsReady(true);
+        setState('TRAIN_AND_PREDICT');
     };
 
     const trainClicked = () => {
@@ -149,7 +148,9 @@ const Train = ({
         setFeactureVectors(null);
         setGraphModel(null);
         setModel(null);
+        setState('SET_GRAPH_MODEL');
         setProgressMessage('Setting up graph model...');
+        setAugmentedDataset([]);
     };
 
     const calculateFeaturesOnCurrentFrame = (img) => {
@@ -180,17 +181,18 @@ const Train = ({
         oneHotOutputs.dispose();
         inputsAsTensor.dispose();
 
-        // setup finish training parameter
         setModels((current) => [...current, currModel]);
+        setState('DONE');
+    }
+
+    const resetStates = () => {
+        // setup finish training parameter
         setProgressMessage('Training is completed');
         setShowAlert(true);
         setIsTrainingSucceed(true);
         setIsTraining(false);
-        setGraphModelIsReady(false);
-        setModelIsReady(false);
-        setDataIsReady(false);
-        setAugmentingIsReady(false);
-    }
+        setState('');
+    };
 
     function shuffleCombo(array, array2) {
         if (array.length !== array2.length) {
@@ -245,8 +247,8 @@ const Train = ({
                         dataset={dataset}
                         dataAugmentationConfig={dataAugmentationConfig}
                         setAugmentedDataset={setAugmentedDataset}
-                        setAugmentingIsReady={setAugmentingIsReady}
                         setProgressMessage={setProgressMessage}
+                        setState={setState}
                         style={{
                             display: 'none'
                         }}

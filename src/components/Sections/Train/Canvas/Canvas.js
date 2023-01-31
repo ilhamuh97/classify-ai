@@ -4,9 +4,9 @@ import Sketch from 'react-p5';
 const Canvas = ({
     dataAugmentationConfig,
     dataset,
-    setAugmentingIsReady,
     setAugmentedDataset,
-    setProgressMessage
+    setProgressMessage,
+    setState
 }) => {
     useEffect(() => {
         setProgressMessage('Preparing feature vectors...');
@@ -49,6 +49,7 @@ const Canvas = ({
                 }
             }
             img.updatePixels();
+
             // Data augmentation
 
             // image translation
@@ -108,7 +109,7 @@ const Canvas = ({
             });
         });
         setAugmentedDataset(augmentedDataset);
-        setAugmentingIsReady(true);
+        setState('SET_DATA');
         p5.noLoop();
     };
     return (
