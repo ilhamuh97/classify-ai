@@ -22,8 +22,7 @@ const DataAugConfig = ({ dataAugmentationConfig, dataAugmentationFormHandler, da
         let randomImgIndex = 0;
         randomImgIndex = parseInt(p5.random(0, dataset.length - 1));
         // load image
-        let img;
-        img = p5.createImage(
+        const img = p5.createImage(
             dataset[randomImgIndex].data.width,
             dataset[randomImgIndex].data.height
         );

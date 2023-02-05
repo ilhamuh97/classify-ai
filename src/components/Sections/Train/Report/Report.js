@@ -10,57 +10,94 @@ import {
     Tooltip,
     Legend
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
 import styles from './Report.module.scss';
+import Chart from 'react-apexcharts';
 
 const Report = ({ reports }) => {
     const { Panel } = Collapse;
     ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
-
-    const options = {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top'
-            },
-            title: {
-                display: true,
-                text: `Model: ${reports[reports.length - 1].modelIdx}`
-            }
-        }
-    };
-    const labels = Array.from(Array(reports[reports.length - 1].logs.length).keys());
     const lossDatasets = reports[reports.length - 1].logs.map((log) => {
-        return log.lossAndAccuracy.loss;
+        return parseFloat(log.lossAndAccuracy.loss.toFixed(2));
     });
     const accDatasets = reports[reports.length - 1].logs.map((log) => {
-        return log.lossAndAccuracy.acc;
+        return parseFloat(log.lossAndAccuracy.acc.toFixed(2));
     });
-    const data = {
-        labels,
-        datasets: [
+
+    const valLossDatasets = reports[reports.length - 1].logs.map((log) => {
+        return parseFloat(log.lossAndAccuracy.val_loss.toFixed(2));
+    });
+    const valAccDatasets = reports[reports.length - 1].logs.map((log) => {
+        return parseFloat(log.lossAndAccuracy.val_acc.toFixed(2));
+    });
+
+    const lineChartOption = (title) => {
+        return {
+            colors: ['rgb(53, 162, 235)', 'rgb(255, 99, 132)'],
+            chart: {
+                height: 350,
+                type: 'line',
+                zoom: {
+                    enabled: false
+                }
+            },
+            yaxis: {
+                max: 1,
+                min: 0
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'straight'
+            },
+            title: {
+                text: title,
+                align: 'left'
+            },
+            grid: {
+                row: {
+                    colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+                    opacity: 0.5
+                }
+            }
+        };
+    };
+
+    const lineChartData = (label1, label2, data1, data2) => {
+        return [
             {
-                label: 'Loss',
-                data: lossDatasets,
-                borderColor: 'rgb(255, 99, 132)',
-                backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                yAxisID: 'y'
+                name: label1,
+                data: data1
             },
             {
-                label: 'Accuracy',
-                data: accDatasets,
-                borderColor: 'rgb(53, 162, 235)',
-                backgroundColor: 'rgba(53, 162, 235, 0.5)',
-                yAxisID: 'y1'
+                name: label2,
+                data: data2
             }
-        ]
+        ];
     };
 
     return (
         <div className={styles.report}>
             <Collapse defaultActiveKey={['0']}>
                 <Panel header="See the report" key="1">
-                    <Line options={options} data={data} />
+                    <Chart
+                        options={lineChartOption('Accuracy')}
+                        series={lineChartData(
+                            'Training',
+                            'Validation',
+                            accDatasets,
+                            valAccDatasets
+                        )}
+                    />
+                    <Chart
+                        options={lineChartOption('Validation')}
+                        series={lineChartData(
+                            'Training',
+                            'Validation',
+                            lossDatasets,
+                            valLossDatasets
+                        )}
+                    />
                 </Panel>
             </Collapse>
         </div>

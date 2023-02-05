@@ -68,7 +68,6 @@ const Train = ({
             // Warm up the model by passing zeros through it once.
             return mobilenet;
         };
-
         loadMobileNetFeatureModel()
             .then((result) => {
                 setGraphModel(result);
@@ -171,23 +170,57 @@ const Train = ({
 
     async function trainAndPredict(trainingDataOutputs, trainingDataInputs, currModel) {
         shuffleCombo(trainingDataInputs, trainingDataOutputs);
-        let outputsAsTensor = tf.tensor1d(trainingDataOutputs, 'int32');
-        let oneHotOutputs = tf.oneHot(outputsAsTensor, classConfig.length);
-        let inputsAsTensor = tf.stack(trainingDataInputs);
-        await currModel.fit(inputsAsTensor, oneHotOutputs, {
+        const { training, validation } = splitDataset(trainingDataInputs, trainingDataOutputs, 0.8);
+        const { trainingInputDataset, trainingOutputDataset } = training;
+        const { validationInputDataset, validationOutputDataset } = validation;
+
+        //console.log(training, validation);
+
+        // Training
+        let outputsAsTensorTraining = tf.tensor1d(trainingOutputDataset, 'int32');
+        let oneHotOutputsTraining = tf.oneHot(outputsAsTensorTraining, classConfig.length);
+        let inputsAsTensorTraining = tf.stack(trainingInputDataset);
+
+        // Validation
+        let outputsAsTensorValidation = tf.tensor1d(validationOutputDataset, 'int32');
+        let oneHotOutputsValidation = tf.oneHot(outputsAsTensorValidation, classConfig.length);
+        let inputsAsTensorValidation = tf.stack(validationInputDataset);
+
+        // Train
+        await currModel.fit(inputsAsTensorTraining, oneHotOutputsTraining, {
             shuffle: true,
+            validationData: [inputsAsTensorValidation, oneHotOutputsValidation],
             batchSize: paramConfig.batchSize,
             epochs: paramConfig.epochs,
-            callbacks: { onEpochEnd: logProgress }
+            callbacks: { onEpochEnd: logProgress },
+            initialEpoch: 0
         });
 
-        outputsAsTensor.dispose();
-        oneHotOutputs.dispose();
-        inputsAsTensor.dispose();
+        outputsAsTensorTraining.dispose();
+        oneHotOutputsTraining.dispose();
+        inputsAsTensorTraining.dispose();
 
         setModels((current) => [...current, currModel]);
         setState('DONE');
     }
+
+    const splitDataset = (input, output, ratio) => {
+        const splitter = Math.ceil(input.length * ratio);
+        const trainingInputDataset = input.slice(0, splitter);
+        const validationInputDataset = input.slice(splitter);
+        const trainingOutputDataset = output.slice(0, splitter);
+        const validationOutputDataset = output.slice(splitter);
+        return {
+            training: {
+                trainingInputDataset,
+                trainingOutputDataset
+            },
+            validation: {
+                validationInputDataset,
+                validationOutputDataset
+            }
+        };
+    };
 
     const resetStates = () => {
         // setup finish training parameter
@@ -196,6 +229,7 @@ const Train = ({
         setIsTrainingSucceed(true);
         setIsTraining(false);
         setState('');
+        setIsAugmenting(false);
     };
 
     function shuffleCombo(array, array2) {
@@ -230,6 +264,7 @@ const Train = ({
      * Log training progress.
      **/
     const logProgress = (epoch, logs) => {
+        //console.log(logs);
         setLogs((current) => [
             ...current,
             {
@@ -249,6 +284,7 @@ const Train = ({
                 {isTraining && dataAugmentationConfig.isActive && isAugmenting ? (
                     <Canvas
                         dataset={dataset}
+                        augmentedDataset={augmentedDataset}
                         dataAugmentationConfig={dataAugmentationConfig}
                         setAugmentedDataset={setAugmentedDataset}
                         setProgressMessage={setProgressMessage}
