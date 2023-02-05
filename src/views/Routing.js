@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from '../components/Home/Home';
-import Main from '../components/Main/Main';
+import Home from '../pages/Home/Home';
+import Main from '../pages/Main/Main';
 import ScrollToTop from '../components/common/ScrollToTop/ScrollToTop';
 
 const Routing = () => {

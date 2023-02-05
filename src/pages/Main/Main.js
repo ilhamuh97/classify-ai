@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import CreateClass from '../Sections/CreateClass/CreateClass';
-import SetupParameters from '../Sections//SetupParameters/SetupParameters';
-import Train from '../Sections//Train/Train';
-import TestModel from '../Sections//TestModel/TestModel';
+import CreateClass from '../../components/Sections/CreateClass/CreateClass';
+import SetupParameters from '../../components/Sections/SetupParameters/SetupParameters';
+import Train from '../../components/Sections/Train/Train';
+import TestModel from '../../components/Sections/TestModel/TestModel';
 import SideNav from './SideNav/SideNav';
 import Logo from '../../assets/logo/classify.svg';
 import { Layout, Button } from 'antd';
