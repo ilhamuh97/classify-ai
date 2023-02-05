@@ -71,7 +71,7 @@ const CanvasWrapper = ({ turnOffCamera, webcamRef, recordButtonOnClick, isRecord
                         onClick={recordButtonOnClick}
                         type={`${isRecord ? 'danger' : 'primary'}`}
                         icon={isRecord ? <PauseCircleOutlined /> : <CameraOutlined />}>
-                        {isRecord ? 'Stop the record' : 'Click to Record'}
+                        {isRecord ? 'Stop the record' : 'Click to record'}
                     </Button>
                 ) : (
                     <Alert

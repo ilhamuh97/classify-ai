@@ -3,7 +3,7 @@ import SamplesSection from './SamplesSection/SamplesSection';
 import CanvasWrapper from './CanvasWrapper/CanvasWrapper';
 import ClassTitle from './ClassTitle/ClassTitle';
 import { Typography, Divider, Button, Upload, Space, message } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { UploadOutlined, CameraOutlined } from '@ant-design/icons';
 import styles from './Class.module.scss';
 
 const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => {
@@ -116,7 +116,9 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
             />
             <Divider />
             <Typography>
-                <Title level={4}>Add your samples here</Title>
+                <Title className={styles.miniTitle} level={5}>
+                    Add your samples here
+                </Title>
             </Typography>
             {config.cameraState ? (
                 <CanvasWrapper
@@ -128,12 +130,12 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
                 />
             ) : (
                 <Space>
-                    <Button onClick={turnOnCamera} type="primary">
-                        Turn On Camera
+                    <Button onClick={turnOnCamera} type="primary" icon={<CameraOutlined />}>
+                        Use camera
                     </Button>
                     <Upload directory disabled>
                         <Button icon={<UploadOutlined />} disabled>
-                            Upload Directory
+                            Upload
                         </Button>
                     </Upload>
                 </Space>

@@ -14,7 +14,7 @@ const ClassTitle = ({ classTitle, setEditableTitle, removeClass, configKey }) =>
                             tooltip: 'Click to edit the class name',
                             onChange: setEditableTitle
                         }}
-                        level={3}>
+                        level={4}>
                         {classTitle}
                     </Typography.Title>
                 </Typography>

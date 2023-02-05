@@ -11,7 +11,7 @@ const SamplesSection = ({ configKey, dataset, removeAllDataset, deleteImage }) =
             <Row justify="space-between" align="middle">
                 <Col>
                     <Typography>
-                        <Typography.Title level={4}>Your samples</Typography.Title>
+                        <Typography.Title level={5}>Your samples</Typography.Title>
                     </Typography>
                 </Col>
                 {filteredDataset.length !== 0 ? (

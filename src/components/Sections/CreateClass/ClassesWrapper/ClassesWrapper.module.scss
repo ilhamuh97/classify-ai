@@ -11,7 +11,7 @@
     -webkit-overflow-scrolling: touch;
 
     >div:first-child {
-        margin-left: 345px;
+        margin-left: 340px;
     }
 
     /* ===== Scrollbar CSS ===== */
@@ -44,8 +44,8 @@
         padding: 24px;
         color: #d9d9d9ab;
         font-size: 30px;
-        max-width: 345px;
-        min-width: 345px;
+        max-width: 340px;
+        min-width: 340px;
         height: -moz-fit-content;
         max-height: 302.8px;
         min-height: 302.8px;
@@ -56,7 +56,7 @@
         transition: all 0.3s ease;
         cursor: pointer;
         scroll-snap-align: center;
-        margin-right: 345px;
+        margin-right: 340px;
 
         &:hover {
             border-color: #d9d9d9;
