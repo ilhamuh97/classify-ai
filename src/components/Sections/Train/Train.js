@@ -16,7 +16,6 @@ const Train = ({
     classConfig,
     graphModel,
     setGraphModel,
-    model,
     setModel
 }) => {
     const [isAugmenting, setIsAugmenting] = useState(false);
@@ -27,6 +26,7 @@ const Train = ({
     const [showAlert, setShowAlert] = useState(false);
     const [logs, setLogs] = useState([]);
     const [models, setModels] = useState([]);
+    const [baseModel, setBaseModel] = useState();
     const [reports, setReports] = useState([]);
     const [progressMessage, setProgressMessage] = useState('');
     const [featureVectors, setFeactureVectors] = useState(null);
@@ -49,7 +49,7 @@ const Train = ({
             } else if (state === 'SET_DATA') {
                 prepareData();
             } else if (state === 'TRAIN_AND_PREDICT') {
-                trainAndPredict(keys, featureVectors, model);
+                trainAndPredict(keys, featureVectors, baseModel);
             } else {
                 resetStates();
             }
@@ -117,7 +117,7 @@ const Train = ({
         currModel.add(tf.layers.dense({ units: classConfig.length, activation: 'softmax' }));
         currModel.summary();
         currModel.compile(modelConfig);
-        setModel(currModel);
+        setBaseModel(currModel);
         const message = dataAugmentationConfig.isActive
             ? 'Preparing augmented images...'
             : 'Preparing feature vectors';
@@ -207,6 +207,7 @@ const Train = ({
         inputsAsTensorTraining.dispose();
 
         setModels((current) => [...current, currModel]);
+        setModel(currModel);
         setState('DONE');
     }
 
