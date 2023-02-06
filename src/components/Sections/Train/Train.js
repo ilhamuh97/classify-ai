@@ -5,7 +5,7 @@ import SuccessAlert from './Alerts/SuccessAlert/SuccessAlert';
 import FailedAlert from './Alerts/FailedAlert/FailedAlert';
 import SectionHeader from '../../common/SectionHeader/SectionHeader';
 import ProgressEpoch from './ProgressEpoch/ProgressEpoch';
-import { Button, Space } from 'antd';
+import { Button, Space, Alert } from 'antd';
 import styles from './Train.module.scss';
 import Canvas from './Canvas/Canvas';
 
@@ -31,6 +31,12 @@ const Train = ({
     const [progressMessage, setProgressMessage] = useState('');
     const [featureVectors, setFeactureVectors] = useState(null);
     const [keys, setKeys] = useState(null);
+    const [infoMessage, setInfoMessage] = useState('');
+    const [isTrainDisable, setIsTrainDisable] = useState(false);
+
+    useEffect(() => {
+        trainIsDisable();
+    }, []);
 
     useEffect(() => {
         if (isTraining) {
@@ -274,6 +280,40 @@ const Train = ({
         ]);
     };
 
+    const trainIsDisable = () => {
+        let disable = false;
+        if (dataset.length === 0) {
+            setInfoMessage('Your dataset could not be empty, please add dataset.');
+            disable = true;
+            setIsTrainDisable(disable);
+        } else {
+            if (classConfig.length < 2) {
+                disable = true;
+                setInfoMessage('Please add at least 2 classes.');
+                setIsTrainDisable(disable);
+            } else {
+                classConfig.forEach((classItem) => {
+                    const found = dataset.find((d) => d.key === classItem.key);
+                    if (!found) {
+                        disable = true;
+                        setInfoMessage(
+                            `Your class "${classItem.label}" requires dataset. Please add at least 1 image for the class`
+                        );
+                        setIsTrainDisable(disable);
+                    }
+                });
+            }
+            if (!disable) {
+                const unique = [...new Set(dataset.map((d) => d.key))];
+                if (unique < 2) {
+                    disable = true;
+                    setInfoMessage('Please add at least 2 classes without empty dataset');
+                    setIsTrainDisable(disable);
+                }
+            }
+        }
+    };
+
     return (
         <div className={styles.train}>
             <Space size="small" direction="vertical" className={styles.layout}>
@@ -296,10 +336,11 @@ const Train = ({
                 ) : null}
                 <Button
                     onClick={() => trainClicked()}
-                    disabled={dataset.length === 0 || isTraining}
+                    disabled={isTrainDisable || isTraining}
                     loading={isTraining}>
                     Start Training
                 </Button>
+                {isTrainDisable ? <Alert message={infoMessage} type="info" /> : null}
                 <span>{progressMessage}</span>
                 {isTraining && logs.length > 0 && logs ? (
                     <ProgressEpoch logs={logs} paramConfig={paramConfig} />

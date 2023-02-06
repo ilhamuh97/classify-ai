@@ -1,11 +1,20 @@
 import React, { useState } from 'react';
 import Sketch from 'react-p5';
-import { Form, Switch, InputNumber, Typography, Space, Button, Divider } from 'antd';
+import { Form, Switch, Typography, Space, Button, Divider, Slider } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import styles from './DataAugConfig.module.scss';
 
 const DataAugConfig = ({ dataAugmentationConfig, dataAugmentationFormHandler, dataset }) => {
     const [clickedSeed, setClickedSeed] = useState(parseInt(Math.random() * 100000));
+    const marks = {
+        0: '0.0',
+        0.2: '0.2',
+        0.4: '0.4',
+        0.6: '0.6',
+        0.8: '0.8',
+        1.0: '1.0'
+    };
+
     const setup = (p5, canvasParentRef) => {
         // use parent to render the canvas in this ref
         // (without that p5 will render the canvas outside of your component)
@@ -137,16 +146,16 @@ const DataAugConfig = ({ dataAugmentationConfig, dataAugmentationFormHandler, da
                 {dataAugmentationConfig.isActive ? (
                     <>
                         <Form.Item name="noise" label="Noise">
-                            <InputNumber min={-1} max={1} step="0.01" />
+                            <Slider min={0} max={1} step={0.01} marks={marks} />
                         </Form.Item>
                         <Form.Item name="translationX" label="Horizontal translation">
-                            <InputNumber min={-1} max={1} step="0.01" />
+                            <Slider min={0} max={1} step={0.01} marks={marks} />
                         </Form.Item>
                         <Form.Item name="translationY" label="Vertical translation">
-                            <InputNumber min={-1} max={1} step="0.01" />
+                            <Slider min={0} max={1} step={0.01} marks={marks} />
                         </Form.Item>
                         <Form.Item name="rotation" label="Rotation">
-                            <InputNumber min={-1} max={1} step="0.01" />
+                            <Slider min={0} max={1} step={0.01} marks={marks} />
                         </Form.Item>
                         <Form.Item name="flipX" label="Horizontal flip" valuePropName="checked">
                             <Switch />
@@ -155,7 +164,7 @@ const DataAugConfig = ({ dataAugmentationConfig, dataAugmentationFormHandler, da
                             <Switch />
                         </Form.Item>
                         <Form.Item name="scale" label="Scale">
-                            <InputNumber min={-1} max={1} step="0.01" />
+                            <Slider min={0} max={1} step={0.01} marks={marks} />
                         </Form.Item>
                     </>
                 ) : null}

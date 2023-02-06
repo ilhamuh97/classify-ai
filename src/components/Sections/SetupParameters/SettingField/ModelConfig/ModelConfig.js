@@ -19,16 +19,16 @@ const ModelConfig = ({ paramConfig, modelFormHandler }) => {
                         {
                             value: JSON.stringify({
                                 inputShape: 1024,
-                                URL: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_100_224/feature_vector/5/default/1'
+                                URL: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_075_224/feature_vector/5/default/1'
                             }),
-                            label: 'mobilenet small 100 225'
+                            label: 'mobilenet small 075 224'
                         },
                         {
                             value: JSON.stringify({
                                 inputShape: 1024,
-                                URL: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_075_224/feature_vector/5/default/1'
+                                URL: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_100_224/feature_vector/5/default/1'
                             }),
-                            label: 'mobilenet small 075 224'
+                            label: 'mobilenet small 100 224'
                         },
                         {
                             value: JSON.stringify({

@@ -1,21 +1,10 @@
 import React from 'react';
-import { Collapse } from 'antd';
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend
-} from 'chart.js';
+import { Collapse, Divider } from 'antd';
 import styles from './Report.module.scss';
 import Chart from 'react-apexcharts';
 
 const Report = ({ reports }) => {
     const { Panel } = Collapse;
-    ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
     const lossDatasets = reports[reports.length - 1].logs.map((log) => {
         return parseFloat(log.lossAndAccuracy.loss.toFixed(2));
     });
@@ -30,7 +19,7 @@ const Report = ({ reports }) => {
         return parseFloat(log.lossAndAccuracy.val_acc.toFixed(2));
     });
 
-    const lineChartOption = (title) => {
+    const lineChartOption = (title, yAxis) => {
         return {
             colors: ['rgb(53, 162, 235)', 'rgb(255, 99, 132)'],
             chart: {
@@ -40,10 +29,7 @@ const Report = ({ reports }) => {
                     enabled: false
                 }
             },
-            yaxis: {
-                max: 1,
-                min: 0
-            },
+            yaxis: yAxis,
             dataLabels: {
                 enabled: false
             },
@@ -81,7 +67,9 @@ const Report = ({ reports }) => {
             <Collapse defaultActiveKey={['0']}>
                 <Panel header="See the report" key="1">
                     <Chart
-                        options={lineChartOption('Accuracy')}
+                        options={lineChartOption('Accuracy', {
+                            max: 1
+                        })}
                         series={lineChartData(
                             'Training',
                             'Validation',
@@ -89,8 +77,11 @@ const Report = ({ reports }) => {
                             valAccDatasets
                         )}
                     />
+                    <Divider />
                     <Chart
-                        options={lineChartOption('Validation')}
+                        options={lineChartOption('Loss', {
+                            min: 0
+                        })}
                         series={lineChartData(
                             'Training',
                             'Validation',
