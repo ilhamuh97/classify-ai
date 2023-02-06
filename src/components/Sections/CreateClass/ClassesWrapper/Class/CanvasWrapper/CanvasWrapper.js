@@ -51,7 +51,7 @@ const CanvasWrapper = ({ turnOffCamera, webcamRef, recordButtonOnClick, isRecord
                             width={265}
                             ref={webcamRef}
                             screenshotFormat="image/jpeg"
-                            mirrored={true}
+                            mirrored={videoConstraints.facingMode === 'user' ? true : false}
                             videoConstraints={videoConstraints}
                             screenshotQuality={0.8}
                             onUserMediaError={() => setShowError(true)}
