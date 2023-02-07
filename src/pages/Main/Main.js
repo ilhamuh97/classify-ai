@@ -7,13 +7,11 @@ import SideNav from './SideNav/SideNav';
 import Logo from '../../assets/logo/classify.svg';
 import { Layout, Button } from 'antd';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
-import useExitPrompt from '../../components/common/UseExitPrompt/useExitPrompt';
 import { usePrompt } from '../../components/common/RouterPrompt/RouterPrompt';
 import styles from './Main.module.scss';
 
 const Main = () => {
     const { Content } = Layout;
-    const [showExitPrompt, setShowExitPrompt] = useExitPrompt(false);
     const [collapsed, setCollapsed] = useState(true);
     const [key, setKey] = useState(0);
     const [keysDataset, setKeysDataset] = useState([]);
@@ -53,11 +51,23 @@ const Main = () => {
         }
     ]);
 
-    useEffect(() => {
-        return () => {
-            setShowExitPrompt(!showExitPrompt);
+    const initBeforeUnLoad = (showExitPrompt) => {
+        window.onbeforeunload = (event) => {
+            // Show prompt based on state
+            if (showExitPrompt) {
+                const e = event || window.event;
+                e.preventDefault();
+                if (e) {
+                    e.returnValue = '';
+                }
+                return '';
+            }
         };
-    }, []);
+    };
+
+    window.onload = function () {
+        initBeforeUnLoad(true);
+    };
 
     useEffect(() => {
         if (model) {
