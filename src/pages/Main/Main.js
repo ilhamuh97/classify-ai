@@ -7,10 +7,13 @@ import SideNav from './SideNav/SideNav';
 import Logo from '../../assets/logo/classify.svg';
 import { Layout, Button } from 'antd';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
+import useExitPrompt from '../../components/common/UseExitPrompt/useExitPrompt';
+import { usePrompt } from '../../components/common/RouterPrompt/RouterPrompt';
 import styles from './Main.module.scss';
 
 const Main = () => {
     const { Content } = Layout;
+    const [showExitPrompt, setShowExitPrompt] = useExitPrompt(false);
     const [collapsed, setCollapsed] = useState(true);
     const [key, setKey] = useState(0);
     const [keysDataset, setKeysDataset] = useState([]);
@@ -49,6 +52,12 @@ const Main = () => {
             cameraState: false
         }
     ]);
+
+    useEffect(() => {
+        return () => {
+            setShowExitPrompt(!showExitPrompt);
+        };
+    }, []);
 
     useEffect(() => {
         if (model) {
@@ -115,6 +124,7 @@ const Main = () => {
 
     return (
         <Layout className={styles.layout}>
+            {usePrompt('All your work will be lost, are you sure you want to leave this page?')}
             <Button
                 style={collapsed ? { left: 0 } : { left: 250 }}
                 className={styles.sideToggleButton}

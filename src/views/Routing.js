@@ -6,7 +6,13 @@ import ScrollToTop from '../components/common/ScrollToTop/ScrollToTop';
 
 const Routing = () => {
     return (
-        <Router>
+        <Router
+            getUserConfirmation={(message, callback) => {
+                // this is the default behavior
+                const allowTransition = window.confirm(message);
+                console.log(message);
+                callback(allowTransition);
+            }}>
             <ScrollToTop />
             <div>
                 <Routes>
