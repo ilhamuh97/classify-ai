@@ -134,7 +134,7 @@ const Train = ({
     const prepareData = () => {
         const combinedDataset = dataset.concat(augmentedDataset);
         shuffleCombo(combinedDataset);
-        const { training, validation } = splitDataset2(combinedDataset, 0.8);
+        const { training, validation } = splitDataset(combinedDataset, 0.8);
         setSplittedDataset(structuredClone({ training: training, validation: validation }));
 
         const trainingImageFeatures = [];
@@ -214,7 +214,7 @@ const Train = ({
         setState('DONE');
     }
 
-    const splitDataset2 = (input, ratio) => {
+    const splitDataset = (input, ratio) => {
         const splitter = Math.ceil(input.length * ratio);
         const trainingDataset = input.slice(0, splitter);
         const validationDataset = input.slice(splitter);
@@ -223,6 +223,7 @@ const Train = ({
             validation: validationDataset
         };
     };
+
     /*
     const splitDataset = (input, output, ratio) => {
         const splitter = Math.ceil(input.length * ratio);

@@ -140,7 +140,14 @@ const DataAugConfig = ({ dataAugmentationConfig, dataAugmentationFormHandler, da
                 layout="horizontal"
                 initialValues={dataAugmentationConfig}
                 onValuesChange={dataAugmentationFormHandler}>
-                <Form.Item name="isActive" label="Data augmentation" valuePropName="checked">
+                <Form.Item
+                    name="isActive"
+                    label="Data augmentation"
+                    valuePropName="checked"
+                    tooltip={{
+                        color: '#000000',
+                        title: 'By augmenting data, you can create a diverse range of images in your dataset, reducing the risk of overfitting the model. Please add at least one image in your dataset to enable this input.'
+                    }}>
                     <Switch disabled={dataset.length === 0} />
                 </Form.Item>
                 {dataAugmentationConfig.isActive ? (
@@ -176,9 +183,9 @@ const DataAugConfig = ({ dataAugmentationConfig, dataAugmentationFormHandler, da
                         <Space align="center" direction="vertical">
                             <Typography.Title level={4}>Display Image</Typography.Title>
                             <Typography.Paragraph>
-                                Below is the display of your augmented image. Click the
-                                &quot;Generate Image&quot; button to see another random image from
-                                your dataset.
+                                The display below shows an augmented image. To view another randomly
+                                generated image from your dataset, click the &quot;Generate
+                                Image&quot; button.
                             </Typography.Paragraph>
                         </Space>
                     </Typography>

@@ -15,12 +15,19 @@ const Home = () => {
             </Layout.Header>
             <Layout.Content>
                 <Typography className={styles.subContent}>
-                    <Title>ClassifyAI</Title>
+                    <Title>
+                        Cl<span className={styles.ai}>a</span>ss<span className={styles.ai}>i</span>
+                        fy
+                        <span className={styles.ai}>AI</span>
+                    </Title>
                     <Paragraph>
-                        Welcome to ClassifyAI! Create your own CNN models for image classification
-                        without coding. Our easy-to-use platform allows you to gather data, train
-                        models and test them with just a few clicks. Ideal for researchers, students
-                        and business owners. Try it now!
+                        Welcome to ClassifyAI! Create
+                        <strong> your own CNN models for image classification </strong>
+                        without coding. Our easy-to-use platform allows you to
+                        <strong>
+                            {' '}
+                            gather data, train models and test them with just a few clicks.{' '}
+                        </strong>
                     </Paragraph>
                     <div>
                         <Button type="primary">

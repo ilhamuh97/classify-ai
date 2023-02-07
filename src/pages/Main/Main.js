@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import CreateClass from '../../components/Sections/CreateClass/CreateClass';
 import SetupParameters from '../../components/Sections/SetupParameters/SetupParameters';
 import Train from '../../components/Sections/Train/Train';
-import TestModel from '../../components/Sections/TestModel/TestModel';
+import Predict from '../../components/Sections/Predict/Predict';
 import SideNav from './SideNav/SideNav';
 import Logo from '../../assets/logo/classify.svg';
 import { Layout, Button } from 'antd';
@@ -98,9 +98,7 @@ const Main = () => {
                     />
                 );
             case 3:
-                return (
-                    <TestModel model={model} graphModel={graphModel} classConfig={classConfig} />
-                );
+                return <Predict model={model} graphModel={graphModel} classConfig={classConfig} />;
             default:
                 return (
                     <CreateClass
