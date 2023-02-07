@@ -52,7 +52,7 @@ const Main = () => {
     ]);
 
     const initBeforeUnLoad = (showExitPrompt) => {
-        window.onbeforeunload = (event) => {
+        window.onpageshow = (event) => {
             // Show prompt based on state
             if (showExitPrompt) {
                 const e = event || window.event;
