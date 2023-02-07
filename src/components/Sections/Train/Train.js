@@ -29,10 +29,11 @@ const Train = ({
     const [baseModel, setBaseModel] = useState();
     const [reports, setReports] = useState([]);
     const [progressMessage, setProgressMessage] = useState('');
-    const [featureVectors, setFeactureVectors] = useState(null);
+    const [featureVectors, setFeatureVectors] = useState(null);
     const [keys, setKeys] = useState(null);
     const [infoMessage, setInfoMessage] = useState('');
     const [isTrainDisable, setIsTrainDisable] = useState(false);
+    const [splittedDataset, setSplittedDataset] = useState([]);
 
     useEffect(() => {
         trainIsDisable();
@@ -49,7 +50,7 @@ const Train = ({
             } else if (state === 'SET_DATA') {
                 prepareData();
             } else if (state === 'TRAIN_AND_PREDICT') {
-                trainAndPredict(keys, featureVectors, baseModel);
+                trainAndPredict(keys, featureVectors);
             } else {
                 resetStates();
             }
@@ -131,20 +132,29 @@ const Train = ({
     };
 
     const prepareData = () => {
-        const imageFeatures = [];
-        const keys = [];
-        if (dataAugmentationConfig.isActive) {
-            augmentedDataset.forEach((d) => {
-                imageFeatures.push(calculateFeaturesOnCurrentFrame(d.data));
-                keys.push(d.key);
-            });
-        }
-        dataset.forEach((d) => {
-            imageFeatures.push(calculateFeaturesOnCurrentFrame(d.data));
-            keys.push(d.key);
+        const combinedDataset = dataset.concat(augmentedDataset);
+        shuffleCombo(combinedDataset);
+        const { training, validation } = splitDataset2(combinedDataset, 0.8);
+        setSplittedDataset(structuredClone({ training: training, validation: validation }));
+
+        const trainingImageFeatures = [];
+        const trainingKeys = [];
+        const validationImageFeatures = [];
+        const validationKeys = [];
+
+        training.forEach((d) => {
+            trainingImageFeatures.push(calculateFeaturesOnCurrentFrame(d.data));
+            trainingKeys.push(d.key);
         });
-        setFeactureVectors(imageFeatures);
-        setKeys(keys);
+        validation.forEach((d) => {
+            validationImageFeatures.push(calculateFeaturesOnCurrentFrame(d.data));
+            validationKeys.push(d.key);
+        });
+        setFeatureVectors({
+            training: trainingImageFeatures,
+            validation: validationImageFeatures
+        });
+        setKeys({ training: trainingKeys, validation: validationKeys });
         setProgressMessage('Training model...');
         setState('TRAIN_AND_PREDICT');
     };
@@ -154,7 +164,7 @@ const Train = ({
         setIsTraining(true);
         setShowAlert(false);
         setKeys(null);
-        setFeactureVectors(null);
+        setFeatureVectors(null);
         setGraphModel(null);
         setModel(null);
         setState('SET_GRAPH_MODEL');
@@ -165,35 +175,28 @@ const Train = ({
     const calculateFeaturesOnCurrentFrame = (img) => {
         return tf.tidy(function () {
             // Grab pixels from current VIDEO frame.
-            let videoFrameAsTensor = tf.browser.fromPixels(img);
+            let imageAsTensor = tf.browser.fromPixels(img);
             // Resize video frame tensor to be 224 x 224 pixels which is needed by MobileNet for input.
-            let resizedTensorFrame = tf.image.resizeBilinear(videoFrameAsTensor, [224, 224], true);
+            let resizedTensorFrame = tf.image.resizeBilinear(imageAsTensor, [224, 224], true);
 
             let normalizedTensorFrame = resizedTensorFrame.div(255);
             return graphModel.predict(normalizedTensorFrame.expandDims()).squeeze();
         });
     };
 
-    async function trainAndPredict(trainingDataOutputs, trainingDataInputs, currModel) {
-        shuffleCombo(trainingDataInputs, trainingDataOutputs);
-        const { training, validation } = splitDataset(trainingDataInputs, trainingDataOutputs, 0.8);
-        const { trainingInputDataset, trainingOutputDataset } = training;
-        const { validationInputDataset, validationOutputDataset } = validation;
-
-        //console.log(training, validation);
-
+    async function trainAndPredict(keys, featureVectors) {
         // Training
-        let outputsAsTensorTraining = tf.tensor1d(trainingOutputDataset, 'int32');
+        let outputsAsTensorTraining = tf.tensor1d(keys.training, 'int32');
         let oneHotOutputsTraining = tf.oneHot(outputsAsTensorTraining, classConfig.length);
-        let inputsAsTensorTraining = tf.stack(trainingInputDataset);
+        let inputsAsTensorTraining = tf.stack(featureVectors.training);
 
         // Validation
-        let outputsAsTensorValidation = tf.tensor1d(validationOutputDataset, 'int32');
+        let outputsAsTensorValidation = tf.tensor1d(keys.validation, 'int32');
         let oneHotOutputsValidation = tf.oneHot(outputsAsTensorValidation, classConfig.length);
-        let inputsAsTensorValidation = tf.stack(validationInputDataset);
+        let inputsAsTensorValidation = tf.stack(featureVectors.validation);
 
         // Train
-        await currModel.fit(inputsAsTensorTraining, oneHotOutputsTraining, {
+        await baseModel.fit(inputsAsTensorTraining, oneHotOutputsTraining, {
             shuffle: true,
             validationData: [inputsAsTensorValidation, oneHotOutputsValidation],
             batchSize: paramConfig.batchSize,
@@ -206,11 +209,21 @@ const Train = ({
         oneHotOutputsTraining.dispose();
         inputsAsTensorTraining.dispose();
 
-        setModels((current) => [...current, currModel]);
-        setModel(currModel);
+        setModels((current) => [...current, baseModel]);
+        setModel(baseModel);
         setState('DONE');
     }
 
+    const splitDataset2 = (input, ratio) => {
+        const splitter = Math.ceil(input.length * ratio);
+        const trainingDataset = input.slice(0, splitter);
+        const validationDataset = input.slice(splitter);
+        return {
+            training: trainingDataset,
+            validation: validationDataset
+        };
+    };
+    /*
     const splitDataset = (input, output, ratio) => {
         const splitter = Math.ceil(input.length * ratio);
         const trainingInputDataset = input.slice(0, splitter);
@@ -228,6 +241,7 @@ const Train = ({
             }
         };
     };
+    */
 
     const resetStates = () => {
         // setup finish training parameter
@@ -239,14 +253,17 @@ const Train = ({
         setIsAugmenting(false);
     };
 
-    function shuffleCombo(array, array2) {
-        if (array.length !== array2.length) {
-            throw new Error(
-                `Array sizes must match to be shuffled together ` +
-                    `First array length was ${array.length}` +
-                    `Second array length was ${array2.length}`
-            );
+    function shuffleCombo(array, array2 = []) {
+        if (array2.length != 0) {
+            if (array.length !== array2.length) {
+                throw new Error(
+                    `Array sizes must match to be shuffled together ` +
+                        `First array length was ${array.length}` +
+                        `Second array length was ${array2.length}`
+                );
+            }
         }
+
         let counter = array.length;
         let index = 0;
         // While there are elements in the array
@@ -257,7 +274,9 @@ const Train = ({
             counter--;
             // And swap the last element of each array with it
             swap(array, counter, index);
-            swap(array2, counter, index);
+            if (array2.length != 0) {
+                swap(array2, counter, index);
+            }
         }
     }
 
@@ -357,7 +376,13 @@ const Train = ({
                 ) : null}
 
                 {!isTraining && showAlert && isTrainingSucceed && logs.length === 0 ? (
-                    <Report reports={reports} />
+                    <Report
+                        reports={reports}
+                        validationDataset={splittedDataset.validation}
+                        model={baseModel}
+                        graphModel={graphModel}
+                        classConfig={classConfig}
+                    />
                 ) : null}
             </Space>
         </div>

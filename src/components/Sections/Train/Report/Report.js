@@ -4,7 +4,7 @@ import styles from './Report.module.scss';
 import LineChart from './LineChart/LineChart';
 import ConfussionMatrix from './ConfussionMatrix/ConfusionMatrix';
 
-const Report = ({ reports }) => {
+const Report = ({ reports, model, validationDataset, classConfig, graphModel }) => {
     const { Panel } = Collapse;
     const lossDatasets = reports[reports.length - 1].logs.map((log) => {
         return parseFloat(log.lossAndAccuracy.loss.toFixed(2));
@@ -35,7 +35,12 @@ const Report = ({ reports }) => {
                         validationData={valLossDatasets}
                     />
                     <Divider />
-                    <ConfussionMatrix />
+                    <ConfussionMatrix
+                        validationDataset={validationDataset}
+                        model={model}
+                        graphModel={graphModel}
+                        classConfig={classConfig}
+                    />
                 </Panel>
             </Collapse>
         </div>
