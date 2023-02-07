@@ -3,10 +3,10 @@ import DisplayImage from './DisplayImage/DisplayImage';
 import { Typography, Button, Progress, Space } from 'antd';
 import * as tf from '@tensorflow/tfjs';
 import { CameraOutlined } from '@ant-design/icons';
-import styles from './TestModel.module.scss';
+import styles from './Predict.module.scss';
 import SectionHeader from '../../common/SectionHeader/SectionHeader';
 
-const TestModel = ({ model, graphModel, classConfig }) => {
+const Predict = ({ model, graphModel, classConfig }) => {
     const [isCameraOn, setIsCameraOn] = useState(false);
     const intervalRef = useRef(null);
     const webcamRef = useRef(null);
@@ -87,7 +87,7 @@ const TestModel = ({ model, graphModel, classConfig }) => {
         <div className={styles.testModel}>
             <Space size="small" direction="vertical" className={styles.layout}>
                 <SectionHeader
-                    title="Test the Model"
+                    title="Start to Predict by Using Your Own Model"
                     subTitle="In this section you are able to test your trained model by providing an image through your webcam. Just click the button and your model will classify the image and show the result."
                 />
                 <div className={styles.displayWrapper}>
@@ -126,4 +126,4 @@ const TestModel = ({ model, graphModel, classConfig }) => {
     );
 };
 
-export default TestModel;
+export default Predict;

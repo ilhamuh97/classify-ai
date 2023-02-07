@@ -33,6 +33,8 @@ const DisplayImage = ({ isCameraOn, webcamRef }) => {
                             onUserMedia={() => setShowError(false)}
                             onUserMediaError={() => setShowError(true)}
                             mirrored={videoConstraints.facingMode === 'user' ? true : false}
+                            height={265}
+                            width={265}
                         />
                         <MdOutlineCameraswitch
                             onClick={() => flipCamera()}
