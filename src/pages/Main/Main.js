@@ -51,24 +51,6 @@ const Main = () => {
         }
     ]);
 
-    const initBeforeUnLoad = (showExitPrompt) => {
-        window.onpageshow = (event) => {
-            // Show prompt based on state
-            if (showExitPrompt) {
-                const e = event || window.event;
-                e.preventDefault();
-                if (e) {
-                    e.returnValue = '';
-                }
-                return '';
-            }
-        };
-    };
-
-    window.onload = function () {
-        initBeforeUnLoad(true);
-    };
-
     useEffect(() => {
         if (model) {
             model.summary();
