@@ -304,7 +304,7 @@ const Train = ({
     const trainIsDisable = () => {
         let disable = false;
         if (dataset.length === 0) {
-            setInfoMessage('Your dataset could not be empty, please add dataset.');
+            setInfoMessage('Please provide data for your dataset. It cannot be empty.');
             disable = true;
             setIsTrainDisable(disable);
         } else {
@@ -318,7 +318,7 @@ const Train = ({
                     if (!found) {
                         disable = true;
                         setInfoMessage(
-                            `Your class "${classItem.label}" requires dataset. Please add at least 1 image for the class`
+                            `Your class "${classItem.label}" requires dataset. Please add at least 1 image for each class`
                         );
                         setIsTrainDisable(disable);
                     }

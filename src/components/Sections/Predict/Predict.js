@@ -86,10 +86,12 @@ const Predict = ({ model, graphModel, classConfig }) => {
     return (
         <div className={styles.testModel}>
             <Space size="small" direction="vertical" className={styles.layout}>
-                <SectionHeader
-                    title="Start to Predict by Using Your Own Model"
-                    subTitle="In this section you are able to test your trained model by providing an image through your webcam. Just click the button and your model will classify the image and show the result."
-                />
+                <div className={styles.sectionHeader}>
+                    <SectionHeader
+                        title="Start to Predict by Using Your Own Model"
+                        subTitle="In this section you are able to test your trained model by providing an image through your webcam. Just click the button and your model will classify the image and show the result."
+                    />
+                </div>
                 <div className={styles.displayWrapper}>
                     <Typography>
                         <Title className={styles.predictedClass} level={5}>
