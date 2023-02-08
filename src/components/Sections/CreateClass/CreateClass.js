@@ -28,10 +28,12 @@ const CreateClass = ({
 
     return (
         <div className={styles.CreateClass}>
-            <SectionHeader
-                title="Create Your Dataset in Real-Time"
-                subTitle="Creating a dataset has never been easier! Our platform allows you to snap pictures using your own camera and label them on the spot. It is a great feature for anyone who is looking to build a dataset in real-time scenarios. Just hit the snap button and start creating your dataset."
-            />
+            <div className={styles.header}>
+                <SectionHeader
+                    title="Create Your Dataset in Real-Time"
+                    subTitle="Creating a dataset has never been easier! Our platform allows you to snap pictures using your own camera and label them on the spot. It is a great feature for anyone who is looking to build a dataset in real-time scenarios. Just hit the snap button and start creating your dataset."
+                />
+            </div>
             <ClassesWrapper
                 classConfig={classConfig}
                 setClassConfig={setClassConfig}

@@ -246,7 +246,7 @@ const Train = ({
 
     const resetStates = () => {
         // setup finish training parameter
-        setProgressMessage('Training is completed');
+        setProgressMessage('');
         setShowAlert(true);
         setIsTrainingSucceed(true);
         setIsTraining(false);

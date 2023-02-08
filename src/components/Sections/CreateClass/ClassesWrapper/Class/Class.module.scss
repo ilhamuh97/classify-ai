@@ -2,7 +2,7 @@
     background-color: #fff;
     border-radius: 2px;
     border: 1px solid #d9d9d9;
-    padding: 1rem 1rem;
+    padding: 1rem 0rem;
     width: 100%;
     max-width: 340px;
     min-width: 340px;
@@ -13,8 +13,16 @@
     -moz-transition: all 0.3s ease;
     transition: all 0.3s ease;
     scroll-snap-align: center;
-
+    .addSampleTitle, .buttons{
+        padding: 0 1rem;
+    }
     &:hover {
-        box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    }
+
+    @media screen and (max-width:345px) {
+        /* Noch größer, noch mehr Regeln */
+        max-width: calc(100vw - 5px);
+        min-width: calc(100vw - 5px);
     }
 }

@@ -115,7 +115,7 @@ const Main = () => {
     };
 
     return (
-        <Layout className={styles.layout}>
+        <Layout className={`${styles.layout} ${key === 0 ? styles.noPadding : null}`}>
             {usePrompt('All your work will be lost, are you sure you want to leave this page?')}
             <Button
                 style={collapsed ? { left: 0 } : { left: 250 }}

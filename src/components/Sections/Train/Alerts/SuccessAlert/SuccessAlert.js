@@ -4,7 +4,7 @@ import React from 'react';
 const SuccessAlert = ({ reports }) => {
     return (
         <Alert
-            message="Training succeed!"
+            message="Training is completed!"
             description={`Loss: ${reports[reports.length - 1].logs[
                 reports[reports.length - 1].logs.length - 1
             ].lossAndAccuracy.loss.toFixed(3)}, Accuracy: ${reports[reports.length - 1].logs[

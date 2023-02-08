@@ -36,8 +36,19 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
 
     const removeClass = (classKey) => {
         const foundedClass = classConfig.filter((d) => d.key === classKey);
-        const newDataset = dataset.filter((d) => d.key !== classKey);
-        const newClasses = classConfig.filter((c) => c.key !== classKey);
+        const newClasses = classConfig
+            .filter((c) => c.key !== classKey)
+            .map((c) => {
+                if (c.key > classKey) c.key = c.key - 1;
+                return c;
+            });
+        const newDataset = dataset
+            .filter((d) => d.key !== classKey)
+            .map((d) => {
+                if (d.key > classKey) d.key = d.key - 1;
+                return d;
+            });
+        console.log(newDataset, newClasses);
         setDataset(newDataset);
         setClassConfig(newClasses);
         message.success(`'${foundedClass[0].label}' is successfully deleted`);
@@ -113,9 +124,10 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
                 setEditableTitle={setEditableTitle}
                 removeClass={removeClass}
                 configKey={config.key}
+                className={styles.topSection}
             />
             <Divider />
-            <Typography>
+            <Typography className={styles.addSampleTitle}>
                 <Title className={styles.miniTitle} level={5}>
                     Add your samples here
                 </Title>
@@ -129,7 +141,7 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
                     canvasRef={canvasRef}
                 />
             ) : (
-                <Space>
+                <Space className={styles.buttons}>
                     <Button onClick={turnOnCamera} type="primary" icon={<CameraOutlined />}>
                         Use camera
                     </Button>
