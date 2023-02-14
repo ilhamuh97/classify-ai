@@ -99,7 +99,15 @@ const Main = () => {
                     />
                 );
             case 3:
-                return <Predict model={model} graphModel={graphModel} classConfig={classConfig} />;
+                return (
+                    <Predict
+                        model={model}
+                        graphModel={graphModel}
+                        classConfig={classConfig}
+                        setGraphModel={setGraphModel}
+                        paramConfig={paramConfig}
+                    />
+                );
             default:
                 return (
                     <CreateClass

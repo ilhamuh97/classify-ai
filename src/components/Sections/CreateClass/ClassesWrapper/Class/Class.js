@@ -48,7 +48,6 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
                 if (d.key > classKey) d.key = d.key - 1;
                 return d;
             });
-        console.log(newDataset, newClasses);
         setDataset(newDataset);
         setClassConfig(newClasses);
         message.success(`'${foundedClass[0].label}' is successfully deleted`);

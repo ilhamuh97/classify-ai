@@ -50,7 +50,6 @@ const ConfusionMatrix = ({ validationDataset, model, classConfig, graphModel }) 
                 labels.push(validation.key);
             });
         });
-        console.log(labels, predictions, classConfig.length);
         setConfusionMatrix(
             tf.math.confusionMatrix(labels, predictions, classConfig.length).arraySync()
         );
