@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import DisplayWrapper from './DisplayWrapper/DisplayWrapper';
-import { Space } from 'antd';
+import { Divider, Space } from 'antd';
 import * as tf from '@tensorflow/tfjs';
 import styles from './Predict.module.scss';
 import SectionHeader from '../../common/SectionHeader/SectionHeader';
@@ -139,6 +139,7 @@ const Predict = ({ model, graphModel, classConfig, paramConfig, setGraphModel })
                 predictionClass={predictionClass}
                 predictionPercent={predictionPercent}
             />
+            <Divider />
             <TabsForModel
                 model={model}
                 classConfig={classConfig}

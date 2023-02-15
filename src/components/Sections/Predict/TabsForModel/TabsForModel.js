@@ -35,13 +35,9 @@ const TabsForModel = ({ model, classConfig, setImportedClassConfig, setImportedM
     ];
 
     return (
-        <Tabs
-            defaultActiveKey="1"
-            items={tabItems}
-            type="card"
-            size="large"
-            className={styles.tabsForModel}
-        />
+        <div className={styles.tabsForModel}>
+            <Tabs defaultActiveKey="1" items={tabItems} type="card" size="large" />
+        </div>
     );
 };
 
