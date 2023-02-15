@@ -73,7 +73,7 @@ const ConfusionMatrix = ({ validationDataset, model, classConfig, graphModel }) 
         },
         xaxis: {
             type: 'category',
-            categories: ['Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5'],
+            categories: classConfig.slice(0).map((c) => c.label),
             position: 'top'
         },
         colors: ['#008FFB'],
