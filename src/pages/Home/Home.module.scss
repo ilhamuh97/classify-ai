@@ -37,6 +37,21 @@
             .ai{
                 color: #1890ff
             }
+            .logos{
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                margin-bottom: 1rem;
+                .logo{
+                    padding: 5px;
+                    max-width: 3rem;
+                    max-height: 3rem;
+                    img{
+                        width: 100%;
+                        height: 100%;
+                    }
+                }
+            }
         }
     }
 
