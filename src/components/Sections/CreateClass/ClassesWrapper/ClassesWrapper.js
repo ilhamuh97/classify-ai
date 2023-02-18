@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import Class from './Class/Class';
 import styles from './ClassesWrapper.module.scss';
 
@@ -10,6 +10,8 @@ const ClassesWrapper = ({
     dataset,
     setDataset
 }) => {
+    const canvasRef = useRef(null);
+
     const datasetsClasses = () => {
         return classConfig.map((config, i) => {
             return (
@@ -22,6 +24,7 @@ const ClassesWrapper = ({
                     setKeysDataset={setKeysDataset}
                     dataset={dataset}
                     setDataset={setDataset}
+                    canvasRef={canvasRef}
                 />
             );
         });
@@ -74,6 +77,14 @@ const ClassesWrapper = ({
             <div className={styles.addClass} onClick={() => onClickHandler()}>
                 Add Class
             </div>
+            <canvas
+                ref={canvasRef}
+                height={265}
+                width={265}
+                style={{
+                    display: 'none'
+                }}
+            />
         </div>
     );
 };

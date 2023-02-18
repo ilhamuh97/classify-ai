@@ -2,17 +2,16 @@ import React, { useState, useRef, useEffect } from 'react';
 import SamplesSection from './SamplesSection/SamplesSection';
 import CanvasWrapper from './CanvasWrapper/CanvasWrapper';
 import ClassTitle from './ClassTitle/ClassTitle';
-import { Typography, Divider, Button, Upload, Space, message } from 'antd';
-import { UploadOutlined, CameraOutlined } from '@ant-design/icons';
+import { Typography, Divider, message } from 'antd';
+import AddDataset from './AddDataset/AddDataset';
 import styles from './Class.module.scss';
 
-const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => {
+const Class = ({ config, dataset, setDataset, classConfig, setClassConfig, canvasRef }) => {
     const { Title } = Typography;
     const [editableTitle, setEditableTitle] = useState('');
     const [isRecord, setIsRecord] = useState(false);
     const intervalRef = useRef(null);
     const webcamRef = useRef(null);
-    const canvasRef = useRef(null);
 
     useEffect(() => {
         setEditableTitle(config.label);
@@ -61,6 +60,17 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
                 key: config.key,
                 img: imageSrc,
                 data: imgData
+            }
+        ]);
+    };
+
+    const inputByUpload = (uploadImage) => {
+        setDataset((current) => [
+            ...current,
+            {
+                key: config.key,
+                img: uploadImage.src,
+                data: uploadImage.imgData
             }
         ]);
     };
@@ -140,16 +150,11 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig }) => 
                     canvasRef={canvasRef}
                 />
             ) : (
-                <Space className={styles.buttons}>
-                    <Button onClick={turnOnCamera} type="primary" icon={<CameraOutlined />}>
-                        Use camera
-                    </Button>
-                    <Upload directory disabled>
-                        <Button icon={<UploadOutlined />} disabled>
-                            Upload
-                        </Button>
-                    </Upload>
-                </Space>
+                <AddDataset
+                    turnOnCamera={turnOnCamera}
+                    canvasRef={canvasRef}
+                    inputByUpload={inputByUpload}
+                />
             )}
             <Divider />
             <SamplesSection

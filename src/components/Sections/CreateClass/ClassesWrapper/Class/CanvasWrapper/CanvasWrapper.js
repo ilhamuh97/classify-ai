@@ -5,7 +5,7 @@ import { Typography, Button, Alert } from 'antd';
 import { CameraOutlined, CloseOutlined, PauseCircleOutlined } from '@ant-design/icons';
 import styles from './CanvasWrapper.module.scss';
 
-const CanvasWrapper = ({ turnOffCamera, webcamRef, recordButtonOnClick, isRecord, canvasRef }) => {
+const CanvasWrapper = ({ turnOffCamera, webcamRef, recordButtonOnClick, isRecord }) => {
     const [showError, setShowError] = useState(false);
     const [videoConstraints, setVideoConstraints] = useState({
         video: true,
@@ -55,14 +55,6 @@ const CanvasWrapper = ({ turnOffCamera, webcamRef, recordButtonOnClick, isRecord
                             videoConstraints={videoConstraints}
                             screenshotQuality={0.8}
                             onUserMediaError={() => setShowError(true)}
-                        />
-                        <canvas
-                            ref={canvasRef}
-                            height={265}
-                            width={265}
-                            style={{
-                                display: 'none'
-                            }}
                         />
                         <MdOutlineCameraswitch onClick={flipCamera} className={styles.flipButton} />
                     </div>
