@@ -123,7 +123,7 @@ const Main = () => {
     };
 
     return (
-        <Layout className={`${styles.layout} ${key === 0 || key === 3 ? styles.noPadding : null}`}>
+        <Layout className={`${styles.layout}`}>
             {usePrompt('All your work will be lost, are you sure you want to leave this page?')}
             <Button
                 style={collapsed ? { left: 0 } : { left: 250 }}
@@ -138,7 +138,10 @@ const Main = () => {
                 setKey={setKey}
                 currKey={key}
             />
-            <Layout className={`${styles.siteLayout} ${collapsed ? styles.big : styles.small}`}>
+            <Layout
+                className={`${styles.siteLayout} ${collapsed ? styles.big : styles.small}  ${
+                    key === 0 || key === 3 ? styles.noPadding : null
+                }`}>
                 <Layout.Header>
                     <div className={styles.logo}>
                         <img src={Logo} />

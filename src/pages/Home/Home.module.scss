@@ -34,23 +34,17 @@
             padding: 10%;
             color: #002766;
             max-width: 1024px;
+            .title{
+                font-family: 'Squada One', cursive;
+                font-weight: 100;
+                letter-spacing: 5px;
+                font-size: 3rem; 
+                @media screen and (max-width:375px) {
+                    font-size: 2.5rem; 
+                }
+            }
             .ai{
                 color: #1890ff
-            }
-            .logos{
-                display: flex;
-                align-items: center;
-                gap: 1rem;
-                margin-bottom: 1rem;
-                .logo{
-                    padding: 5px;
-                    max-width: 3rem;
-                    max-height: 3rem;
-                    img{
-                        width: 100%;
-                        height: 100%;
-                    }
-                }
             }
         }
     }

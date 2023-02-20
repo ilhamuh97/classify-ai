@@ -18,11 +18,11 @@ const ExportModelCard = ({ model, classConfig }) => {
     const exportModel = async () => {
         const classesText = classesTextBuilder();
         try {
-            await model.save('downloads://my-model');
+            const modelName = 'my-model';
+            await model.save('downloads://' + modelName);
 
             const blob = new Blob([classesText], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
-
             const link = document.createElement('a');
             link.download = 'classes.txt';
             link.href = url;
@@ -37,15 +37,22 @@ const ExportModelCard = ({ model, classConfig }) => {
             <Card title="Export your model">
                 <Typography>
                     <Typography.Paragraph>
-                        To save your trained model to your computer, click the button below. This
-                        will create and export three files: model.json, model.weights.bin, and
-                        classes.txt.
+                        <div>
+                            To save your trained model to your computer, click the button below.
+                            This will create and export three files:
+                        </div>
+                        <ul>
+                            <li>model.json</li>
+                            <li>model.weights.bin</li>
+                            <li>classes.txt</li>
+                        </ul>
                     </Typography.Paragraph>
                 </Typography>
                 <Button
                     icon={<DownloadOutlined />}
                     onClick={() => exportModel()}
                     type="primary"
+                    shape="round"
                     disabled={!model}>
                     Export
                 </Button>
