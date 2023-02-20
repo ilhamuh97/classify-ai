@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import SectionHeader from '../../common/SectionHeader/SectionHeader';
 import ClassesWrapper from './ClassesWrapper/ClassesWrapper';
+import { createClassContext as headerContext } from '../../../assets/text/headerText/headerText';
 import styles from './CreateClass.module.scss';
 
 const CreateClass = ({
@@ -30,8 +31,9 @@ const CreateClass = ({
         <div className={styles.CreateClass}>
             <div className={styles.header}>
                 <SectionHeader
-                    title="Create Your Dataset in Real-Time"
-                    subTitle="Creating a dataset has never been easier! Our platform allows you to snap pictures using your own camera and label them on the spot. It is a great feature for anyone who is looking to build a dataset in real-time scenarios. Just hit the snap button and start creating your dataset."
+                    title={headerContext.title}
+                    subTitle={headerContext.subTitle}
+                    stepStatus={headerContext.stepStatus}
                 />
             </div>
             <ClassesWrapper

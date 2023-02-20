@@ -6,8 +6,9 @@ import FailedAlert from './Alerts/FailedAlert/FailedAlert';
 import SectionHeader from '../../common/SectionHeader/SectionHeader';
 import ProgressEpoch from './ProgressEpoch/ProgressEpoch';
 import { Button, Space, Alert } from 'antd';
-import styles from './Train.module.scss';
 import Canvas from './Canvas/Canvas';
+import { trainContext as headerContext } from '../../../assets/text/headerText/headerText';
+import styles from './Train.module.scss';
 
 const Train = ({
     dataset,
@@ -339,8 +340,9 @@ const Train = ({
         <div className={styles.train}>
             <Space size="small" direction="vertical" className={styles.layout}>
                 <SectionHeader
-                    title="Train and Evaluate"
-                    subTitle="In this section, you can start training your model using the dataset and configuration you have set up. You can also view the training progress, evaluation metrics such as accuracy and loss, and other results in an easy-to-understand format."
+                    title={headerContext.title}
+                    subTitle={headerContext.subTitle}
+                    stepStatus={headerContext.stepStatus}
                 />
                 {isTraining && dataAugmentationConfig.isActive && isAugmenting ? (
                     <Canvas
