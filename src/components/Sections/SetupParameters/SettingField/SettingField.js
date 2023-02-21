@@ -1,16 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Collapse } from 'antd';
 import ModelConfig from './ModelConfig/ModelConfig';
 import DataAugConfig from './DataAugConfig/DataAugConfig';
+import { ParamConfigContext } from '../../../../contexts/ParamConfigContext';
 import styles from './SettingField.module.scss';
+import { DataAugmentationConfigContext } from '../../../../contexts/DataAugmentationConfigContext';
 
-const SettingField = ({
-    paramConfig,
-    setParamConfig,
-    dataAugmentationConfig,
-    setDataAugmentationConfig,
-    dataset
-}) => {
+const SettingField = ({ dataset }) => {
+    const { paramConfig, setParamConfig } = useContext(ParamConfigContext);
+    const { dataAugmentationConfig, setDataAugmentationConfig } = useContext(
+        DataAugmentationConfigContext
+    );
     const modelFormHandler = (value, allValues) => {
         setParamConfig(allValues);
     };

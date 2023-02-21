@@ -1,13 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import DisplayWrapper from './DisplayWrapper/DisplayWrapper';
 import { Divider, Space } from 'antd';
 import * as tf from '@tensorflow/tfjs';
 import styles from './Predict.module.scss';
 import SectionHeader from '../../common/SectionHeader/SectionHeader';
 import { predictContext as headerContext } from '../../../assets/text/headerText/headerText';
+import { ClassConfigContext } from '../../../contexts/ClassConfigContext';
+import { ParamConfigContext } from '../../../contexts/ParamConfigContext';
 import TabsForModel from './TabsForModel/TabsForModel';
 
-const Predict = ({ model, graphModel, classConfig, paramConfig, setGraphModel }) => {
+const Predict = ({ model, graphModel, setGraphModel }) => {
+    const { paramConfig } = useContext(ParamConfigContext);
+    const { classConfig } = useContext(ClassConfigContext);
     const intervalRef = useRef(null);
     const webcamRef = useRef(null);
     const [isCameraOn, setIsCameraOn] = useState(false);

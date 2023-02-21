@@ -1,24 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import * as tf from '@tensorflow/tfjs';
 import Report from './Report/Report';
 import SuccessAlert from './Alerts/SuccessAlert/SuccessAlert';
 import FailedAlert from './Alerts/FailedAlert/FailedAlert';
 import SectionHeader from '../../common/SectionHeader/SectionHeader';
 import ProgressEpoch from './ProgressEpoch/ProgressEpoch';
-import { Button, Space, Alert } from 'antd';
 import Canvas from './Canvas/Canvas';
+import { Button, Space, Alert } from 'antd';
 import { trainContext as headerContext } from '../../../assets/text/headerText/headerText';
+import { ParamConfigContext } from '../../../contexts/ParamConfigContext';
+import { DataAugmentationConfigContext } from '../../../contexts/DataAugmentationConfigContext';
+import { ClassConfigContext } from '../../../contexts/ClassConfigContext';
 import styles from './Train.module.scss';
 
-const Train = ({
-    dataset,
-    dataAugmentationConfig,
-    paramConfig,
-    classConfig,
-    graphModel,
-    setGraphModel,
-    setModel
-}) => {
+const Train = ({ dataset, graphModel, setGraphModel, setModel }) => {
+    const { paramConfig } = useContext(ParamConfigContext);
+    const { dataAugmentationConfig } = useContext(DataAugmentationConfigContext);
+    const { classConfig } = useContext(ClassConfigContext);
     const [isAugmenting, setIsAugmenting] = useState(false);
     const [state, setState] = useState('');
     const [augmentedDataset, setAugmentedDataset] = useState([]);

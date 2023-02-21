@@ -1,18 +1,13 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useContext } from 'react';
 import SectionHeader from '../../common/SectionHeader/SectionHeader';
 import ClassesWrapper from './ClassesWrapper/ClassesWrapper';
 import { createClassContext as headerContext } from '../../../assets/text/headerText/headerText';
+import { ClassConfigContext } from '../../../contexts/ClassConfigContext';
 import styles from './CreateClass.module.scss';
 
-const CreateClass = ({
-    classConfig,
-    setClassConfig,
-    keysDataset,
-    setKeysDataset,
-    dataset,
-    setDataset
-}) => {
+const CreateClass = ({ keysDataset, setKeysDataset, dataset, setDataset }) => {
     const classConfigRef = useRef();
+    const { classConfig, setClassConfig } = useContext(ClassConfigContext);
 
     useEffect(() => {
         classConfigRef.current = classConfig;

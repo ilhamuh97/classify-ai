@@ -4,13 +4,7 @@ import SectionHeader from '../../common/SectionHeader/SectionHeader';
 import { setupParametersContext as headerContext } from '../../../assets/text/headerText/headerText';
 import styles from './SetupParameters.module.scss';
 
-const SetupParameters = ({
-    paramConfig,
-    setParamConfig,
-    dataAugmentationConfig,
-    setDataAugmentationConfig,
-    dataset
-}) => {
+const SetupParameters = ({ dataset }) => {
     return (
         <div className={styles.setupParameters}>
             <SectionHeader
@@ -18,13 +12,7 @@ const SetupParameters = ({
                 subTitle={headerContext.subTitle}
                 stepStatus={headerContext.stepStatus}
             />
-            <SettingField
-                paramConfig={paramConfig}
-                setParamConfig={setParamConfig}
-                dataAugmentationConfig={dataAugmentationConfig}
-                setDataAugmentationConfig={setDataAugmentationConfig}
-                dataset={dataset}
-            />
+            <SettingField dataset={dataset} />
         </div>
     );
 };

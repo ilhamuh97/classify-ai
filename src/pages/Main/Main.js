@@ -8,6 +8,14 @@ import Logo from '../../assets/logo/classify.svg';
 import { Layout, Button } from 'antd';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { usePrompt } from '../../components/common/RouterPrompt/RouterPrompt';
+import { ParamConfigContext } from '../../contexts/ParamConfigContext';
+import { DataAugmentationConfigContext } from '../../contexts/DataAugmentationConfigContext';
+import { ClassConfigContext } from '../../contexts/ClassConfigContext';
+import {
+    classConfigValue,
+    paramConfigValue,
+    dataAugmentationConfigValue
+} from '../../assets/initialValues/initialValues';
 import styles from './Main.module.scss';
 
 const Main = () => {
@@ -18,38 +26,11 @@ const Main = () => {
     const [dataset, setDataset] = useState([]);
     const [graphModel, setGraphModel] = useState(null);
     const [model, setModel] = useState(null);
-    const [paramConfig, setParamConfig] = useState({
-        model: JSON.stringify({
-            inputShape: 1024,
-            URL: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_100_224/feature_vector/5/default/1'
-        }),
-        optimizer: 'adam',
-        learningRate: 0.001,
-        epochs: 10,
-        batchSize: 4
-    });
-    const [dataAugmentationConfig, setDataAugmentationConfig] = useState({
-        isActive: false,
-        noise: 0.0,
-        translationX: 0.0,
-        translationY: 0.0,
-        rotation: 0.0,
-        flipX: false,
-        flipY: false,
-        scale: 0.0
-    });
-    const [classConfig, setClassConfig] = useState([
-        {
-            key: 0,
-            label: 'Class 1',
-            cameraState: false
-        },
-        {
-            key: 1,
-            label: 'Class 2',
-            cameraState: false
-        }
-    ]);
+    const [paramConfig, setParamConfig] = useState(paramConfigValue);
+    const [dataAugmentationConfig, setDataAugmentationConfig] = useState(
+        dataAugmentationConfigValue
+    );
+    const [classConfig, setClassConfig] = useState(classConfigValue);
 
     useEffect(() => {
         if (model) {
@@ -62,8 +43,6 @@ const Main = () => {
             case 0:
                 return (
                     <CreateClass
-                        classConfig={classConfig}
-                        setClassConfig={setClassConfig}
                         keysDataset={keysDataset}
                         setKeysDataset={setKeysDataset}
                         dataset={dataset}
@@ -71,20 +50,7 @@ const Main = () => {
                     />
                 );
             case 1:
-                return (
-                    <SetupParameters
-                        model={model}
-                        graphModel={graphModel}
-                        setModel={setModel}
-                        setGraphModel={setGraphModel}
-                        classesLength={classConfig.length}
-                        paramConfig={paramConfig}
-                        dataAugmentationConfig={dataAugmentationConfig}
-                        setDataAugmentationConfig={setDataAugmentationConfig}
-                        setParamConfig={setParamConfig}
-                        dataset={dataset}
-                    />
-                );
+                return <SetupParameters dataset={dataset} />;
             case 2:
                 return (
                     <Train
@@ -93,26 +59,15 @@ const Main = () => {
                         setModel={setModel}
                         graphModel={graphModel}
                         setGraphModel={setGraphModel}
-                        paramConfig={paramConfig}
-                        classConfig={classConfig}
-                        dataAugmentationConfig={dataAugmentationConfig}
                     />
                 );
             case 3:
                 return (
-                    <Predict
-                        model={model}
-                        graphModel={graphModel}
-                        classConfig={classConfig}
-                        setGraphModel={setGraphModel}
-                        paramConfig={paramConfig}
-                    />
+                    <Predict model={model} graphModel={graphModel} setGraphModel={setGraphModel} />
                 );
             default:
                 return (
                     <CreateClass
-                        classConfig={classConfig}
-                        setClassConfig={setClassConfig}
                         keysDataset={keysDataset}
                         setKeysDataset={setKeysDataset}
                         dataset={dataset}
@@ -150,10 +105,16 @@ const Main = () => {
                 {!collapsed ? (
                     <div className={styles.overlay} onClick={() => setCollapsed(true)} />
                 ) : null}
-
-                <Content style={{ margin: '32px 0', overflow: 'initial' }}>
-                    {ContentElem(key)}
-                </Content>
+                <ParamConfigContext.Provider value={{ paramConfig, setParamConfig }}>
+                    <DataAugmentationConfigContext.Provider
+                        value={{ dataAugmentationConfig, setDataAugmentationConfig }}>
+                        <ClassConfigContext.Provider value={{ classConfig, setClassConfig }}>
+                            <Content style={{ margin: '32px 0', overflow: 'initial' }}>
+                                {ContentElem(key)}
+                            </Content>
+                        </ClassConfigContext.Provider>
+                    </DataAugmentationConfigContext.Provider>
+                </ParamConfigContext.Provider>
                 <Layout.Footer>© Copyright {new Date().getFullYear()} Ilhamuh97</Layout.Footer>
             </Layout>
         </Layout>
