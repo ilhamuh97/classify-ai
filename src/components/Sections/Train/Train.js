@@ -364,7 +364,7 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel, report, setReport
                     loading={isTraining}>
                     Start Training
                 </Button>
-                {isTrainDisable ? <Alert message={infoMessage} type="warning" /> : null}
+                {isTrainDisable ? <Alert message={infoMessage} type="warning" showIcon /> : null}
                 <span>{progressMessage}</span>
                 {isTraining && logs.length > 0 ? (
                     <ProgressEpoch logs={logs} paramConfig={paramConfig} />
