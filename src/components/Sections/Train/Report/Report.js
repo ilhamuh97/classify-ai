@@ -1,21 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Collapse, Divider } from 'antd';
 import styles from './Report.module.scss';
 import LineChart from './LineChart/LineChart';
 import ConfussionMatrix from './ConfussionMatrix/ConfusionMatrix';
 
-const Report = ({ reports, model, validationDataset, classConfig, graphModel }) => {
+const Report = ({ report, model, classConfig, graphModel, logs }) => {
     const { Panel } = Collapse;
-    const lossDatasets = reports[reports.length - 1].logs.map((log) => {
+    const [reportedLogs, setReportedLogs] = useState(logs || report.logs);
+
+    useEffect(() => {
+        if (logs.length > 0) {
+            setReportedLogs(logs);
+        } else {
+            setReportedLogs(report.logs);
+        }
+    }, [logs]);
+
+    const lossDatasets = reportedLogs.map((log) => {
         return parseFloat(log.lossAndAccuracy.loss.toFixed(2));
     });
-    const accDatasets = reports[reports.length - 1].logs.map((log) => {
+    const accDatasets = reportedLogs.map((log) => {
         return parseFloat(log.lossAndAccuracy.acc.toFixed(2));
     });
-    const valLossDatasets = reports[reports.length - 1].logs.map((log) => {
+    const valLossDatasets = reportedLogs.map((log) => {
         return parseFloat(log.lossAndAccuracy.val_loss.toFixed(2));
     });
-    const valAccDatasets = reports[reports.length - 1].logs.map((log) => {
+
+    const valAccDatasets = reportedLogs.map((log) => {
         return parseFloat(log.lossAndAccuracy.val_acc.toFixed(2));
     });
 
@@ -34,13 +45,18 @@ const Report = ({ reports, model, validationDataset, classConfig, graphModel }) 
                         trainData={lossDatasets}
                         validationData={valLossDatasets}
                     />
-                    <Divider />
-                    <ConfussionMatrix
-                        validationDataset={validationDataset}
-                        model={model}
-                        graphModel={graphModel}
-                        classConfig={classConfig}
-                    />
+
+                    {report && logs.length === 0 ? (
+                        <>
+                            <Divider />
+                            <ConfussionMatrix
+                                validationDataset={report.splittedDataset.validation}
+                                model={model}
+                                graphModel={graphModel}
+                                classConfig={classConfig}
+                            />
+                        </>
+                    ) : null}
                 </Panel>
             </Collapse>
         </div>

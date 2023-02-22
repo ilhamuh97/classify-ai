@@ -26,6 +26,7 @@ const Main = () => {
     const [dataset, setDataset] = useState([]);
     const [graphModel, setGraphModel] = useState(null);
     const [model, setModel] = useState(null);
+    const [report, setReport] = useState(null);
     const [paramConfig, setParamConfig] = useState(paramConfigValue);
     const [dataAugmentationConfig, setDataAugmentationConfig] = useState(
         dataAugmentationConfigValue
@@ -59,6 +60,8 @@ const Main = () => {
                         setModel={setModel}
                         graphModel={graphModel}
                         setGraphModel={setGraphModel}
+                        setReport={setReport}
+                        report={report}
                     />
                 );
             case 3:

@@ -69,12 +69,18 @@ const ConfusionMatrix = ({ validationDataset, model, classConfig, graphModel }) 
             curve: 'straight'
         },
         yaxis: {
-            min: 0
+            min: 0,
+            title: {
+                text: 'Actual classification'
+            }
         },
         xaxis: {
             type: 'category',
             categories: classConfig.slice(0).map((c) => c.label),
-            position: 'top'
+            position: 'top',
+            title: {
+                text: 'Predicted classification'
+            }
         },
         colors: ['#008FFB'],
         title: {

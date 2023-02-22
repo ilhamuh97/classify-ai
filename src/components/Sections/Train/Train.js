@@ -13,7 +13,7 @@ import { DataAugmentationConfigContext } from '../../../contexts/DataAugmentatio
 import { ClassConfigContext } from '../../../contexts/ClassConfigContext';
 import styles from './Train.module.scss';
 
-const Train = ({ dataset, graphModel, setGraphModel, setModel }) => {
+const Train = ({ dataset, graphModel, setGraphModel, setModel, report, setReport }) => {
     const { paramConfig } = useContext(ParamConfigContext);
     const { dataAugmentationConfig } = useContext(DataAugmentationConfigContext);
     const { classConfig } = useContext(ClassConfigContext);
@@ -24,9 +24,7 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel }) => {
     const [isTrainingSucceed, setIsTrainingSucceed] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
     const [logs, setLogs] = useState([]);
-    const [models, setModels] = useState([]);
     const [baseModel, setBaseModel] = useState();
-    const [reports, setReports] = useState([]);
     const [progressMessage, setProgressMessage] = useState('');
     const [featureVectors, setFeatureVectors] = useState(null);
     const [keys, setKeys] = useState(null);
@@ -59,7 +57,13 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel }) => {
     useEffect(() => {
         if (!isTraining && isTrainingSucceed) {
             // store logs into the report history
-            setReports((current) => [...current, { modelIdx: models.length, logs: logs }]);
+            setReport({
+                logs: logs,
+                splittedDataset: splittedDataset,
+                model: baseModel,
+                graphModel: graphModel
+            });
+            setModel(baseModel);
             // clean up current logs
             setLogs([]);
         }
@@ -135,6 +139,7 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel }) => {
         shuffleCombo(combinedDataset);
         const { training, validation } = splitDataset(combinedDataset, 0.8);
         setSplittedDataset(structuredClone({ training: training, validation: validation }));
+        console.log(validation.length);
 
         const trainingImageFeatures = [];
         const trainingKeys = [];
@@ -165,7 +170,7 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel }) => {
         setKeys(null);
         setFeatureVectors(null);
         setGraphModel(null);
-        setModel(null);
+        setBaseModel(null);
         setState('SET_GRAPH_MODEL');
         setProgressMessage('Setting up graph model...');
         setAugmentedDataset([]);
@@ -208,8 +213,6 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel }) => {
         oneHotOutputsTraining.dispose();
         inputsAsTensorTraining.dispose();
 
-        setModels((current) => [...current, baseModel]);
-        setModel(baseModel);
         setState('DONE');
     }
 
@@ -361,27 +364,41 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel }) => {
                     loading={isTraining}>
                     Start Training
                 </Button>
-                {isTrainDisable ? <Alert message={infoMessage} type="info" /> : null}
+                {isTrainDisable ? <Alert message={infoMessage} type="warning" /> : null}
                 <span>{progressMessage}</span>
-                {isTraining && logs.length > 0 && logs ? (
+                {isTraining && logs.length > 0 ? (
                     <ProgressEpoch logs={logs} paramConfig={paramConfig} />
+                ) : null}
+                {isTraining && logs.length > 0 ? (
+                    <Alert
+                        message="Training is still in progress"
+                        description={`Accuracy: ${logs[logs.length - 1].lossAndAccuracy.acc.toFixed(
+                            3
+                        )}, Loss: ${logs[logs.length - 1].lossAndAccuracy.loss.toFixed(3)}`}
+                        type="info"
+                        showIcon
+                    />
                 ) : null}
                 {!isTraining && showAlert ? (
                     isTrainingSucceed ? (
                         logs.length === 0 ? (
-                            <SuccessAlert reports={reports} />
+                            <SuccessAlert report={report} />
                         ) : null
                     ) : (
                         <FailedAlert />
                     )
                 ) : null}
 
-                {!isTraining && showAlert && isTrainingSucceed && logs.length === 0 ? (
+                {(report || logs.length > 0) &&
+                state !== 'SET_GRAPH_MODEL' &&
+                state !== 'SET_MODEL' &&
+                state !== 'SET_AUGMENTED_DATA' &&
+                state !== 'SET_DATA' ? (
                     <Report
-                        reports={reports}
-                        validationDataset={splittedDataset.validation}
-                        model={baseModel}
-                        graphModel={graphModel}
+                        report={report}
+                        logs={logs}
+                        model={report?.model}
+                        graphModel={report?.graphModel}
                         classConfig={classConfig}
                     />
                 ) : null}
