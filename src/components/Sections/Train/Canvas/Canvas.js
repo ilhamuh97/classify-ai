@@ -9,6 +9,7 @@ const Canvas = ({
     setState
 }) => {
     const [i, setI] = useState(0);
+    const [copyNumbIndex, setCopyNumbIndex] = useState(1);
 
     useEffect(() => {
         setProgressMessage('Preparing feature vectors...');
@@ -112,9 +113,15 @@ const Canvas = ({
                 key: image.key
             }
         ]);
+
         if (i === dataset.length - 1) {
-            setState('SET_DATA');
-            p5.noLoop();
+            if (copyNumbIndex < dataAugmentationConfig.copyNumb) {
+                setI(0);
+                setCopyNumbIndex(copyNumbIndex + 1);
+            } else {
+                setState('SET_DATA');
+                p5.noLoop();
+            }
         } else {
             setI(i + 1);
         }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Sketch from 'react-p5';
-import { Form, Switch, Typography, Space, Button, Divider, Slider } from 'antd';
+import { Form, Switch, Typography, Space, Button, Divider, Slider, Select } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import styles from './DataAugConfig.module.scss';
 
@@ -152,6 +152,53 @@ const DataAugConfig = ({ dataAugmentationConfig, dataAugmentationFormHandler, da
                 </Form.Item>
                 {dataAugmentationConfig.isActive ? (
                     <>
+                        <Form.Item name="copyNumb" label="Copy Number">
+                            <Select
+                                placeholder="Please select the Optimizer"
+                                options={[
+                                    {
+                                        value: 1,
+                                        label: '1'
+                                    },
+                                    {
+                                        value: 2,
+                                        label: '2'
+                                    },
+                                    {
+                                        value: 3,
+                                        label: '3'
+                                    },
+                                    {
+                                        value: 4,
+                                        label: '4'
+                                    },
+                                    {
+                                        value: 5,
+                                        label: '5'
+                                    },
+                                    {
+                                        value: 6,
+                                        label: '6'
+                                    },
+                                    {
+                                        value: 7,
+                                        label: '7'
+                                    },
+                                    {
+                                        value: 8,
+                                        label: '8'
+                                    },
+                                    {
+                                        value: 9,
+                                        label: '9'
+                                    },
+                                    {
+                                        value: 10,
+                                        label: '10'
+                                    }
+                                ]}
+                            />
+                        </Form.Item>
                         <Form.Item name="noise" label="Noise">
                             <Slider min={0} max={1} step={0.01} marks={marks} />
                         </Form.Item>

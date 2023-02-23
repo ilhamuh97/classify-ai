@@ -317,12 +317,7 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel, report, setReport
                         <FailedAlert />
                     )
                 ) : null}
-
-                {(report || logs.length > 0) &&
-                state !== 'SET_GRAPH_MODEL' &&
-                state !== 'SET_MODEL' &&
-                state !== 'SET_AUGMENTED_DATA' &&
-                state !== 'SET_DATA' ? (
+                {(report && !isTraining) || (isTraining && logs.length > 0) ? (
                     <Report
                         report={report}
                         logs={logs}

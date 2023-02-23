@@ -1,5 +1,6 @@
 export const dataAugmentationConfigValue = {
     isActive: false,
+    copyNumb: 1,
     noise: 0.0,
     translationX: 0.0,
     translationY: 0.0,
