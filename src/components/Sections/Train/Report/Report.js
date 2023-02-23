@@ -4,7 +4,7 @@ import styles from './Report.module.scss';
 import LineChart from './LineChart/LineChart';
 import ConfussionMatrix from './ConfussionMatrix/ConfusionMatrix';
 
-const Report = ({ report, model, classConfig, graphModel, logs }) => {
+const Report = ({ report, logs }) => {
     const { Panel } = Collapse;
     const [reportedLogs, setReportedLogs] = useState(logs || report.logs);
 
@@ -50,10 +50,8 @@ const Report = ({ report, model, classConfig, graphModel, logs }) => {
                         <>
                             <Divider />
                             <ConfussionMatrix
-                                validationDataset={report.splittedDataset.validation}
-                                model={model}
-                                graphModel={graphModel}
-                                classConfig={classConfig}
+                                confusionMatrix={report.confusionMatrix}
+                                classConfig={report.classConfig}
                             />
                         </>
                     ) : null}

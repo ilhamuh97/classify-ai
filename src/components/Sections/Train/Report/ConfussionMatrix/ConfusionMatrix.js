@@ -1,15 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import * as tf from '@tensorflow/tfjs';
 import Chart from 'react-apexcharts';
-import { calculateFeaturesOnCurrentFrame } from '../../../../../helpers/helpers';
 
-const ConfusionMatrix = ({ validationDataset, model, classConfig, graphModel }) => {
-    const [confusionMatrix, setConfusionMatrix] = useState([]);
+const ConfusionMatrix = ({ classConfig, confusionMatrix }) => {
     const [data, setData] = useState([]);
-
-    useEffect(() => {
-        predictLoop();
-    }, []);
 
     useEffect(() => {
         if (confusionMatrix.length > 0) {
@@ -33,25 +26,6 @@ const ConfusionMatrix = ({ validationDataset, model, classConfig, graphModel }) 
             setData(data);
         }
     }, [confusionMatrix]);
-
-    const predictLoop = () => {
-        const labels = [];
-        const predictions = [];
-        tf.tidy(function () {
-            // Grab pixels from current VIDEO frame.
-            validationDataset.forEach((validation) => {
-                let imageFeatures = calculateFeaturesOnCurrentFrame(validation.data, graphModel);
-                // Resize video frame tensor to be 224 x 224 pixels which is needed by MobileNet for input.
-                let prediction = model.predict(imageFeatures.expandDims()).squeeze();
-                let highestIndex = prediction.argMax().arraySync();
-                predictions.push(highestIndex);
-                labels.push(validation.key);
-            });
-        });
-        setConfusionMatrix(
-            tf.math.confusionMatrix(labels, predictions, classConfig.length).arraySync()
-        );
-    };
 
     const option = {
         chart: {

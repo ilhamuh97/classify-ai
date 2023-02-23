@@ -24,18 +24,18 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel, report, setReport
     const { classConfig } = useContext(ClassConfigContext);
     const [isAugmenting, setIsAugmenting] = useState(false);
     const [state, setState] = useState('');
-    const [augmentedDataset, setAugmentedDataset] = useState([]);
+    const [progressMessage, setProgressMessage] = useState('');
+    const [infoMessage, setInfoMessage] = useState('');
     const [isTraining, setIsTraining] = useState(false);
     const [isTrainingSucceed, setIsTrainingSucceed] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
+    const [isTrainDisable, setIsTrainDisable] = useState(false);
+    const [augmentedDataset, setAugmentedDataset] = useState([]);
     const [logs, setLogs] = useState([]);
-    const [baseModel, setBaseModel] = useState();
-    const [progressMessage, setProgressMessage] = useState('');
+    const [splittedDataset, setSplittedDataset] = useState([]);
+    const [baseModel, setBaseModel] = useState(null);
     const [featureVectors, setFeatureVectors] = useState(null);
     const [keys, setKeys] = useState(null);
-    const [infoMessage, setInfoMessage] = useState('');
-    const [isTrainDisable, setIsTrainDisable] = useState(false);
-    const [splittedDataset, setSplittedDataset] = useState([]);
 
     useEffect(() => {
         trainIsDisable();
@@ -61,12 +61,31 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel, report, setReport
 
     useEffect(() => {
         if (!isTraining && isTrainingSucceed) {
+            const getConfusionMatrix = () => {
+                const labels = [];
+                const predictions = [];
+                tf.tidy(function () {
+                    // Grab pixels from current VIDEO frame.
+                    splittedDataset.validation.forEach((validation) => {
+                        let imageFeatures = calculateFeaturesOnCurrentFrame(
+                            validation.data,
+                            graphModel
+                        );
+                        // Resize video frame tensor to be 224 x 224 pixels which is needed by MobileNet for input.
+                        let prediction = baseModel.predict(imageFeatures.expandDims()).squeeze();
+                        let highestIndex = prediction.argMax().arraySync();
+                        predictions.push(highestIndex);
+                        labels.push(validation.key);
+                    });
+                });
+                return tf.math.confusionMatrix(labels, predictions, classConfig.length).arraySync();
+            };
+
             // store logs into the report history
             setReport({
                 logs: logs,
-                splittedDataset: splittedDataset,
-                model: baseModel,
-                graphModel: graphModel
+                classConfig: classConfig,
+                confusionMatrix: getConfusionMatrix()
             });
             setModel(baseModel);
             // clean up current logs
@@ -318,13 +337,7 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel, report, setReport
                     )
                 ) : null}
                 {(report && !isTraining) || (isTraining && logs.length > 0) ? (
-                    <Report
-                        report={report}
-                        logs={logs}
-                        model={report?.model}
-                        graphModel={report?.graphModel}
-                        classConfig={classConfig}
-                    />
+                    <Report report={report} logs={logs} />
                 ) : null}
             </Space>
         </div>
