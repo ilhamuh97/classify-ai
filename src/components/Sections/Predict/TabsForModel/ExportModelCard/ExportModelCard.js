@@ -54,7 +54,7 @@ const ExportModelCard = ({ model, classConfig }) => {
                     type="primary"
                     shape="round"
                     disabled={!model}>
-                    Export
+                    Download
                 </Button>
             </Card>
         </div>

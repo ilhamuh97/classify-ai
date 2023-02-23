@@ -31,14 +31,23 @@ const ImportModelCard = ({ setImportedClassConfig, setImportedModel }) => {
         const filteredFile = file.fileList.filter(
             (f) => f.type === 'application/macbinary' || f.type === 'application/json'
         );
+        console.log(
+            filteredFile.map((f) => {
+                if (f.type === 'application/json' || f.type === 'application/macbinary') {
+                    return f.originFileObj;
+                }
+            })
+        );
         try {
-            const model = await tf.loadLayersModel(
-                tf.io.browserFiles([
-                    filteredFile.find((f) => f.type === 'application/json').originFileObj,
-                    filteredFile.find((f) => f.type === 'application/macbinary').originFileObj
-                ])
+            const model = await tf.loadGraphModel(
+                tf.io.browserFiles(
+                    filteredFile.map((f) => {
+                        if (f.type === 'application/json' || f.type === 'application/macbinary') {
+                            return f.originFileObj;
+                        }
+                    })
+                )
             );
-            model.summary();
             setImportedClassConfig(classes);
             setImportedModel(model);
         } catch (error) {
@@ -51,8 +60,13 @@ const ImportModelCard = ({ setImportedClassConfig, setImportedModel }) => {
             <Card title="Import your model">
                 <Typography>
                     <Typography.Paragraph>
-                        In order to import your model, you have to import 3 files, which are
-                        model.weights.bin, model.json, and classes.txt
+                        In order to import your model, you have to import 3 type of files, which
+                        are:
+                        <ul>
+                            <li>model.json</li>
+                            <li>model.weights.bin</li>
+                            <li>classes.txt</li>
+                        </ul>
                     </Typography.Paragraph>
                 </Typography>
                 <Upload directory onChange={handleChange} beforeUpload={beforeUpload}>

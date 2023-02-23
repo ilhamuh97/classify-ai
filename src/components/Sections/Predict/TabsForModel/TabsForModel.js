@@ -24,7 +24,6 @@ const TabsForModel = ({ model, classConfig, setImportedClassConfig, setImportedM
                 </span>
             ),
             key: '2',
-            disabled: true,
             children: (
                 <ImportModelCard
                     setImportedClassConfig={setImportedClassConfig}

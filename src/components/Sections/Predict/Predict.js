@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import DisplayWrapper from './DisplayWrapper/DisplayWrapper';
 import * as tf from '@tensorflow/tfjs';
-import styles from './Predict.module.scss';
 import SectionHeader from '../../common/SectionHeader/SectionHeader';
 import TabsForModel from './TabsForModel/TabsForModel';
+import PredictConfig from './PredictConfig/PredictConfig';
 import { Divider, Space } from 'antd';
 import { predictContext as headerContext } from '../../../assets/text/headerText/headerText';
 import { ClassConfigContext } from '../../../contexts/ClassConfigContext';
 import { ParamConfigContext } from '../../../contexts/ParamConfigContext';
 import { calculateFeaturesOnCurrentFrame } from '../../../helpers/helpers';
+import { predictConfigValue } from '../../../assets/initialValues/initialValues';
+import styles from './Predict.module.scss';
 
-const Predict = ({ model, graphModel, setGraphModel }) => {
+const Predict = ({ model, graphModel }) => {
     const { paramConfig } = useContext(ParamConfigContext);
     const { classConfig } = useContext(ClassConfigContext);
     const intervalRef = useRef(null);
@@ -20,12 +22,14 @@ const Predict = ({ model, graphModel, setGraphModel }) => {
     const [predictionClass, setPredictClass] = useState('');
     const [importedModel, setImportedModel] = useState(null);
     const [importedClassConfig, setImportedClassConfig] = useState(null);
-
+    const [predictConfig, setPredictConfig] = useState(predictConfigValue);
+    const [localGraphModel, setLocalGraphModel] = useState(null);
+    console.log(predictConfigValue);
     useEffect(() => {
-        if (importedModel && !graphModel) {
+        if (predictConfigValue.useImportedModel && !predictConfigValue.graphModelName) {
             initialGraphModel();
         }
-    }, [importedModel]);
+    }, [predictConfigValue]);
 
     useEffect(() => {
         return () => {
@@ -49,7 +53,7 @@ const Predict = ({ model, graphModel, setGraphModel }) => {
 
     const initialGraphModel = () => {
         const loadMobileNetFeatureModel = async () => {
-            const model = paramConfig.model;
+            const model = predictConfigValue.graphModelName || paramConfig.model;
             const URL = JSON.parse(model).URL;
             const mobilenet = await tf.loadGraphModel(URL, { fromTFHub: true });
             // Warm up the model by passing zeros through it once.
@@ -57,7 +61,7 @@ const Predict = ({ model, graphModel, setGraphModel }) => {
         };
         loadMobileNetFeatureModel()
             .then((result) => {
-                setGraphModel(result);
+                setLocalGraphModel(result);
                 console.log('Tensors in memory after graph loaded: ' + tf.memory().numTensors);
             })
             .catch((e) => {
@@ -80,23 +84,47 @@ const Predict = ({ model, graphModel, setGraphModel }) => {
             webcamRef.current.video.height = videoHeight;
 
             tf.tidy(function () {
-                let imageFeatures = calculateFeaturesOnCurrentFrame(video, graphModel);
-                let prediction;
-                if (importedModel) {
-                    prediction = importedModel.predict(imageFeatures.expandDims()).squeeze();
-                } else {
-                    prediction = model.predict(imageFeatures.expandDims()).squeeze();
-                }
-                let highestIndex = prediction.argMax().arraySync();
-                let predictionArray = prediction.arraySync();
+                if (!predictConfigValue.useImportedModel) {
+                    let imageFeatures = calculateFeaturesOnCurrentFrame(video, graphModel);
+                    let prediction = model.predict(imageFeatures.expandDims()).squeeze();
 
-                setPredictionPercent(Math.floor(predictionArray[highestIndex] * 100));
-                if (importedClassConfig) {
-                    setPredictClass(importedClassConfig[highestIndex].label);
-                } else {
+                    let highestIndex = prediction.argMax().arraySync();
+                    let predictionArray = prediction.arraySync();
+
+                    setPredictionPercent(Math.floor(predictionArray[highestIndex] * 100));
                     setPredictClass(classConfig[highestIndex].label);
+                } else {
+                    if (predictConfigValue.graphModelName) {
+                        let imageFeatures = calculateFeaturesOnCurrentFrame(video, localGraphModel);
+                        let prediction = importedModel
+                            .predict(imageFeatures.expandDims())
+                            .squeeze();
+
+                        let highestIndex = prediction.argMax().arraySync();
+                        let predictionArray = prediction.arraySync();
+
+                        setPredictionPercent(Math.floor(predictionArray[highestIndex] * 100));
+                        setPredictClass(importedClassConfig[highestIndex].label);
+                    } else {
+                        let imageAsTensor = tf.browser.fromPixels(video);
+                        // Resize video frame tensor to be 224 x 224 pixels which is needed by MobileNet for input.
+                        let resizedTensorFrame = tf.image.resizeBilinear(
+                            imageAsTensor,
+                            [predictConfigValue.inputDimension, predictConfigValue.inputDimension],
+                            true
+                        );
+                        let normalizedTensorFrame = resizedTensorFrame.div(255);
+                        let prediction = importedModel
+                            .predict(normalizedTensorFrame.expandDims())
+                            .squeeze();
+
+                        let highestIndex = prediction.argMax().arraySync();
+                        let predictionArray = prediction.arraySync();
+                        setPredictionPercent(Math.floor(predictionArray[highestIndex]));
+                        setPredictClass(importedClassConfig[highestIndex].label);
+                    }
                 }
-                setPredictClass(classConfig[highestIndex].label);
+
                 /*
                     const innerText =
                         'Prediction: ' +
@@ -129,7 +157,9 @@ const Predict = ({ model, graphModel, setGraphModel }) => {
                 predictionClass={predictionClass}
                 predictionPercent={predictionPercent}
             />
-            <Divider />
+            <Divider orientation="left">Prediction Setting</Divider>
+            <PredictConfig predictConfig={predictConfig} setPredictConfig={setPredictConfig} />
+            <Divider orientation="left">Export or Import Model</Divider>
             <TabsForModel
                 model={model}
                 classConfig={classConfig}
