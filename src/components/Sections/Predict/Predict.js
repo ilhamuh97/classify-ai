@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import DisplayWrapper from './DisplayWrapper/DisplayWrapper';
-import { Divider, Space } from 'antd';
 import * as tf from '@tensorflow/tfjs';
 import styles from './Predict.module.scss';
 import SectionHeader from '../../common/SectionHeader/SectionHeader';
+import TabsForModel from './TabsForModel/TabsForModel';
+import { Divider, Space } from 'antd';
 import { predictContext as headerContext } from '../../../assets/text/headerText/headerText';
 import { ClassConfigContext } from '../../../contexts/ClassConfigContext';
 import { ParamConfigContext } from '../../../contexts/ParamConfigContext';
-import TabsForModel from './TabsForModel/TabsForModel';
+import { calculateFeaturesOnCurrentFrame } from '../../../helpers/helpers';
 
 const Predict = ({ model, graphModel, setGraphModel }) => {
     const { paramConfig } = useContext(ParamConfigContext);
@@ -64,23 +65,6 @@ const Predict = ({ model, graphModel, setGraphModel }) => {
             });
     };
 
-    function calculateFeaturesOnCurrentFrame(video) {
-        if (graphModel) {
-            return tf.tidy(function () {
-                // Grab pixels from current VIDEO frame.
-                let videoFrameAsTensor = tf.browser.fromPixels(video);
-                // Resize video frame tensor to be 224 x 224 pixels which is needed by MobileNet for input.
-                let resizedTensorFrame = tf.image.resizeBilinear(
-                    videoFrameAsTensor,
-                    [224, 224],
-                    true
-                );
-                let normalizedTensorFrame = resizedTensorFrame.div(255);
-                return graphModel.predict(normalizedTensorFrame.expandDims()).squeeze();
-            });
-        }
-    }
-
     /**
      *  Make live predictions from webcam once trained.
      **/
@@ -96,7 +80,7 @@ const Predict = ({ model, graphModel, setGraphModel }) => {
             webcamRef.current.video.height = videoHeight;
 
             tf.tidy(function () {
-                let imageFeatures = calculateFeaturesOnCurrentFrame(video);
+                let imageFeatures = calculateFeaturesOnCurrentFrame(video, graphModel);
                 let prediction;
                 if (importedModel) {
                     prediction = importedModel.predict(imageFeatures.expandDims()).squeeze();

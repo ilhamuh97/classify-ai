@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import * as tf from '@tensorflow/tfjs';
 import Chart from 'react-apexcharts';
+import { calculateFeaturesOnCurrentFrame } from '../../../../../helpers/helpers';
 
 const ConfusionMatrix = ({ validationDataset, model, classConfig, graphModel }) => {
     const [confusionMatrix, setConfusionMatrix] = useState([]);
@@ -15,26 +16,23 @@ const ConfusionMatrix = ({ validationDataset, model, classConfig, graphModel }) 
             const data = confusionMatrix
                 .slice(0)
                 .reverse()
-                .map((confusionMatrixData, i) => ({
-                    name: classConfig[confusionMatrixData.length - 1 - i].label,
-                    data: confusionMatrixData
-                }));
+                .map((confusionMatrixData, i) => {
+                    const newConfusionMatrixData = confusionMatrixData.map((val) => {
+                        const total = confusionMatrixData.reduce(
+                            (accumulator, currValue) => accumulator + currValue,
+                            0
+                        );
+                        return parseFloat((val / total).toFixed(3));
+                    });
+
+                    return {
+                        name: classConfig[confusionMatrixData.length - 1 - i].label,
+                        data: newConfusionMatrixData
+                    };
+                });
             setData(data);
         }
     }, [confusionMatrix]);
-
-    function calculateFeaturesOnCurrentFrame(img) {
-        return tf.tidy(function () {
-            // Grab pixels from current VIDEO frame.
-            let imageFrameAsTensor = tf.browser.fromPixels(img);
-            // Resize video frame tensor to be 224 x 224 pixels which is needed by MobileNet for input.
-            let resizedTensorFrame = tf.image.resizeBilinear(imageFrameAsTensor, [224, 224], true);
-
-            let normalizedTensorFrame = resizedTensorFrame.div(255);
-
-            return graphModel.predict(normalizedTensorFrame.expandDims()).squeeze();
-        });
-    }
 
     const predictLoop = () => {
         const labels = [];
@@ -42,7 +40,7 @@ const ConfusionMatrix = ({ validationDataset, model, classConfig, graphModel }) 
         tf.tidy(function () {
             // Grab pixels from current VIDEO frame.
             validationDataset.forEach((validation) => {
-                let imageFeatures = calculateFeaturesOnCurrentFrame(validation.data);
+                let imageFeatures = calculateFeaturesOnCurrentFrame(validation.data, graphModel);
                 // Resize video frame tensor to be 224 x 224 pixels which is needed by MobileNet for input.
                 let prediction = model.predict(imageFeatures.expandDims()).squeeze();
                 let highestIndex = prediction.argMax().arraySync();

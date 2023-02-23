@@ -11,6 +11,11 @@ import { trainContext as headerContext } from '../../../assets/text/headerText/h
 import { ParamConfigContext } from '../../../contexts/ParamConfigContext';
 import { DataAugmentationConfigContext } from '../../../contexts/DataAugmentationConfigContext';
 import { ClassConfigContext } from '../../../contexts/ClassConfigContext';
+import {
+    shuffleCombo,
+    splitDataset,
+    calculateFeaturesOnCurrentFrame
+} from '../../../helpers/helpers';
 import styles from './Train.module.scss';
 
 const Train = ({ dataset, graphModel, setGraphModel, setModel, report, setReport }) => {
@@ -139,7 +144,6 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel, report, setReport
         shuffleCombo(combinedDataset);
         const { training, validation } = splitDataset(combinedDataset, 0.8);
         setSplittedDataset(structuredClone({ training: training, validation: validation }));
-        console.log(validation.length);
 
         const trainingImageFeatures = [];
         const trainingKeys = [];
@@ -147,11 +151,11 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel, report, setReport
         const validationKeys = [];
 
         training.forEach((d) => {
-            trainingImageFeatures.push(calculateFeaturesOnCurrentFrame(d.data));
+            trainingImageFeatures.push(calculateFeaturesOnCurrentFrame(d.data, graphModel));
             trainingKeys.push(d.key);
         });
         validation.forEach((d) => {
-            validationImageFeatures.push(calculateFeaturesOnCurrentFrame(d.data));
+            validationImageFeatures.push(calculateFeaturesOnCurrentFrame(d.data, graphModel));
             validationKeys.push(d.key);
         });
         setFeatureVectors({
@@ -176,19 +180,7 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel, report, setReport
         setAugmentedDataset([]);
     };
 
-    const calculateFeaturesOnCurrentFrame = (img) => {
-        return tf.tidy(function () {
-            // Grab pixels from current VIDEO frame.
-            let imageAsTensor = tf.browser.fromPixels(img);
-            // Resize video frame tensor to be 224 x 224 pixels which is needed by MobileNet for input.
-            let resizedTensorFrame = tf.image.resizeBilinear(imageAsTensor, [224, 224], true);
-
-            let normalizedTensorFrame = resizedTensorFrame.div(255);
-            return graphModel.predict(normalizedTensorFrame.expandDims()).squeeze();
-        });
-    };
-
-    async function trainAndPredict(keys, featureVectors) {
+    const trainAndPredict = async (keys, featureVectors) => {
         // Training
         let outputsAsTensorTraining = tf.tensor1d(keys.training, 'int32');
         let oneHotOutputsTraining = tf.oneHot(outputsAsTensorTraining, classConfig.length);
@@ -214,37 +206,7 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel, report, setReport
         inputsAsTensorTraining.dispose();
 
         setState('DONE');
-    }
-
-    const splitDataset = (input, ratio) => {
-        const splitter = Math.ceil(input.length * ratio);
-        const trainingDataset = input.slice(0, splitter);
-        const validationDataset = input.slice(splitter);
-        return {
-            training: trainingDataset,
-            validation: validationDataset
-        };
     };
-
-    /*
-    const splitDataset = (input, output, ratio) => {
-        const splitter = Math.ceil(input.length * ratio);
-        const trainingInputDataset = input.slice(0, splitter);
-        const validationInputDataset = input.slice(splitter);
-        const trainingOutputDataset = output.slice(0, splitter);
-        const validationOutputDataset = output.slice(splitter);
-        return {
-            training: {
-                trainingInputDataset,
-                trainingOutputDataset
-            },
-            validation: {
-                validationInputDataset,
-                validationOutputDataset
-            }
-        };
-    };
-    */
 
     const resetStates = () => {
         // setup finish training parameter
@@ -255,39 +217,6 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel, report, setReport
         setState('');
         setIsAugmenting(false);
     };
-
-    function shuffleCombo(array, array2 = []) {
-        if (array2.length != 0) {
-            if (array.length !== array2.length) {
-                throw new Error(
-                    `Array sizes must match to be shuffled together ` +
-                        `First array length was ${array.length}` +
-                        `Second array length was ${array2.length}`
-                );
-            }
-        }
-
-        let counter = array.length;
-        let index = 0;
-        // While there are elements in the array
-        while (counter > 0) {
-            // Pick a random index
-            index = (Math.random() * counter) | 0;
-            // Decrease counter by 1
-            counter--;
-            // And swap the last element of each array with it
-            swap(array, counter, index);
-            if (array2.length != 0) {
-                swap(array2, counter, index);
-            }
-        }
-    }
-
-    function swap(object, left, right) {
-        const temp = object[left];
-        object[left] = object[right];
-        object[right] = temp;
-    }
 
     /**
      * Log training progress.
