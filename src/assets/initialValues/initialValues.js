@@ -33,3 +33,59 @@ export const paramConfigValue = {
     epochs: 10,
     batchSize: 4
 };
+
+export const graphModelOptions = [
+    {
+        value: JSON.stringify({
+            inputShape: 1024,
+            URL: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_075_224/feature_vector/5/default/1'
+        }),
+        label: 'mobilenet small 075 224'
+    },
+    {
+        value: JSON.stringify({
+            inputShape: 1024,
+            URL: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_100_224/feature_vector/5/default/1'
+        }),
+        label: 'mobilenet small 100 224'
+    },
+    {
+        value: JSON.stringify({
+            inputShape: 1280,
+            URL: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_large_075_224/feature_vector/5/default/1'
+        }),
+        label: 'mobilenet large 075 224'
+    },
+    {
+        value: JSON.stringify({
+            inputShape: 1280,
+            URL: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_large_100_224/feature_vector/5/default/1'
+        }),
+        label: 'mobilenet large 100 224'
+    },
+    {
+        value: JSON.stringify({
+            inputShape: 2048,
+            URL: 'https://tfhub.dev/google/tfjs-model/imagenet/inception_v3/feature_vector/3/default/1'
+        }),
+        label: 'inception'
+    },
+    {
+        value: JSON.stringify({
+            inputShape: 2048,
+            URL: 'https://tfhub.dev/google/tfjs-model/inaturalist/inception_v3/feature_vector/3/default/1'
+        }),
+        label: 'inception (from iNaturalist dataset)'
+    }
+];
+
+export const optimizerOptions = [
+    {
+        value: 'adam',
+        label: 'Adam'
+    },
+    {
+        value: 'sgd',
+        label: 'SGD'
+    }
+];

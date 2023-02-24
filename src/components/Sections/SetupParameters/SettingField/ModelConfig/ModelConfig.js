@@ -1,4 +1,8 @@
 import React from 'react';
+import {
+    graphModelOptions,
+    optimizerOptions
+} from '../../../../../assets/initialValues/initialValues';
 import { Select, Form, InputNumber } from 'antd';
 
 const ModelConfig = ({ paramConfig, modelFormHandler }) => {
@@ -19,53 +23,7 @@ const ModelConfig = ({ paramConfig, modelFormHandler }) => {
                     color: '#000000',
                     title: 'This model generates feature vectors for each image in the dataset and uses these vectors to train its own parameters.'
                 }}>
-                <Select
-                    placeholder="Please select the Model"
-                    options={[
-                        {
-                            value: JSON.stringify({
-                                inputShape: 1024,
-                                URL: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_075_224/feature_vector/5/default/1'
-                            }),
-                            label: 'mobilenet small 075 224'
-                        },
-                        {
-                            value: JSON.stringify({
-                                inputShape: 1024,
-                                URL: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_100_224/feature_vector/5/default/1'
-                            }),
-                            label: 'mobilenet small 100 224'
-                        },
-                        {
-                            value: JSON.stringify({
-                                inputShape: 1280,
-                                URL: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_large_075_224/feature_vector/5/default/1'
-                            }),
-                            label: 'mobilenet large 075 224'
-                        },
-                        {
-                            value: JSON.stringify({
-                                inputShape: 1280,
-                                URL: 'https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_large_100_224/feature_vector/5/default/1'
-                            }),
-                            label: 'mobilenet large 100 224'
-                        },
-                        {
-                            value: JSON.stringify({
-                                inputShape: 2048,
-                                URL: 'https://tfhub.dev/google/tfjs-model/imagenet/inception_v3/feature_vector/3/default/1'
-                            }),
-                            label: 'inception'
-                        },
-                        {
-                            value: JSON.stringify({
-                                inputShape: 2048,
-                                URL: 'https://tfhub.dev/google/tfjs-model/inaturalist/inception_v3/feature_vector/3/default/1'
-                            }),
-                            label: 'inception (from iNaturalist dataset)'
-                        }
-                    ]}
-                />
+                <Select placeholder="Please select the Model" options={graphModelOptions} />
             </Form.Item>
             <Form.Item
                 name="optimizer"
@@ -74,19 +32,7 @@ const ModelConfig = ({ paramConfig, modelFormHandler }) => {
                     color: '#000000',
                     title: 'An optimizer is a technique used in machine learning to minimize the loss/error during model training by updating its parameters.'
                 }}>
-                <Select
-                    placeholder="Please select the Optimizer"
-                    options={[
-                        {
-                            value: 'adam',
-                            label: 'Adam'
-                        },
-                        {
-                            value: 'sgd',
-                            label: 'SGD'
-                        }
-                    ]}
-                />
+                <Select placeholder="Please select the Optimizer" options={optimizerOptions} />
             </Form.Item>
             <Form.Item
                 name="learningRate"
