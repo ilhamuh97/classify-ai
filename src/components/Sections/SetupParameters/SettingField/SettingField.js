@@ -22,7 +22,7 @@ const SettingField = ({ dataset }) => {
     return (
         <div className={styles.settingField}>
             <Collapse defaultActiveKey={['1']} accordion expandIconPosition="end">
-                <Collapse.Panel header="Model configuration" key="1">
+                <Collapse.Panel header="Training configuration" key="1">
                     <ModelConfig paramConfig={paramConfig} modelFormHandler={modelFormHandler} />
                 </Collapse.Panel>
                 <Collapse.Panel header="Data Augmentation configuration" key="2">
