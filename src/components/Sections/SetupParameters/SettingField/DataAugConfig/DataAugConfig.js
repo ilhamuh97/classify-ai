@@ -152,7 +152,7 @@ const DataAugConfig = ({ dataAugmentationConfig, dataAugmentationFormHandler, da
                 </Form.Item>
                 {dataAugmentationConfig.isActive ? (
                     <>
-                        <Form.Item name="copyNumb" label="Copy Number">
+                        <Form.Item name="copyNumb" label="Copy number">
                             <Select
                                 placeholder="Please select the Optimizer"
                                 options={[
