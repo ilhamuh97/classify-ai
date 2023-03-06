@@ -95,14 +95,13 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel, report, setReport
 
     const initialGraphModel = () => {
         setProgressMessage('Preparing graph model...');
-        const loadMobileNetFeatureModel = async () => {
+        const loadFeatureModel = async () => {
             const model = paramConfig.model;
             const URL = JSON.parse(model).URL;
-            const mobilenet = await tf.loadGraphModel(URL, { fromTFHub: true });
-            // Warm up the model by passing zeros through it once.
-            return mobilenet;
+            const loadedGraphModel = await tf.loadGraphModel(URL, { fromTFHub: true });
+            return loadedGraphModel;
         };
-        loadMobileNetFeatureModel()
+        loadFeatureModel()
             .then((result) => {
                 setGraphModel(result);
                 setProgressMessage('Preparing model...');
@@ -129,6 +128,7 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel, report, setReport
     };
 
     const initialModel = () => {
+        // get parameters from config
         const learningRate = paramConfig.learningRate;
         const optimizer = getOptimizer(paramConfig.optimizer, learningRate);
         const modelConfig = {
@@ -138,12 +138,13 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel, report, setReport
         };
         const model = paramConfig.model;
         const inputShape = JSON.parse(model).inputShape;
+        // create model layers
         const currModel = tf.sequential();
         currModel.add(
             tf.layers.dense({ inputShape: [inputShape], units: 128, activation: 'relu' })
         );
         currModel.add(tf.layers.dense({ units: classConfig.length, activation: 'softmax' }));
-        currModel.summary();
+        // compile model
         currModel.compile(modelConfig);
         setBaseModel(currModel);
         const message = dataAugmentationConfig.isActive
