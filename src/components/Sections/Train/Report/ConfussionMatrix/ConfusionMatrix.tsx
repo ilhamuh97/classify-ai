@@ -1,79 +1,63 @@
-import { useState, useEffect } from 'react';
-import Chart from 'react-apexcharts';
-import { ApexOptions } from 'apexcharts';
-import { ClassConfigItem } from '../../../../../types';
+import { cn } from '@/lib/utils';
+import { ClassConfigItem } from '@/types.ts';
 
 interface ConfusionMatrixProps {
     classConfig: ClassConfigItem[];
     confusionMatrix: number[][];
 }
 
-interface HeatmapSeriesItem {
-    name: string;
-    data: number[];
-}
-
 const ConfusionMatrix = ({ classConfig, confusionMatrix }: ConfusionMatrixProps) => {
-    const [data, setData] = useState<HeatmapSeriesItem[]>([]);
+    const rows = confusionMatrix.map((row) => {
+        const total = row.reduce((sum, value) => sum + value, 0) || 1;
+        return row.map((value) => value / total);
+    });
 
-    useEffect(() => {
-        if (confusionMatrix.length > 0) {
-            const data = confusionMatrix
-                .slice(0)
-                .reverse()
-                .map((confusionMatrixData, i) => {
-                    const newConfusionMatrixData = confusionMatrixData.map((val) => {
-                        const total = confusionMatrixData.reduce(
-                            (accumulator, currValue) => accumulator + currValue,
-                            0
-                        );
-                        return parseFloat((val / total).toFixed(3));
-                    });
-
-                    return {
-                        name: classConfig[confusionMatrixData.length - 1 - i].label,
-                        data: newConfusionMatrixData
-                    };
-                });
-            setData(data);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [confusionMatrix]);
-
-    const option: ApexOptions = {
-        chart: {
-            type: 'heatmap'
-        },
-        dataLabels: {
-            enabled: true,
-            style: {
-                colors: ['#000']
-            }
-        },
-        stroke: {
-            curve: 'straight'
-        },
-        yaxis: {
-            min: 0,
-            title: {
-                text: 'Actual classification'
-            }
-        },
-        xaxis: {
-            type: 'category',
-            categories: classConfig.slice(0).map((c) => c.label),
-            position: 'top',
-            title: {
-                text: 'Predicted classification'
-            }
-        },
-        colors: ['#008FFB'],
-        title: {
-            text: 'Confusion Matrix'
-        }
-    };
-
-    return <Chart options={option} series={data} type="heatmap" height={350} />;
+    return (
+        <div className="grid gap-2">
+            <h4 className="font-mono text-xs uppercase tracking-wide text-muted-foreground">
+                Confusion matrix
+            </h4>
+            <div className="overflow-x-auto">
+                <table className="border-collapse text-xs">
+                    <thead>
+                        <tr>
+                            <th className="p-1" />
+                            {classConfig.map((c) => (
+                                <th key={c.key} className="w-16 truncate p-1 font-mono font-medium">
+                                    {c.label}
+                                </th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {rows.map((row, i) => (
+                            <tr key={classConfig[i]?.key ?? i}>
+                                <th className="truncate p-1 text-right font-mono font-medium">
+                                    {classConfig[i]?.label}
+                                </th>
+                                {row.map((value, j) => (
+                                    <td
+                                        key={j}
+                                        className={cn(
+                                            'size-14 border border-border text-center font-mono tabular-nums',
+                                            value > 0.55 && 'text-white'
+                                        )}
+                                        style={{
+                                            backgroundColor: `color-mix(in srgb, var(--brand-focus) ${Math.round(value * 85)}%, var(--card))`
+                                        }}>
+                                        {value.toFixed(2)}
+                                    </td>
+                                ))}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+            <p className="font-mono text-[0.65rem] uppercase tracking-wide text-muted-foreground">
+                Rows: actual class · Columns: predicted class
+            </p>
+        </div>
+    );
 };
 
 export default ConfusionMatrix;

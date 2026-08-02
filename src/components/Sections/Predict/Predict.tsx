@@ -1,16 +1,15 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState, useContext } from 'react';
+import { Dispatch, SetStateAction, useContext, useEffect, useRef, useState } from 'react';
 import Webcam from 'react-webcam';
 import DisplayWrapper from './DisplayWrapper/DisplayWrapper';
 import * as tf from '@tensorflow/tfjs';
-import styles from './Predict.module.scss';
 import SectionHeader from '../../common/SectionHeader/SectionHeader';
 import TabsForModel from './TabsForModel/TabsForModel';
-import { Divider, Space } from 'antd';
+import { Separator } from '@/components/ui/separator';
 import { predictContext as headerContext } from '../../../assets/text/headerText/headerText';
-import { ClassConfigContext } from '../../../contexts/ClassConfigContext';
-import { ParamConfigContext } from '../../../contexts/ParamConfigContext';
-import { calculateFeaturesOnCurrentFrame } from '../../../helpers/helpers';
-import { ClassConfigItem } from '../../../types';
+import { ClassConfigContext } from '@/contexts/ClassConfigContext.ts';
+import { ParamConfigContext } from '@/contexts/ParamConfigContext.ts';
+import { calculateFeaturesOnCurrentFrame } from '@/helpers/helpers.ts';
+import { ClassConfigItem } from '@/types.ts';
 
 interface PredictProps {
     model: tf.LayersModel | null;
@@ -27,9 +26,7 @@ const Predict = ({ model, graphModel, setGraphModel }: PredictProps) => {
     const [predictionPercent, setPredictionPercent] = useState(0);
     const [predictionClass, setPredictClass] = useState('');
     const [importedModel, setImportedModel] = useState<tf.LayersModel | null>(null);
-    const [importedClassConfig, setImportedClassConfig] = useState<ClassConfigItem[] | null>(
-        null
-    );
+    const [importedClassConfig, setImportedClassConfig] = useState<ClassConfigItem[] | null>(null);
 
     useEffect(() => {
         if (importedModel && !graphModel) {
@@ -48,10 +45,9 @@ const Predict = ({ model, graphModel, setGraphModel }: PredictProps) => {
     useEffect(() => {
         if (model || importedModel) {
             if (isCameraOn) {
-                const id = window.setInterval(() => {
+                intervalRef.current = window.setInterval(() => {
                     predictLoop();
                 }, 100);
-                intervalRef.current = id;
             } else {
                 clearInterval(intervalRef.current);
             }
@@ -63,9 +59,9 @@ const Predict = ({ model, graphModel, setGraphModel }: PredictProps) => {
         const loadMobileNetFeatureModel = async () => {
             const model = paramConfig.model;
             const URL = JSON.parse(model).URL;
-            const mobilenet = await tf.loadGraphModel(URL, { fromTFHub: true });
+
             // Warm up the model by passing zeros through it once.
-            return mobilenet;
+            return await tf.loadGraphModel(URL, { fromTFHub: true });
         };
         loadMobileNetFeatureModel()
             .then((result) => {
@@ -126,16 +122,12 @@ const Predict = ({ model, graphModel, setGraphModel }: PredictProps) => {
     };
 
     return (
-        <div className={styles.testModel}>
-            <Space size="small" direction="vertical" className={styles.layout}>
-                <div className={styles.sectionHeader}>
-                    <SectionHeader
-                        title={headerContext.title}
-                        subTitle={headerContext.subTitle}
-                        stepStatus={headerContext.stepStatus}
-                    />
-                </div>
-            </Space>
+        <div className="grid gap-8">
+            <SectionHeader
+                title={headerContext.title}
+                subTitle={headerContext.subTitle}
+                stepStatus={headerContext.stepStatus}
+            />
             <DisplayWrapper
                 isCameraOn={isCameraOn}
                 setIsCameraOn={setIsCameraOn}
@@ -143,7 +135,7 @@ const Predict = ({ model, graphModel, setGraphModel }: PredictProps) => {
                 predictionClass={predictionClass}
                 predictionPercent={predictionPercent}
             />
-            <Divider />
+            <Separator />
             <TabsForModel
                 model={model}
                 classConfig={classConfig}

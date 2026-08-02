@@ -1,19 +1,12 @@
-import {
-    Dispatch,
-    RefObject,
-    SetStateAction,
-    useEffect,
-    useRef,
-    useState
-} from 'react';
+import { Dispatch, RefObject, SetStateAction, useEffect, useRef, useState } from 'react';
 import Webcam from 'react-webcam';
+import { toast } from 'sonner';
 import SamplesSection from './SamplesSection/SamplesSection';
 import CanvasWrapper from './CanvasWrapper/CanvasWrapper';
 import ClassTitle from './ClassTitle/ClassTitle';
-import { Typography, Divider, message } from 'antd';
+import { Separator } from '@/components/ui/separator';
 import AddDataset from './AddDataset/AddDataset';
-import { ClassConfigItem, CroppedImage, DatasetItem } from '../../../../../types';
-import styles from './Class.module.scss';
+import { ClassConfigItem, CroppedImage, DatasetItem } from '@/types.ts';
 
 interface ClassProps {
     config: ClassConfigItem;
@@ -24,8 +17,14 @@ interface ClassProps {
     canvasRef: RefObject<HTMLCanvasElement | null>;
 }
 
-const Class = ({ config, dataset, setDataset, classConfig, setClassConfig, canvasRef }: ClassProps) => {
-    const { Title } = Typography;
+const Class = ({
+    config,
+    dataset,
+    setDataset,
+    classConfig,
+    setClassConfig,
+    canvasRef
+}: ClassProps) => {
     const [editableTitle, setEditableTitle] = useState('');
     const [isRecord, setIsRecord] = useState(false);
     const intervalRef = useRef<number | undefined>(undefined);
@@ -69,7 +68,7 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig, canva
             });
         setDataset(newDataset);
         setClassConfig(newClasses);
-        message.success(`'${foundedClass[0].label}' is successfully deleted`);
+        toast.success(`'${foundedClass[0].label}' is successfully deleted`);
     };
 
     const capture = (imgData: ImageData) => {
@@ -99,15 +98,14 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig, canva
         const newRecordStatus = !isRecord;
         setIsRecord(newRecordStatus);
         const video = webcamRef.current?.video;
-        if (newRecordStatus === true && video && video.readyState === 4 && canvasRef.current) {
+        if (newRecordStatus && video && video.readyState === 4 && canvasRef.current) {
             const ctx = canvasRef.current.getContext('2d')!;
 
-            const id = window.setInterval(() => {
+            intervalRef.current = window.setInterval(() => {
                 ctx.drawImage(video, 0, 0, 265, 265);
                 const imageData = ctx.getImageData(0, 0, 265, 265);
                 capture(imageData);
             }, 100);
-            intervalRef.current = id;
         } else {
             clearInterval(intervalRef.current);
         }
@@ -124,7 +122,7 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig, canva
     const removeAllDataset = (classKey: number) => {
         const newDataset = dataset.filter((d) => d.key !== classKey);
         setDataset(newDataset);
-        message.success(`All samples in '${config.label}' successfully deleted`);
+        toast.success(`All samples in '${config.label}' successfully deleted`);
     };
 
     const turnOnCamera = () => {
@@ -142,19 +140,14 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig, canva
     };
 
     return (
-        <div className={styles.class}>
+        <div className="overflow-hidden rounded-sm border border-border bg-card">
             <ClassTitle
                 classTitle={config.label}
                 setEditableTitle={setEditableTitle}
                 removeClass={removeClass}
                 configKey={config.key}
             />
-            <Divider />
-            <Typography className={styles.addSampleTitle}>
-                <Title className={styles.miniTitle} level={5}>
-                    Add your samples here
-                </Title>
-            </Typography>
+            <p className="px-3.5 pt-3 text-sm font-semibold">Add your samples here</p>
             {config.cameraState ? (
                 <CanvasWrapper
                     turnOffCamera={turnOffCamera}
@@ -169,7 +162,7 @@ const Class = ({ config, dataset, setDataset, classConfig, setClassConfig, canva
                     inputByUpload={inputByUpload}
                 />
             )}
-            <Divider />
+            <Separator />
             <SamplesSection
                 configKey={config.key}
                 dataset={dataset}

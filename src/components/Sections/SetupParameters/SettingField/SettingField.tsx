@@ -1,11 +1,15 @@
 import { useContext } from 'react';
-import { Collapse } from 'antd';
 import ModelConfig from './ModelConfig/ModelConfig';
 import DataAugConfig from './DataAugConfig/DataAugConfig';
-import { ParamConfigContext } from '../../../../contexts/ParamConfigContext';
-import { DataAugmentationConfigContext } from '../../../../contexts/DataAugmentationConfigContext';
-import { DataAugmentationConfig, DatasetItem, ParamConfig } from '../../../../types';
-import styles from './SettingField.module.scss';
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger
+} from '@/components/ui/accordion';
+import { ParamConfigContext } from '@/contexts/ParamConfigContext.ts';
+import { DataAugmentationConfigContext } from '@/contexts/DataAugmentationConfigContext.ts';
+import { DataAugmentationConfig, DatasetItem, ParamConfig } from '@/types.ts';
 
 interface SettingFieldProps {
     dataset: DatasetItem[];
@@ -28,20 +32,28 @@ const SettingField = ({ dataset }: SettingFieldProps) => {
     };
 
     return (
-        <div className={styles.settingField}>
-            <Collapse defaultActiveKey={['1']} accordion expandIconPosition="end">
-                <Collapse.Panel header="Training configuration" key="1">
+        <Accordion type="single" collapsible defaultValue="training" className="grid gap-3">
+            <AccordionItem value="training" className="rounded-sm border border-border px-4">
+                <AccordionTrigger className="hover:no-underline">
+                    Training configuration
+                </AccordionTrigger>
+                <AccordionContent>
                     <ModelConfig paramConfig={paramConfig} modelFormHandler={modelFormHandler} />
-                </Collapse.Panel>
-                <Collapse.Panel header="Data Augmentation configuration" key="2">
+                </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="augmentation" className="rounded-sm border border-border px-4">
+                <AccordionTrigger className="hover:no-underline">
+                    Data Augmentation configuration
+                </AccordionTrigger>
+                <AccordionContent>
                     <DataAugConfig
                         dataAugmentationConfig={dataAugmentationConfig}
                         dataset={dataset}
                         dataAugmentationFormHandler={dataAugmentationFormHandler}
                     />
-                </Collapse.Panel>
-            </Collapse>
-        </div>
+                </AccordionContent>
+            </AccordionItem>
+        </Accordion>
     );
 };
 

@@ -1,7 +1,14 @@
-import { Alert } from 'antd';
+import { CircleAlert } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const FailedAlert = () => {
-    return <Alert message="Error Text" showIcon description="Training Failed" type="error" />;
+    return (
+        <Alert variant="destructive">
+            <CircleAlert />
+            <AlertTitle>Error Text</AlertTitle>
+            <AlertDescription>Training Failed</AlertDescription>
+        </Alert>
+    );
 };
 
 export default FailedAlert;

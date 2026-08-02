@@ -2,9 +2,8 @@ import { Dispatch, SetStateAction, useContext, useEffect, useRef } from 'react';
 import SectionHeader from '../../common/SectionHeader/SectionHeader';
 import ClassesWrapper from './ClassesWrapper/ClassesWrapper';
 import { createClassContext as headerContext } from '../../../assets/text/headerText/headerText';
-import { ClassConfigContext } from '../../../contexts/ClassConfigContext';
-import { DatasetItem } from '../../../types';
-import styles from './CreateClass.module.scss';
+import { ClassConfigContext } from '@/contexts/ClassConfigContext.ts';
+import { DatasetItem } from '@/types.ts';
 
 interface CreateClassProps {
     dataset: DatasetItem[];
@@ -30,14 +29,12 @@ const CreateClass = ({ dataset, setDataset }: CreateClassProps) => {
     }, []);
 
     return (
-        <div className={styles.CreateClass}>
-            <div className={styles.header}>
-                <SectionHeader
-                    title={headerContext.title}
-                    subTitle={headerContext.subTitle}
-                    stepStatus={headerContext.stepStatus}
-                />
-            </div>
+        <div className="grid gap-8">
+            <SectionHeader
+                title={headerContext.title}
+                subTitle={headerContext.subTitle}
+                stepStatus={headerContext.stepStatus}
+            />
             <ClassesWrapper
                 classConfig={classConfig}
                 setClassConfig={setClassConfig}

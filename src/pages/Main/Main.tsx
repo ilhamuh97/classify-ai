@@ -1,28 +1,24 @@
 import { useEffect, useState } from 'react';
 import * as tf from '@tensorflow/tfjs';
+import { Link } from 'react-router-dom';
 import CreateClass from '../../components/Sections/CreateClass/CreateClass';
 import SetupParameters from '../../components/Sections/SetupParameters/SetupParameters';
 import Train from '../../components/Sections/Train/Train';
 import Predict from '../../components/Sections/Predict/Predict';
-import SideNav from './SideNav/SideNav';
+import StageNav from './StageNav/StageNav';
 import Logo from '../../assets/logo/classify.svg';
-import { Layout, Button } from 'antd';
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { usePrompt } from '../../components/common/RouterPrompt/RouterPrompt';
-import { ParamConfigContext } from '../../contexts/ParamConfigContext';
-import { DataAugmentationConfigContext } from '../../contexts/DataAugmentationConfigContext';
-import { ClassConfigContext } from '../../contexts/ClassConfigContext';
+import { ParamConfigContext } from '@/contexts/ParamConfigContext.ts';
+import { DataAugmentationConfigContext } from '@/contexts/DataAugmentationConfigContext.ts';
+import { ClassConfigContext } from '@/contexts/ClassConfigContext.ts';
 import {
     classConfigValue,
     paramConfigValue,
     dataAugmentationConfigValue
-} from '../../assets/initialValues/initialValues';
-import { DatasetItem, TrainingReport } from '../../types';
-import styles from './Main.module.scss';
+} from '@/assets/initialValues/initialValues.ts';
+import { DatasetItem, TrainingReport } from '@/types.ts';
 
 const Main = () => {
-    const { Content } = Layout;
-    const [collapsed, setCollapsed] = useState(true);
     const [key, setKey] = useState(0);
     const [dataset, setDataset] = useState<DatasetItem[]>([]);
     const [graphModel, setGraphModel] = useState<tf.GraphModel | null>(null);
@@ -69,45 +65,27 @@ const Main = () => {
     usePrompt('All your work will be lost, are you sure you want to leave this page?');
 
     return (
-        <Layout className={`${styles.layout}`}>
-            <Button
-                style={collapsed ? { left: 0 } : { left: 250 }}
-                className={styles.sideToggleButton}
-                type="primary"
-                onClick={() => setCollapsed(!collapsed)}>
-                {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            </Button>
-            <SideNav
-                collapsed={collapsed}
-                setCollapsed={setCollapsed}
-                setKey={setKey}
-                currKey={key}
-            />
-            <Layout
-                className={`${styles.siteLayout} ${collapsed ? styles.big : styles.small}  ${
-                    key === 0 || key === 3 ? styles.noPadding : null
-                }`}>
-                <Layout.Header>
-                    <div className={styles.logo}>
-                        <img src={Logo} />
-                    </div>
-                </Layout.Header>
-                {!collapsed ? (
-                    <div className={styles.overlay} onClick={() => setCollapsed(true)} />
-                ) : null}
-                <ParamConfigContext.Provider value={{ paramConfig, setParamConfig }}>
-                    <DataAugmentationConfigContext.Provider
-                        value={{ dataAugmentationConfig, setDataAugmentationConfig }}>
-                        <ClassConfigContext.Provider value={{ classConfig, setClassConfig }}>
-                            <Content style={{ margin: '32px 0', overflow: 'initial' }}>
-                                {ContentElem(key)}
-                            </Content>
-                        </ClassConfigContext.Provider>
-                    </DataAugmentationConfigContext.Provider>
-                </ParamConfigContext.Provider>
-                <Layout.Footer>© Copyright {new Date().getFullYear()} Ilhamuh97</Layout.Footer>
-            </Layout>
-        </Layout>
+        <div className="flex min-h-screen flex-col">
+            <header className="flex min-h-28 flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-4 sm:px-10">
+                <Link to="/" className="shrink-0">
+                    <img src={Logo} alt="ClassifyAI" className="h-12" />
+                </Link>
+                <StageNav currKey={key} setKey={setKey} />
+            </header>
+            <ParamConfigContext.Provider value={{ paramConfig, setParamConfig }}>
+                <DataAugmentationConfigContext.Provider
+                    value={{ dataAugmentationConfig, setDataAugmentationConfig }}>
+                    <ClassConfigContext.Provider value={{ classConfig, setClassConfig }}>
+                        <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-10 sm:px-8">
+                            {ContentElem(key)}
+                        </main>
+                    </ClassConfigContext.Provider>
+                </DataAugmentationConfigContext.Provider>
+            </ParamConfigContext.Provider>
+            <footer className="flex min-h-28 items-center justify-center border-t border-border px-6 text-center text-sm text-muted-foreground sm:px-10">
+                © Copyright {new Date().getFullYear()} Ilhamuh97
+            </footer>
+        </div>
     );
 };
 

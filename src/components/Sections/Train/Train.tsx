@@ -6,16 +6,14 @@ import FailedAlert from './Alerts/FailedAlert/FailedAlert';
 import SectionHeader from '../../common/SectionHeader/SectionHeader';
 import ProgressEpoch from './ProgressEpoch/ProgressEpoch';
 import Canvas from './Canvas/Canvas';
-import { Button, Space, Alert } from 'antd';
+import { Info, Loader2, TriangleAlert } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { trainContext as headerContext } from '../../../assets/text/headerText/headerText';
-import { ParamConfigContext } from '../../../contexts/ParamConfigContext';
-import { DataAugmentationConfigContext } from '../../../contexts/DataAugmentationConfigContext';
-import { ClassConfigContext } from '../../../contexts/ClassConfigContext';
-import {
-    shuffleCombo,
-    splitDataset,
-    calculateFeaturesOnCurrentFrame
-} from '../../../helpers/helpers';
+import { ParamConfigContext } from '@/contexts/ParamConfigContext.ts';
+import { DataAugmentationConfigContext } from '@/contexts/DataAugmentationConfigContext.ts';
+import { ClassConfigContext } from '@/contexts/ClassConfigContext.ts';
+import { calculateFeaturesOnCurrentFrame, shuffleCombo, splitDataset } from '@/helpers/helpers.ts';
 import {
     AugmentedDatasetItem,
     DatasetItem,
@@ -24,8 +22,7 @@ import {
     SplitDataset,
     TrainingReport,
     TrainState
-} from '../../../types';
-import styles from './Train.module.scss';
+} from '@/types.ts';
 
 interface TrainProps {
     dataset: DatasetItem[];
@@ -95,7 +92,9 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel, report, setReport
                             graphModel!
                         );
                         // Resize video frame tensor to be 224 x 224 pixels which is needed by MobileNet for input.
-                        let prediction = baseModel!.predict(imageFeatures.expandDims()) as tf.Tensor;
+                        let prediction = baseModel!.predict(
+                            imageFeatures.expandDims()
+                        ) as tf.Tensor;
                         prediction = prediction.squeeze();
                         const highestIndex = prediction.argMax().arraySync() as number;
                         predictions.push(highestIndex);
@@ -125,8 +124,8 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel, report, setReport
         const loadFeatureModel = async () => {
             const model = paramConfig.model;
             const URL = JSON.parse(model).URL;
-            const loadedGraphModel = await tf.loadGraphModel(URL, { fromTFHub: true });
-            return loadedGraphModel;
+
+            return await tf.loadGraphModel(URL, { fromTFHub: true });
         };
         loadFeatureModel()
             .then((result) => {
@@ -160,8 +159,7 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel, report, setReport
         const optimizer = getOptimizer(paramConfig.optimizer, learningRate);
         const modelConfig = {
             optimizer: optimizer,
-            loss:
-                classConfig.length === 2 ? 'binaryCrossentropy' : 'categoricalCrossentropy',
+            loss: classConfig.length === 2 ? 'binaryCrossentropy' : 'categoricalCrossentropy',
             metrics: ['accuracy']
         };
         const model = paramConfig.model;
@@ -179,7 +177,7 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel, report, setReport
             ? 'Preparing augmented images...'
             : 'Preparing feature vectors';
         setProgressMessage(message);
-        if (dataAugmentationConfig.isActive === true) {
+        if (dataAugmentationConfig.isActive) {
             setState('SET_AUGMENTED_DATA');
         } else {
             setState('SET_DATA');
@@ -194,9 +192,7 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel, report, setReport
         ];
         shuffleCombo(combinedDataset);
         const { training, validation } = splitDataset(combinedDataset, 0.8);
-        setSplittedDataset(
-            structuredClone({ training, validation }) as SplitDataset<DatasetItem>
-        );
+        setSplittedDataset(structuredClone({ training, validation }) as SplitDataset<DatasetItem>);
 
         const trainingImageFeatures: tf.Tensor[] = [];
         const trainingKeys: number[] = [];
@@ -323,56 +319,61 @@ const Train = ({ dataset, graphModel, setGraphModel, setModel, report, setReport
     };
 
     return (
-        <div className={styles.train}>
-            <Space size="small" direction="vertical" className={styles.layout}>
-                <SectionHeader
-                    title={headerContext.title}
-                    subTitle={headerContext.subTitle}
-                    stepStatus={headerContext.stepStatus}
+        <div className="grid gap-6">
+            <SectionHeader
+                title={headerContext.title}
+                subTitle={headerContext.subTitle}
+                stepStatus={headerContext.stepStatus}
+            />
+            {isTraining && dataAugmentationConfig.isActive && isAugmenting ? (
+                <Canvas
+                    dataset={dataset}
+                    dataAugmentationConfig={dataAugmentationConfig}
+                    setAugmentedDataset={setAugmentedDataset}
+                    setProgressMessage={setProgressMessage}
+                    setState={setState}
                 />
-                {isTraining && dataAugmentationConfig.isActive && isAugmenting ? (
-                    <Canvas
-                        dataset={dataset}
-                        dataAugmentationConfig={dataAugmentationConfig}
-                        setAugmentedDataset={setAugmentedDataset}
-                        setProgressMessage={setProgressMessage}
-                        setState={setState}
-                    />
-                ) : null}
-                <Button
-                    onClick={() => trainClicked()}
-                    disabled={isTrainDisable || isTraining}
-                    loading={isTraining}>
+            ) : null}
+            <div>
+                <Button onClick={() => trainClicked()} disabled={isTrainDisable || isTraining}>
+                    {isTraining ? <Loader2 className="animate-spin" /> : null}
                     Start Training
                 </Button>
-                {isTrainDisable ? <Alert message={infoMessage} type="warning" showIcon /> : null}
-                <span>{progressMessage}</span>
-                {isTraining && logs.length > 0 ? (
-                    <ProgressEpoch logs={logs} paramConfig={paramConfig} />
-                ) : null}
-                {isTraining && logs.length > 0 ? (
-                    <Alert
-                        message="Training is still in progress"
-                        description={`Accuracy: ${logs[logs.length - 1].lossAndAccuracy.acc.toFixed(
-                            3
-                        )}, Loss: ${logs[logs.length - 1].lossAndAccuracy.loss.toFixed(3)}`}
-                        type="info"
-                        showIcon
-                    />
-                ) : null}
-                {!isTraining && showAlert ? (
-                    isTrainingSucceed ? (
-                        logs.length === 0 ? (
-                            <SuccessAlert report={report!} />
-                        ) : null
-                    ) : (
-                        <FailedAlert />
-                    )
-                ) : null}
-                {(report && !isTraining) || (isTraining && logs.length > 0) ? (
-                    <Report report={report} logs={logs} />
-                ) : null}
-            </Space>
+            </div>
+            {isTrainDisable ? (
+                <Alert variant="warning">
+                    <TriangleAlert />
+                    <AlertDescription>{infoMessage}</AlertDescription>
+                </Alert>
+            ) : null}
+            {progressMessage ? (
+                <p className="font-mono text-sm text-muted-foreground">{progressMessage}</p>
+            ) : null}
+            {isTraining && logs.length > 0 ? (
+                <ProgressEpoch logs={logs} paramConfig={paramConfig} />
+            ) : null}
+            {isTraining && logs.length > 0 ? (
+                <Alert>
+                    <Info />
+                    <AlertTitle>Training is still in progress</AlertTitle>
+                    <AlertDescription>
+                        Accuracy: {logs[logs.length - 1].lossAndAccuracy.acc.toFixed(3)}, Loss:{' '}
+                        {logs[logs.length - 1].lossAndAccuracy.loss.toFixed(3)}
+                    </AlertDescription>
+                </Alert>
+            ) : null}
+            {!isTraining && showAlert ? (
+                isTrainingSucceed ? (
+                    logs.length === 0 ? (
+                        <SuccessAlert report={report!} />
+                    ) : null
+                ) : (
+                    <FailedAlert />
+                )
+            ) : null}
+            {(report && !isTraining) || (isTraining && logs.length > 0) ? (
+                <Report report={report} logs={logs} />
+            ) : null}
         </div>
     );
 };

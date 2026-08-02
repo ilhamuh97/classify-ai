@@ -1,9 +1,8 @@
 import { Dispatch, RefObject, SetStateAction } from 'react';
 import Webcam from 'react-webcam';
+import { Camera } from 'lucide-react';
 import DisplayImage from './DisplayImage/DisplayImage';
-import { Typography, Button, Progress } from 'antd';
-import { CameraOutlined } from '@ant-design/icons';
-import styles from './DisplayWrapper.module.scss';
+import { Button } from '@/components/ui/button';
 
 interface DisplayWrapperProps {
     isCameraOn: boolean;
@@ -20,37 +19,33 @@ const DisplayWrapper = ({
     predictionClass,
     predictionPercent
 }: DisplayWrapperProps) => {
-    const { Title } = Typography;
     return (
-        <div className={styles.displayWrapper}>
-            <Typography>
-                <Title className={styles.predictedClass} level={5}>
-                    Camera
-                </Title>
-            </Typography>
-            <DisplayImage
-                isCameraOn={isCameraOn}
-                webcamRef={webcamRef}
-            />
-            <Button onClick={() => setIsCameraOn(!isCameraOn)} icon={<CameraOutlined />}>
-                {isCameraOn ? 'Turn off' : 'Turn on'}
-            </Button>
+        <div className="grid gap-6 sm:grid-cols-2 sm:items-start">
+            <div className="grid justify-items-center gap-3 text-center">
+                <h3 className="text-sm font-semibold">Camera</h3>
+                <DisplayImage isCameraOn={isCameraOn} webcamRef={webcamRef} />
+                <Button onClick={() => setIsCameraOn(!isCameraOn)}>
+                    <Camera /> {isCameraOn ? 'Turn off' : 'Turn on'}
+                </Button>
+            </div>
             {isCameraOn ? (
-                <div className={styles.predictWrapper}>
-                    <Typography>
-                        <Title className={styles.predictedClass} level={3}>
-                            {predictionClass || ''}
-                        </Title>
-                    </Typography>
-                    <Progress
-                        className={styles.predict}
-                        percent={predictionPercent}
-                        format={() => `${predictionPercent}%`}
-                    />
+                <div className="grid gap-3 rounded-sm border border-border bg-card p-5">
+                    <span className="font-mono text-xs uppercase tracking-wide text-muted-foreground">
+                        Identified as
+                    </span>
+                    <span className="font-display text-3xl">{predictionClass || '—'}</span>
+                    <div className="h-2 overflow-hidden rounded-full bg-border">
+                        <div
+                            className="h-full rounded-full bg-gradient-to-r from-brand-focus to-primary transition-[width]"
+                            style={{ width: `${predictionPercent}%` }}
+                        />
+                    </div>
+                    <div className="flex justify-between font-mono text-xs tabular-nums text-muted-foreground">
+                        <span>Confidence</span>
+                        <span>{predictionPercent}%</span>
+                    </div>
                 </div>
-            ) : (
-                ''
-            )}
+            ) : null}
         </div>
     );
 };

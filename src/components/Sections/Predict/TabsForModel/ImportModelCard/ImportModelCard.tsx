@@ -1,9 +1,9 @@
-import { Dispatch, SetStateAction, useState } from 'react';
-import { Button, Card, Upload, Typography } from 'antd';
-import type { RcFile, UploadChangeParam } from 'antd/es/upload/interface';
-import { UploadOutlined } from '@ant-design/icons';
+import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
 import * as tf from '@tensorflow/tfjs';
-import { ClassConfigItem } from '../../../../../types';
+import { Upload } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ClassConfigItem } from '@/types.ts';
 
 interface ImportModelCardProps {
     setImportedClassConfig: Dispatch<SetStateAction<ClassConfigItem[] | null>>;
@@ -13,36 +13,31 @@ interface ImportModelCardProps {
 const ImportModelCard = ({ setImportedClassConfig, setImportedModel }: ImportModelCardProps) => {
     const [classes, setClasses] = useState<ClassConfigItem[] | null>(null);
 
-    const beforeUpload = (file: RcFile) => {
-        if (file.type === 'text/plain') {
-            const reader = new FileReader();
-
-            reader.onload = (event) => {
-                const contents = event.target?.result as string;
-                const lines = contents.split('\n');
-                const tempClasses: ClassConfigItem[] = [];
-                lines.forEach((line, i) => {
-                    tempClasses.push({
-                        key: i,
-                        label: line,
-                        cameraState: false
-                    });
-                });
-                setClasses(tempClasses);
-            };
-            reader.readAsText(file);
-        }
+    const readClassesFile = (file: File) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const contents = event.target?.result as string;
+            const lines = contents.split('\n');
+            const tempClasses: ClassConfigItem[] = lines.map((line, i) => ({
+                key: i,
+                label: line,
+                cameraState: false
+            }));
+            setClasses(tempClasses);
+        };
+        reader.readAsText(file);
     };
 
-    const handleChange = async (file: UploadChangeParam) => {
-        const filteredFile = file.fileList.filter(
-            (f) => f.type === 'application/macbinary' || f.type === 'application/json'
-        );
+    const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(event.target.files ?? []);
+        const classesFile = files.find((f) => f.type === 'text/plain');
+        if (classesFile) readClassesFile(classesFile);
+
+        const jsonFile = files.find((f) => f.type === 'application/json');
+        const weightsFile = files.find((f) => f.name.endsWith('.bin'));
+        if (!jsonFile || !weightsFile) return;
+
         try {
-            const jsonFile = filteredFile.find((f) => f.type === 'application/json')
-                ?.originFileObj as File;
-            const weightsFile = filteredFile.find((f) => f.type === 'application/macbinary')
-                ?.originFileObj as File;
             const model = await tf.loadLayersModel(tf.io.browserFiles([jsonFile, weightsFile]));
             model.summary();
             setImportedClassConfig(classes);
@@ -53,19 +48,30 @@ const ImportModelCard = ({ setImportedClassConfig, setImportedModel }: ImportMod
     };
 
     return (
-        <div>
-            <Card title="Import your model">
-                <Typography>
-                    <Typography.Paragraph>
-                        In order to import your model, you have to import 3 files, which are
-                        model.weights.bin, model.json, and classes.txt
-                    </Typography.Paragraph>
-                </Typography>
-                <Upload directory onChange={handleChange} beforeUpload={beforeUpload}>
-                    <Button icon={<UploadOutlined />}>Upload</Button>
-                </Upload>
-            </Card>
-        </div>
+        <Card>
+            <CardHeader>
+                <CardTitle>Import your model</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+                <p className="text-sm text-muted-foreground">
+                    In order to import your model, you have to import 3 files, which are
+                    model.weights.bin, model.json, and classes.txt
+                </p>
+                <div>
+                    <Button asChild variant="outline">
+                        <label className="cursor-pointer">
+                            <Upload /> Upload
+                            <input
+                                type="file"
+                                multiple
+                                className="hidden"
+                                onChange={handleFileChange}
+                            />
+                        </label>
+                    </Button>
+                </div>
+            </CardContent>
+        </Card>
     );
 };
 

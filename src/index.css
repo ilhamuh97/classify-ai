@@ -1,15 +1,137 @@
-html{
-    background-color: #f0f2f5;
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@font-face {
+    font-family: 'Squada One';
+    src: url('./assets/font/Squada_One/SquadaOne-Regular.ttf');
+    font-weight: normal;
+    font-display: swap;
 }
 
-body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-        'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+@theme {
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-display: 'Squada One', -apple-system, sans-serif;
+    --font-mono: 'SF Mono', 'Roboto Mono', Menlo, Consolas, 'Courier New', monospace;
 }
 
-code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+:root {
+    /* raw brand palette -- frosted lens glass / anodized ink / rangefinder tally red */
+    --brand-ground: #e7ece8;
+    --brand-surface: #f5f8f6;
+    --brand-surface-2: #eef2ef;
+    --brand-ink: #10171a;
+    --brand-ink-dim: #4b5a57;
+    --brand-metal: #8b9398;
+    --brand-metal-line: #c7cec9;
+    --brand-accent: #c2321f;
+    --brand-accent-ink: #ffffff;
+    --brand-focus: #2f6e5c;
+    --brand-focus-soft: #dceae4;
+    --brand-scope-bg: #14201d;
+    --brand-scope-grid: #24413a;
+
+    --radius: 0.25rem;
+
+    /* shadcn slots, derived from the brand palette above */
+    --background: var(--brand-ground);
+    --foreground: var(--brand-ink);
+    --card: var(--brand-surface);
+    --card-foreground: var(--brand-ink);
+    --popover: var(--brand-surface);
+    --popover-foreground: var(--brand-ink);
+    --primary: var(--brand-accent);
+    --primary-foreground: var(--brand-accent-ink);
+    --secondary: var(--brand-surface-2);
+    --secondary-foreground: var(--brand-ink);
+    --muted: var(--brand-surface-2);
+    --muted-foreground: var(--brand-ink-dim);
+    --accent: var(--brand-focus-soft);
+    --accent-foreground: var(--brand-ink);
+    --destructive: var(--brand-accent);
+    --destructive-foreground: var(--brand-accent-ink);
+    --border: var(--brand-metal-line);
+    --input: var(--brand-metal-line);
+    --ring: var(--brand-focus);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --brand-ground: #181d1f;
+        --brand-surface: #20272a;
+        --brand-surface-2: #262e31;
+        --brand-ink: #ecf2f0;
+        --brand-ink-dim: #9aacab;
+        --brand-metal: #66716f;
+        --brand-metal-line: #38423f;
+        --brand-accent: #ff6a55;
+        --brand-accent-ink: #191110;
+        --brand-focus: #4fbe9f;
+        --brand-focus-soft: #1e3630;
+        --brand-scope-bg: #0e1614;
+        --brand-scope-grid: #223832;
+    }
+}
+
+@theme inline {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+
+    --color-brand-metal: var(--brand-metal);
+    --color-brand-focus: var(--brand-focus);
+    --color-brand-scope: var(--brand-scope-bg);
+    --color-brand-scope-grid: var(--brand-scope-grid);
+
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+
+    --animate-accordion-down: accordion-down 0.2s ease-out;
+    --animate-accordion-up: accordion-up 0.2s ease-out;
+
+    @keyframes accordion-down {
+        from {
+            height: 0;
+        }
+        to {
+            height: var(--radix-accordion-content-height);
+        }
+    }
+    @keyframes accordion-up {
+        from {
+            height: var(--radix-accordion-content-height);
+        }
+        to {
+            height: 0;
+        }
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    html {
+        scrollbar-gutter: stable;
+    }
+    body {
+        @apply bg-background text-foreground font-sans antialiased;
+    }
 }

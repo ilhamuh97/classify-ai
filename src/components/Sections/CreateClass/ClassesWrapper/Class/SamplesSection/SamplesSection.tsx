@@ -1,7 +1,23 @@
-import { Typography, Row, Col, Popconfirm, Button, Collapse } from 'antd';
-import { CloseOutlined } from '@ant-design/icons';
-import { DatasetItem } from '../../../../../../types';
-import styles from './SamplesSection.module.scss';
+import { X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger
+} from '@/components/ui/accordion';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger
+} from '@/components/ui/alert-dialog';
+import { DatasetItem } from '@/types.ts';
 
 interface SamplesSectionProps {
     configKey: number;
@@ -18,57 +34,70 @@ const SamplesSection = ({
 }: SamplesSectionProps) => {
     const filteredDataset = dataset.filter((ds) => ds.key === configKey);
     return (
-        <div className={styles.samplesSection}>
-            <Row justify="space-between" align="middle">
-                <Col>
-                    <Typography>
-                        <Typography.Title level={5}>Your samples</Typography.Title>
-                    </Typography>
-                </Col>
+        <div className="p-3.5">
+            <div className="mb-1 flex items-center justify-between gap-3">
+                <h4 className="text-sm font-semibold">Your samples</h4>
                 {filteredDataset.length !== 0 ? (
-                    <Col>
-                        <Popconfirm
-                            placement="rightBottom"
-                            title={'Are you sure to delete all samples in this class?'}
-                            onConfirm={() => removeAllDataset(configKey)}
-                            okText="Yes"
-                            cancelText="No">
-                            <Button type="text" size="small" danger>
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-destructive hover:text-destructive">
                                 Clear all
                             </Button>
-                        </Popconfirm>
-                    </Col>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Delete all samples?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This removes every sample collected for this class.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                    className="bg-destructive text-destructive-foreground hover:opacity-90"
+                                    onClick={() => removeAllDataset(configKey)}>
+                                    Delete
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                 ) : null}
-            </Row>
+            </div>
             {filteredDataset.length !== 0 ? (
-                <Collapse accordion>
-                    <Collapse.Panel
-                        header={`Images ${
-                            filteredDataset.length ? '(' + filteredDataset.length + ')' : ''
-                        }`}
-                        key="1">
-                        <Row gutter={[2, 2]} className={styles.samples}>
-                            {filteredDataset.map((fds, i) => {
-                                return (
-                                    <Col key={i} span={6}>
-                                        <div key={i + 'img'} className={styles.imageWrapper}>
-                                            <img src={fds.img} width={60} height={60} />
-                                            <span
-                                                className={styles.deleteImage}
-                                                onClick={() => deleteImage(fds)}>
-                                                <CloseOutlined />
-                                            </span>
-                                        </div>
-                                    </Col>
-                                );
-                            })}
-                        </Row>
-                    </Collapse.Panel>
-                </Collapse>
+                <Accordion type="single" collapsible defaultValue="images">
+                    <AccordionItem value="images" className="border-none">
+                        <AccordionTrigger className="py-1.5 font-mono text-xs uppercase tracking-wide text-muted-foreground hover:no-underline">
+                            Images ({filteredDataset.length})
+                        </AccordionTrigger>
+                        <AccordionContent>
+                            <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-6">
+                                {filteredDataset.map((fds, i) => (
+                                    <div
+                                        key={i}
+                                        className="group relative aspect-square overflow-hidden rounded-sm border border-border">
+                                        <img
+                                            src={fds.img}
+                                            alt="Collected sample"
+                                            className="size-full object-cover"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => deleteImage(fds)}
+                                            aria-label="Delete sample"
+                                            className="absolute right-1 top-1 flex size-5 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition-opacity group-hover:opacity-100">
+                                            <X className="size-3" />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
             ) : (
-                <Typography>
-                    <Typography.Paragraph>No samples</Typography.Paragraph>
-                </Typography>
+                <p className="text-sm text-muted-foreground">No samples</p>
             )}
         </div>
     );

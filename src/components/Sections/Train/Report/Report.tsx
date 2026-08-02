@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Collapse, Divider } from 'antd';
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger
+} from '@/components/ui/accordion';
+import { Separator } from '@/components/ui/separator';
 import LineChart from './LineChart/LineChart';
 import ConfussionMatrix from './ConfussionMatrix/ConfusionMatrix';
-import { LogEntry, TrainingReport } from '../../../../types';
-import styles from './Report.module.scss';
+import { LogEntry, TrainingReport } from '@/types.ts';
 
 interface ReportProps {
     report: TrainingReport | null;
@@ -11,8 +16,9 @@ interface ReportProps {
 }
 
 const Report = ({ report, logs }: ReportProps) => {
-    const { Panel } = Collapse;
-    const [reportedLogs, setReportedLogs] = useState<LogEntry[]>(logs.length > 0 ? logs : (report?.logs ?? []));
+    const [reportedLogs, setReportedLogs] = useState<LogEntry[]>(
+        logs.length > 0 ? logs : (report?.logs ?? [])
+    );
 
     useEffect(() => {
         if (logs.length > 0) {
@@ -23,48 +29,43 @@ const Report = ({ report, logs }: ReportProps) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [logs]);
 
-    const lossDatasets = reportedLogs.map((log) => {
-        return parseFloat(log.lossAndAccuracy.loss.toFixed(2));
-    });
-    const accDatasets = reportedLogs.map((log) => {
-        return parseFloat(log.lossAndAccuracy.acc.toFixed(2));
-    });
-    const valLossDatasets = reportedLogs.map((log) => {
-        return parseFloat(log.lossAndAccuracy.val_loss.toFixed(2));
-    });
-
-    const valAccDatasets = reportedLogs.map((log) => {
-        return parseFloat(log.lossAndAccuracy.val_acc.toFixed(2));
-    });
+    const lossDatasets = reportedLogs.map((log) => parseFloat(log.lossAndAccuracy.loss.toFixed(2)));
+    const accDatasets = reportedLogs.map((log) => parseFloat(log.lossAndAccuracy.acc.toFixed(2)));
+    const valLossDatasets = reportedLogs.map((log) =>
+        parseFloat(log.lossAndAccuracy.val_loss.toFixed(2))
+    );
+    const valAccDatasets = reportedLogs.map((log) =>
+        parseFloat(log.lossAndAccuracy.val_acc.toFixed(2))
+    );
 
     return (
-        <div className={styles.report}>
-            <Collapse defaultActiveKey={['0']}>
-                <Panel header="See the report" key="1">
+        <Accordion type="single" collapsible defaultValue="report">
+            <AccordionItem value="report" className="rounded-sm border border-border px-4">
+                <AccordionTrigger className="hover:no-underline">See the report</AccordionTrigger>
+                <AccordionContent className="grid gap-6">
                     <LineChart
-                        title={'Accuracy'}
+                        title="Accuracy"
                         trainData={accDatasets}
                         validationData={valAccDatasets}
                     />
-                    <Divider />
+                    <Separator />
                     <LineChart
-                        title={'Loss'}
+                        title="Loss"
                         trainData={lossDatasets}
                         validationData={valLossDatasets}
                     />
-
                     {report && logs.length === 0 ? (
                         <>
-                            <Divider />
+                            <Separator />
                             <ConfussionMatrix
                                 confusionMatrix={report.confusionMatrix}
                                 classConfig={report.classConfig}
                             />
                         </>
                     ) : null}
-                </Panel>
-            </Collapse>
-        </div>
+                </AccordionContent>
+            </AccordionItem>
+        </Accordion>
     );
 };
 

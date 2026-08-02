@@ -1,7 +1,8 @@
 import * as tf from '@tensorflow/tfjs';
-import { Button, Card, Typography } from 'antd';
-import { DownloadOutlined } from '@ant-design/icons';
-import { ClassConfigItem } from '../../../../../types';
+import { Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ClassConfigItem } from '@/types.ts';
 
 interface ExportModelCardProps {
     model: tf.LayersModel | null;
@@ -39,31 +40,29 @@ const ExportModelCard = ({ model, classConfig }: ExportModelCardProps) => {
     };
 
     return (
-        <div>
-            <Card title="Export your model">
-                <Typography>
-                    <Typography.Paragraph>
-                        <div>
-                            To save your trained model to your computer, click the button below.
-                            This will create and export three files:
-                        </div>
-                        <ul>
-                            <li>model.json</li>
-                            <li>model.weights.bin</li>
-                            <li>classes.txt</li>
-                        </ul>
-                    </Typography.Paragraph>
-                </Typography>
-                <Button
-                    icon={<DownloadOutlined />}
-                    onClick={() => exportModel()}
-                    type="primary"
-                    shape="round"
-                    disabled={!model}>
-                    Export
-                </Button>
-            </Card>
-        </div>
+        <Card>
+            <CardHeader>
+                <CardTitle>Export your model</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+                <div className="text-sm text-muted-foreground">
+                    <p>
+                        To save your trained model to your computer, click the button below. This
+                        will create and export three files:
+                    </p>
+                    <ul className="mt-2 list-disc pl-5">
+                        <li>model.json</li>
+                        <li>model.weights.bin</li>
+                        <li>classes.txt</li>
+                    </ul>
+                </div>
+                <div>
+                    <Button onClick={() => exportModel()} disabled={!model}>
+                        <Download /> Export
+                    </Button>
+                </div>
+            </CardContent>
+        </Card>
     );
 };
 

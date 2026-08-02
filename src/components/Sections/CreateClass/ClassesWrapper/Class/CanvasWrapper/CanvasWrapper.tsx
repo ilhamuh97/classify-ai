@@ -1,9 +1,9 @@
 import { RefObject, useEffect, useState } from 'react';
 import Webcam from 'react-webcam';
 import { MdOutlineCameraswitch } from 'react-icons/md';
-import { Typography, Button, Alert } from 'antd';
-import { CameraOutlined, CloseOutlined, PauseCircleOutlined } from '@ant-design/icons';
-import styles from './CanvasWrapper.module.scss';
+import { Camera, CircleX, PauseCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface CanvasWrapperProps {
     turnOffCamera: () => void;
@@ -27,11 +27,10 @@ const CanvasWrapper = ({
     });
 
     const flipCamera = () => {
-        if (videoConstraints.facingMode === 'environment') {
-            setVideoConstraints({ ...videoConstraints, facingMode: 'user' });
-        } else {
-            setVideoConstraints({ ...videoConstraints, facingMode: 'environment' });
-        }
+        setVideoConstraints((current) => ({
+            ...current,
+            facingMode: current.facingMode === 'environment' ? 'user' : 'environment'
+        }));
     };
 
     useEffect(() => {
@@ -42,50 +41,52 @@ const CanvasWrapper = ({
     }, []);
 
     return (
-        <div className={styles.canvasWrapper}>
-            <div className={styles.camera}>
-                <Button
-                    className={styles.turnOffButton}
+        <div className="p-3.5">
+            <div className="relative flex flex-col items-center gap-3">
+                <button
+                    type="button"
                     onClick={turnOffCamera}
-                    size="small"
-                    type="primary"
-                    ghost
-                    shape="circle"
-                    icon={<CloseOutlined />}
-                />
-                <Typography>
-                    <Typography.Title level={5}>Webcam</Typography.Title>
-                </Typography>
+                    aria-label="Turn off camera"
+                    className="absolute -top-1 right-0 flex size-7 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:border-primary hover:text-primary">
+                    <CircleX className="size-4" />
+                </button>
+                <h4 className="text-sm font-semibold">Webcam</h4>
                 {!showError ? (
-                    <div className={styles.displayImageField}>
+                    <div className="relative">
                         <Webcam
                             audio={false}
                             height={265}
                             width={265}
                             ref={webcamRef}
                             screenshotFormat="image/jpeg"
-                            mirrored={videoConstraints.facingMode === 'user' ? true : false}
+                            mirrored={videoConstraints.facingMode === 'user'}
                             videoConstraints={videoConstraints}
                             screenshotQuality={0.8}
                             onUserMediaError={() => setShowError(true)}
+                            className="rounded-sm border border-border"
                         />
-                        <MdOutlineCameraswitch onClick={flipCamera} className={styles.flipButton} />
+                        <button
+                            type="button"
+                            onClick={flipCamera}
+                            aria-label="Flip camera"
+                            className="absolute bottom-2 right-2 flex size-8 items-center justify-center rounded-full bg-card/90 text-foreground shadow-sm">
+                            <MdOutlineCameraswitch className="size-4" />
+                        </button>
                     </div>
                 ) : null}
                 {!showError ? (
                     <Button
                         onClick={recordButtonOnClick}
-                        type="primary"
-                        danger={isRecord}
-                        icon={isRecord ? <PauseCircleOutlined /> : <CameraOutlined />}>
+                        variant={isRecord ? 'destructive' : 'default'}>
+                        {isRecord ? <PauseCircle /> : <Camera />}
                         {isRecord ? 'Stop the record' : 'Click to record'}
                     </Button>
                 ) : (
-                    <Alert
-                        message="Webcam permission denied. Please enable permission to your webcam"
-                        type="error"
-                        showIcon
-                    />
+                    <Alert variant="destructive">
+                        <AlertDescription>
+                            Webcam permission denied. Please enable permission to your webcam
+                        </AlertDescription>
+                    </Alert>
                 )}
             </div>
         </div>

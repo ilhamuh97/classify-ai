@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useRef } from 'react';
+import { Plus } from 'lucide-react';
 import Class from './Class/Class';
-import { ClassConfigItem, DatasetItem } from '../../../../types';
-import styles from './ClassesWrapper.module.scss';
+import { ClassConfigItem, DatasetItem } from '@/types.ts';
 
 interface ClassesWrapperProps {
     classConfig: ClassConfigItem[];
@@ -76,19 +76,16 @@ const ClassesWrapper = ({
     };
 
     return (
-        <div className={styles.classesWrapper}>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {datasetsClasses()}
-            <div className={styles.addClass} onClick={() => onClickHandler()}>
-                Add Class
-            </div>
-            <canvas
-                ref={canvasRef}
-                height={265}
-                width={265}
-                style={{
-                    display: 'none'
-                }}
-            />
+            <button
+                type="button"
+                onClick={() => onClickHandler()}
+                className="flex min-h-40 flex-col items-center justify-center gap-2 rounded-sm border border-dashed border-border font-mono text-xs uppercase tracking-wide text-muted-foreground transition-colors hover:border-brand-metal hover:text-foreground">
+                <Plus className="size-5" />
+                Add class
+            </button>
+            <canvas ref={canvasRef} height={265} width={265} className="hidden" />
         </div>
     );
 };

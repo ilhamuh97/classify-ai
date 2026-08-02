@@ -1,11 +1,12 @@
-import './App.scss';
+import { Toaster } from 'sonner';
 import Routing from './views/Routing';
 
 function App() {
     return (
-        <div className="App">
+        <>
             <Routing />
-        </div>
+            <Toaster position="top-right" richColors theme="system" />
+        </>
     );
 }
 
