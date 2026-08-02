@@ -1,7 +1,12 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import P5Sketch from '../../../common/P5Sketch/P5Sketch';
 import type P5 from 'p5';
-import { AugmentedDatasetItem, DataAugmentationConfig, DatasetItem, TrainState } from '../../../../types';
+import {
+    AugmentedDatasetItem,
+    DataAugmentationConfig,
+    DatasetItem,
+    TrainState
+} from '@/types.ts';
 
 interface CanvasProps {
     dataAugmentationConfig: DataAugmentationConfig;
@@ -48,12 +53,12 @@ const Canvas = ({
                 const index = (x + y * img.width) * 4;
                 const rand = p5.random(0, 1);
                 if (rand < dataAugmentationConfig.noise) {
-                    img.pixels[index + 0] = 0;
+                    img.pixels[index] = 0;
                     img.pixels[index + 1] = 0;
                     img.pixels[index + 2] = 0;
                     img.pixels[index + 3] = 255;
                 } else {
-                    img.pixels[index + 0] = arr[index];
+                    img.pixels[index] = arr[index];
                     img.pixels[index + 1] = arr[index + 1];
                     img.pixels[index + 2] = arr[index + 2];
                     img.pixels[index + 3] = arr[index + 3];
@@ -113,7 +118,7 @@ const Canvas = ({
 
         const scaleX = scaleXRand * flipX;
         const scaleY = scaleYRand * flipY;
-        p5.scale(1 * flipX + scaleX, 1 * flipY + scaleY);
+        p5.scale(flipX + scaleX, flipY + scaleY);
         p5.image(img, 0, 0);
         p5.loadPixels();
         const imageData = (p5 as unknown as { imageData: ImageData }).imageData;

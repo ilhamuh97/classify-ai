@@ -27,7 +27,6 @@ const P5Sketch = ({ setup, draw, style }: P5SketchProps) => {
         return () => {
             instance.remove();
         };
-         
     }, []);
 
     return <div ref={containerRef} style={style} />;

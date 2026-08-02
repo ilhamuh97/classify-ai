@@ -1,9 +1,4 @@
-import {
-    ClassConfigItem,
-    DataAugmentationConfig,
-    ParamConfig,
-    SelectOption
-} from '../../types';
+import { ClassConfigItem, DataAugmentationConfig, ParamConfig, SelectOption } from '@/types.ts';
 
 export const dataAugmentationConfigValue: DataAugmentationConfig = {
     isActive: false,
