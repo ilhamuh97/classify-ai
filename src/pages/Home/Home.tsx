@@ -6,8 +6,8 @@ import LogosWrapper from './LogosWrapper/LogosWrapper';
 const Home = () => {
     return (
         <div className="flex min-h-screen flex-col">
-            <header className="flex min-h-28 items-center border-b border-border px-6 sm:px-10">
-                <img src={Logo} alt="ClassifyAI" className="h-12" />
+            <header className="flex min-h-20 items-center justify-center border-b border-border px-6 sm:px-10">
+                <img src={Logo} alt="ClassifyAI" className="h-9" />
             </header>
             <main className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-16 text-center sm:px-10">
                 <span className="font-mono text-xs uppercase tracking-wider text-primary">
@@ -33,7 +33,7 @@ const Home = () => {
                     <Link to="/train">Get Started</Link>
                 </Button>
             </main>
-            <footer className="flex min-h-28 items-center justify-center border-t border-border px-6 text-center text-sm text-muted-foreground sm:px-10">
+            <footer className="flex min-h-20 items-center justify-center border-t border-border px-6 text-center text-sm text-muted-foreground sm:px-10">
                 © Copyright {new Date().getFullYear()} Ilhamuh97
             </footer>
         </div>

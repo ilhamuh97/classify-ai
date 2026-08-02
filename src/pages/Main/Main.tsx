@@ -66,12 +66,16 @@ const Main = () => {
 
     return (
         <div className="flex min-h-screen flex-col">
-            <header className="flex min-h-28 flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-4 sm:px-10">
+            <header className="flex min-h-20 items-center justify-center border-b border-border px-6 py-3 sm:px-10">
                 <Link to="/" className="shrink-0">
-                    <img src={Logo} alt="ClassifyAI" className="h-12" />
+                    <img src={Logo} alt="ClassifyAI" className="h-9" />
                 </Link>
-                <StageNav currKey={key} setKey={setKey} />
             </header>
+            <div className="px-4 py-4 sm:px-8">
+                <div className="mx-auto max-w-3xl">
+                    <StageNav currKey={key} setKey={setKey} />
+                </div>
+            </div>
             <ParamConfigContext.Provider value={{ paramConfig, setParamConfig }}>
                 <DataAugmentationConfigContext.Provider
                     value={{ dataAugmentationConfig, setDataAugmentationConfig }}>
@@ -82,7 +86,7 @@ const Main = () => {
                     </ClassConfigContext.Provider>
                 </DataAugmentationConfigContext.Provider>
             </ParamConfigContext.Provider>
-            <footer className="flex min-h-28 items-center justify-center border-t border-border px-6 text-center text-sm text-muted-foreground sm:px-10">
+            <footer className="flex min-h-20 items-center justify-center border-t border-border px-6 text-center text-sm text-muted-foreground sm:px-10">
                 © Copyright {new Date().getFullYear()} Ilhamuh97
             </footer>
         </div>

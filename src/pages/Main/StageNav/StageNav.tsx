@@ -11,9 +11,7 @@ const stages = [{ name: 'Collect' }, { name: 'Configure' }, { name: 'Train' }, {
 
 const StageNav = ({ currKey, setKey }: StageNavProps) => {
     return (
-        <ol
-            className="grid w-full grid-cols-4 sm:w-auto sm:min-w-[26rem]"
-            aria-label="Workflow stages">
+        <ol className="grid w-full grid-cols-4" aria-label="Workflow stages">
             {stages.map((stage, i) => {
                 const done = i < currKey;
                 const current = i === currKey;
