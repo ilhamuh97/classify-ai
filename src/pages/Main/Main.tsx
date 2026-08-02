@@ -8,6 +8,7 @@ import Predict from '../../components/Sections/Predict/Predict';
 import StageNav from './StageNav/StageNav';
 import Logo from '../../assets/logo/classify.svg';
 import { usePrompt } from '../../components/common/RouterPrompt/RouterPrompt';
+import Footer from '@/components/common/Footer/Footer';
 import { ParamConfigContext } from '@/contexts/ParamConfigContext.ts';
 import { DataAugmentationConfigContext } from '@/contexts/DataAugmentationConfigContext.ts';
 import { ClassConfigContext } from '@/contexts/ClassConfigContext.ts';
@@ -86,9 +87,7 @@ const Main = () => {
                     </ClassConfigContext.Provider>
                 </DataAugmentationConfigContext.Provider>
             </ParamConfigContext.Provider>
-            <footer className="flex min-h-20 items-center justify-center border-t border-border px-6 text-center text-sm text-muted-foreground sm:px-10">
-                © Copyright {new Date().getFullYear()} Ilhamuh97
-            </footer>
+            <Footer />
         </div>
     );
 };

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import Logo from '../../assets/logo/classify.svg';
 import { Button } from '@/components/ui/button';
+import Footer from '@/components/common/Footer/Footer';
 import LogosWrapper from './LogosWrapper/LogosWrapper';
 
 const Home = () => {
@@ -33,9 +34,7 @@ const Home = () => {
                     <Link to="/train">Get Started</Link>
                 </Button>
             </main>
-            <footer className="flex min-h-20 items-center justify-center border-t border-border px-6 text-center text-sm text-muted-foreground sm:px-10">
-                © Copyright {new Date().getFullYear()} Ilhamuh97
-            </footer>
+            <Footer />
         </div>
     );
 };
