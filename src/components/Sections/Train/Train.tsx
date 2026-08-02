@@ -1,0 +1,380 @@
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
+import * as tf from '@tensorflow/tfjs';
+import Report from './Report/Report';
+import SuccessAlert from './Alerts/SuccessAlert/SuccessAlert';
+import FailedAlert from './Alerts/FailedAlert/FailedAlert';
+import SectionHeader from '../../common/SectionHeader/SectionHeader';
+import ProgressEpoch from './ProgressEpoch/ProgressEpoch';
+import Canvas from './Canvas/Canvas';
+import { Button, Space, Alert } from 'antd';
+import { trainContext as headerContext } from '../../../assets/text/headerText/headerText';
+import { ParamConfigContext } from '../../../contexts/ParamConfigContext';
+import { DataAugmentationConfigContext } from '../../../contexts/DataAugmentationConfigContext';
+import { ClassConfigContext } from '../../../contexts/ClassConfigContext';
+import {
+    shuffleCombo,
+    splitDataset,
+    calculateFeaturesOnCurrentFrame
+} from '../../../helpers/helpers';
+import {
+    AugmentedDatasetItem,
+    DatasetItem,
+    LogEntry,
+    LossAndAccuracy,
+    SplitDataset,
+    TrainingReport,
+    TrainState
+} from '../../../types';
+import styles from './Train.module.scss';
+
+interface TrainProps {
+    dataset: DatasetItem[];
+    graphModel: tf.GraphModel | null;
+    setGraphModel: Dispatch<SetStateAction<tf.GraphModel | null>>;
+    setModel: Dispatch<SetStateAction<tf.LayersModel | null>>;
+    report: TrainingReport | null;
+    setReport: Dispatch<SetStateAction<TrainingReport | null>>;
+}
+
+const Train = ({ dataset, graphModel, setGraphModel, setModel, report, setReport }: TrainProps) => {
+    const { paramConfig } = useContext(ParamConfigContext);
+    const { dataAugmentationConfig } = useContext(DataAugmentationConfigContext);
+    const { classConfig } = useContext(ClassConfigContext);
+    const [isAugmenting, setIsAugmenting] = useState(false);
+    const [state, setState] = useState<TrainState>('');
+    const [progressMessage, setProgressMessage] = useState('');
+    const [infoMessage, setInfoMessage] = useState('');
+    const [isTraining, setIsTraining] = useState(false);
+    const [isTrainingSucceed, setIsTrainingSucceed] = useState(false);
+    const [showAlert, setShowAlert] = useState(false);
+    const [isTrainDisable, setIsTrainDisable] = useState(false);
+    const [augmentedDataset, setAugmentedDataset] = useState<AugmentedDatasetItem[]>([]);
+    const [logs, setLogs] = useState<LogEntry[]>([]);
+    const [splittedDataset, setSplittedDataset] = useState<SplitDataset<DatasetItem>>({
+        training: [],
+        validation: []
+    });
+    const [baseModel, setBaseModel] = useState<tf.Sequential | null>(null);
+    const [featureVectors, setFeatureVectors] = useState<SplitDataset<tf.Tensor> | null>(null);
+    const [keys, setKeys] = useState<SplitDataset<number> | null>(null);
+
+    useEffect(() => {
+        trainIsDisable();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        if (isTraining) {
+            if (state === 'SET_GRAPH_MODEL') {
+                initialGraphModel();
+            } else if (state === 'SET_MODEL') {
+                initialModel();
+            } else if (state === 'SET_AUGMENTED_DATA') {
+                setIsAugmenting(true);
+            } else if (state === 'SET_DATA') {
+                prepareData();
+            } else if (state === 'TRAIN_AND_PREDICT') {
+                if (keys && featureVectors) trainAndPredict(keys, featureVectors);
+            } else {
+                resetStates();
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isTraining, state]);
+
+    useEffect(() => {
+        if (!isTraining && isTrainingSucceed) {
+            const getConfusionMatrix = (): number[][] => {
+                const labels: number[] = [];
+                const predictions: number[] = [];
+                tf.tidy(function () {
+                    // Grab pixels from current VIDEO frame.
+                    splittedDataset.validation.forEach((validation) => {
+                        const imageFeatures = calculateFeaturesOnCurrentFrame(
+                            validation.data,
+                            graphModel!
+                        );
+                        // Resize video frame tensor to be 224 x 224 pixels which is needed by MobileNet for input.
+                        let prediction = baseModel!.predict(imageFeatures.expandDims()) as tf.Tensor;
+                        prediction = prediction.squeeze();
+                        const highestIndex = prediction.argMax().arraySync() as number;
+                        predictions.push(highestIndex);
+                        labels.push(validation.key);
+                    });
+                });
+                return tf.math
+                    .confusionMatrix(labels, predictions, classConfig.length)
+                    .arraySync() as number[][];
+            };
+
+            // store logs into the report history
+            setReport({
+                logs: logs,
+                classConfig: classConfig,
+                confusionMatrix: getConfusionMatrix()
+            });
+            setModel(baseModel);
+            // clean up current logs
+            setLogs([]);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isTrainingSucceed, isTraining]);
+
+    const initialGraphModel = () => {
+        setProgressMessage('Preparing graph model...');
+        const loadFeatureModel = async () => {
+            const model = paramConfig.model;
+            const URL = JSON.parse(model).URL;
+            const loadedGraphModel = await tf.loadGraphModel(URL, { fromTFHub: true });
+            return loadedGraphModel;
+        };
+        loadFeatureModel()
+            .then((result) => {
+                setGraphModel(result);
+                setProgressMessage('Preparing model...');
+                setState('SET_MODEL');
+                console.log('Tensors in memory after graph loaded: ' + tf.memory().numTensors);
+            })
+            .catch((e) => {
+                setIsTraining(false);
+                setShowAlert(true);
+                setIsTrainingSucceed(false);
+                console.log(e);
+            });
+    };
+
+    const getOptimizer = (optimizerName: string, learningRate: number) => {
+        switch (optimizerName) {
+            case 'sgd':
+                return tf.train.sgd(learningRate);
+            case 'adam':
+                return tf.train.adam(learningRate);
+            default:
+                return tf.train.adam(learningRate);
+        }
+    };
+
+    const initialModel = () => {
+        // get parameters from config
+        const learningRate = paramConfig.learningRate;
+        const optimizer = getOptimizer(paramConfig.optimizer, learningRate);
+        const modelConfig = {
+            optimizer: optimizer,
+            loss:
+                classConfig.length === 2 ? 'binaryCrossentropy' : 'categoricalCrossentropy',
+            metrics: ['accuracy']
+        };
+        const model = paramConfig.model;
+        const inputShape = JSON.parse(model).inputShape;
+        // create model layers
+        const currModel = tf.sequential();
+        currModel.add(
+            tf.layers.dense({ inputShape: [inputShape], units: 128, activation: 'relu' })
+        );
+        currModel.add(tf.layers.dense({ units: classConfig.length, activation: 'softmax' }));
+        // compile model
+        currModel.compile(modelConfig);
+        setBaseModel(currModel);
+        const message = dataAugmentationConfig.isActive
+            ? 'Preparing augmented images...'
+            : 'Preparing feature vectors';
+        setProgressMessage(message);
+        if (dataAugmentationConfig.isActive === true) {
+            setState('SET_AUGMENTED_DATA');
+        } else {
+            setState('SET_DATA');
+        }
+        console.log('Tensors in memory after model loaded: ' + tf.memory().numTensors);
+    };
+
+    const prepareData = () => {
+        const combinedDataset: (DatasetItem | AugmentedDatasetItem)[] = [
+            ...dataset,
+            ...augmentedDataset
+        ];
+        shuffleCombo(combinedDataset);
+        const { training, validation } = splitDataset(combinedDataset, 0.8);
+        setSplittedDataset(
+            structuredClone({ training, validation }) as SplitDataset<DatasetItem>
+        );
+
+        const trainingImageFeatures: tf.Tensor[] = [];
+        const trainingKeys: number[] = [];
+        const validationImageFeatures: tf.Tensor[] = [];
+        const validationKeys: number[] = [];
+
+        training.forEach((d) => {
+            trainingImageFeatures.push(calculateFeaturesOnCurrentFrame(d.data, graphModel!));
+            trainingKeys.push(d.key);
+        });
+        validation.forEach((d) => {
+            validationImageFeatures.push(calculateFeaturesOnCurrentFrame(d.data, graphModel!));
+            validationKeys.push(d.key);
+        });
+        setFeatureVectors({
+            training: trainingImageFeatures,
+            validation: validationImageFeatures
+        });
+        setKeys({ training: trainingKeys, validation: validationKeys });
+        setProgressMessage('Training model...');
+        setState('TRAIN_AND_PREDICT');
+    };
+
+    const trainClicked = () => {
+        tf.disposeVariables();
+        setIsTraining(true);
+        setShowAlert(false);
+        setKeys(null);
+        setFeatureVectors(null);
+        setGraphModel(null);
+        setBaseModel(null);
+        setState('SET_GRAPH_MODEL');
+        setProgressMessage('Setting up graph model...');
+        setAugmentedDataset([]);
+    };
+
+    const trainAndPredict = async (
+        keys: SplitDataset<number>,
+        featureVectors: SplitDataset<tf.Tensor>
+    ) => {
+        // Training
+        const outputsAsTensorTraining = tf.tensor1d(keys.training, 'int32');
+        const oneHotOutputsTraining = tf.oneHot(outputsAsTensorTraining, classConfig.length);
+        const inputsAsTensorTraining = tf.stack(featureVectors.training);
+
+        // Validation
+        const outputsAsTensorValidation = tf.tensor1d(keys.validation, 'int32');
+        const oneHotOutputsValidation = tf.oneHot(outputsAsTensorValidation, classConfig.length);
+        const inputsAsTensorValidation = tf.stack(featureVectors.validation);
+
+        // Train
+        await baseModel!.fit(inputsAsTensorTraining, oneHotOutputsTraining, {
+            shuffle: true,
+            validationData: [inputsAsTensorValidation, oneHotOutputsValidation],
+            batchSize: paramConfig.batchSize,
+            epochs: paramConfig.epochs,
+            callbacks: { onEpochEnd: logProgress },
+            initialEpoch: 0
+        });
+
+        outputsAsTensorTraining.dispose();
+        oneHotOutputsTraining.dispose();
+        inputsAsTensorTraining.dispose();
+
+        setState('DONE');
+    };
+
+    const resetStates = () => {
+        // setup finish training parameter
+        setProgressMessage('');
+        setShowAlert(true);
+        setIsTrainingSucceed(true);
+        setIsTraining(false);
+        setState('');
+        setIsAugmenting(false);
+    };
+
+    /**
+     * Log training progress.
+     **/
+    const logProgress = (epoch: number, logs?: tf.Logs) => {
+        //console.log(logs);
+        setLogs((current) => [
+            ...current,
+            {
+                epoch: epoch,
+                lossAndAccuracy: logs as unknown as LossAndAccuracy
+            }
+        ]);
+    };
+
+    const trainIsDisable = () => {
+        let disable = false;
+        if (dataset.length === 0) {
+            setInfoMessage('Please provide data for your dataset. It cannot be empty.');
+            disable = true;
+            setIsTrainDisable(disable);
+        } else {
+            if (classConfig.length < 2) {
+                disable = true;
+                setInfoMessage('Please add at least 2 classes.');
+                setIsTrainDisable(disable);
+            } else {
+                classConfig.forEach((classItem) => {
+                    const found = dataset.find((d) => d.key === classItem.key);
+                    if (!found) {
+                        disable = true;
+                        setInfoMessage(
+                            `Your class "${classItem.label}" requires dataset. Please add at least 1 image for each class`
+                        );
+                        setIsTrainDisable(disable);
+                    }
+                });
+            }
+            if (!disable) {
+                const unique = [...new Set(dataset.map((d) => d.key))];
+                if (unique.length < 2) {
+                    disable = true;
+                    setInfoMessage('Please add at least 2 classes without empty dataset');
+                    setIsTrainDisable(disable);
+                }
+            }
+        }
+    };
+
+    return (
+        <div className={styles.train}>
+            <Space size="small" direction="vertical" className={styles.layout}>
+                <SectionHeader
+                    title={headerContext.title}
+                    subTitle={headerContext.subTitle}
+                    stepStatus={headerContext.stepStatus}
+                />
+                {isTraining && dataAugmentationConfig.isActive && isAugmenting ? (
+                    <Canvas
+                        dataset={dataset}
+                        dataAugmentationConfig={dataAugmentationConfig}
+                        setAugmentedDataset={setAugmentedDataset}
+                        setProgressMessage={setProgressMessage}
+                        setState={setState}
+                    />
+                ) : null}
+                <Button
+                    onClick={() => trainClicked()}
+                    disabled={isTrainDisable || isTraining}
+                    loading={isTraining}>
+                    Start Training
+                </Button>
+                {isTrainDisable ? <Alert message={infoMessage} type="warning" showIcon /> : null}
+                <span>{progressMessage}</span>
+                {isTraining && logs.length > 0 ? (
+                    <ProgressEpoch logs={logs} paramConfig={paramConfig} />
+                ) : null}
+                {isTraining && logs.length > 0 ? (
+                    <Alert
+                        message="Training is still in progress"
+                        description={`Accuracy: ${logs[logs.length - 1].lossAndAccuracy.acc.toFixed(
+                            3
+                        )}, Loss: ${logs[logs.length - 1].lossAndAccuracy.loss.toFixed(3)}`}
+                        type="info"
+                        showIcon
+                    />
+                ) : null}
+                {!isTraining && showAlert ? (
+                    isTrainingSucceed ? (
+                        logs.length === 0 ? (
+                            <SuccessAlert report={report!} />
+                        ) : null
+                    ) : (
+                        <FailedAlert />
+                    )
+                ) : null}
+                {(report && !isTraining) || (isTraining && logs.length > 0) ? (
+                    <Report report={report} logs={logs} />
+                ) : null}
+            </Space>
+        </div>
+    );
+};
+
+export default Train;
