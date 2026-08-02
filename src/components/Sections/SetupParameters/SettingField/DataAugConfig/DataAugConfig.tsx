@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type P5 from 'p5';
 import { RefreshCw } from 'lucide-react';
 import P5Sketch from '../../../../common/P5Sketch/P5Sketch';
+import { augmentImage } from '@/helpers/augmentImage';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
@@ -101,79 +102,7 @@ const DataAugConfig = ({
             img.updatePixels();
             p5.image(img, 0, 0);
         } else {
-            img.loadPixels();
-            const arr = dataset[randomImgIndex].data.data;
-            for (let y = 0; y < img.height; y++) {
-                for (let x = 0; x < img.width; x++) {
-                    const index = (x + y * img.width) * 4;
-                    const rand = p5.random(0, 1);
-                    if (rand < dataAugmentationConfig.noise) {
-                        img.pixels[index] = 0;
-                        img.pixels[index + 1] = 0;
-                        img.pixels[index + 2] = 0;
-                        img.pixels[index + 3] = 255;
-                    } else {
-                        img.pixels[index] = arr[index];
-                        img.pixels[index + 1] = arr[index + 1];
-                        img.pixels[index + 2] = arr[index + 2];
-                        img.pixels[index + 3] = arr[index + 3];
-                    }
-                }
-            }
-            img.updatePixels();
-            // Data augmentation
-
-            // image translation
-            let translationXRand = 0;
-            let translationYRand = 0;
-            if (dataAugmentationConfig.translationX) {
-                translationXRand = p5.random(
-                    -dataAugmentationConfig.translationX,
-                    dataAugmentationConfig.translationX
-                );
-            }
-
-            if (dataAugmentationConfig.translationY) {
-                translationYRand = p5.random(
-                    -dataAugmentationConfig.translationY,
-                    dataAugmentationConfig.translationY
-                );
-            }
-            const xTranslation = img.width * translationXRand;
-            const yTranslation = img.height * translationYRand;
-            p5.translate(img.width / 2 + xTranslation, img.height / 2 + yTranslation);
-
-            // image rotation
-            if (dataAugmentationConfig.rotation) {
-                const rotationRand = p5.random(
-                    -dataAugmentationConfig.rotation,
-                    dataAugmentationConfig.rotation
-                );
-                p5.rotate(p5.PI * rotationRand);
-            }
-
-            //flip scale
-            let flipX = 1;
-            if (dataAugmentationConfig.flipX && 0.5 > p5.random(0, 1)) {
-                flipX = -1;
-            }
-            let flipY = 1;
-            if (dataAugmentationConfig.flipY && 0.5 > p5.random(0, 1)) {
-                flipY = -1;
-            }
-
-            //scale
-            let scaleXRand = 0;
-            let scaleYRand = 0;
-            if (dataAugmentationConfig.scale) {
-                scaleXRand = p5.random(dataAugmentationConfig.scale, -dataAugmentationConfig.scale);
-                scaleYRand = p5.random(dataAugmentationConfig.scale, -dataAugmentationConfig.scale);
-            }
-
-            const scaleX = scaleXRand * flipX;
-            const scaleY = scaleYRand * flipY;
-            p5.scale(flipX + scaleX, flipY + scaleY);
-            p5.image(img, 0, 0);
+            augmentImage(p5, img, dataset[randomImgIndex].data.data, dataAugmentationConfig);
         }
     };
 
